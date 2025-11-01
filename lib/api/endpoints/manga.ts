@@ -46,7 +46,7 @@ export const mangaApi = {
   getList: async (
     params?: MangaListParams
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<MangaListItem>>(`/mangas${query}`);
   },
 
@@ -57,7 +57,7 @@ export const mangaApi = {
   getRecent: async (
     params?: Partial<MangaListParams>
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<MangaListItem>>(
       `/mangas/recent${query}`
     );
@@ -70,7 +70,7 @@ export const mangaApi = {
   getHot: async (
     params?: Partial<MangaListParams>
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<MangaListItem>>(
       `/mangas/hot${query}`
     );
@@ -83,7 +83,9 @@ export const mangaApi = {
   search: async (
     params: MangaSearchParams
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(
+      params as unknown as Record<string, unknown>
+    );
     return apiClient.get<PaginatedResponse<MangaListItem>>(
       `/mangas/search${query}`
     );
@@ -105,7 +107,7 @@ export const mangaApi = {
     slug: string,
     params?: ChapterListParams
   ): Promise<PaginatedResponse<ChapterListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<ChapterListItem>>(
       `/mangas/${slug}/chapters${query}`
     );
@@ -124,7 +126,7 @@ export const genreApi = {
     per_page?: number;
     page?: number;
   }): Promise<PaginatedResponse<Genre>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<Genre>>(`/genres${query}`);
   },
 
@@ -144,7 +146,7 @@ export const genreApi = {
     slug: string,
     params?: GenreMangasParams
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<MangaListItem>>(
       `/genres/${slug}/mangas${query}`
     );
@@ -164,7 +166,7 @@ export const artistApi = {
     per_page?: number;
     page?: number;
   }): Promise<PaginatedResponse<Artist>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<Artist>>(`/artists${query}`);
   },
 
@@ -184,7 +186,7 @@ export const artistApi = {
     slug: string,
     params?: { per_page?: number; page?: number }
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<MangaListItem>>(
       `/artists/${slug}/mangas${query}`
     );
@@ -203,7 +205,7 @@ export const groupApi = {
     per_page?: number;
     page?: number;
   }): Promise<PaginatedResponse<Group>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<Group>>(`/groups${query}`);
   },
 
@@ -223,7 +225,7 @@ export const groupApi = {
     slug: string,
     params?: { per_page?: number; page?: number }
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<MangaListItem>>(
       `/groups/${slug}/mangas${query}`
     );
@@ -242,7 +244,7 @@ export const doujinshiApi = {
     per_page?: number;
     page?: number;
   }): Promise<PaginatedResponse<Doujinshi>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<Doujinshi>>(`/doujinshis${query}`);
   },
 
@@ -262,7 +264,7 @@ export const doujinshiApi = {
     slug: string,
     params?: { per_page?: number; page?: number }
   ): Promise<PaginatedResponse<MangaListItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<MangaListItem>>(
       `/doujinshis/${slug}/mangas${query}`
     );

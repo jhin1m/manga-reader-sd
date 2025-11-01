@@ -73,7 +73,7 @@ export const chapterApi = {
     slug: string,
     params?: CommentListParams
   ): Promise<PaginatedResponse<Comment>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<Comment>>(
       `/chapters/${slug}/comments${query}`
     );
@@ -122,7 +122,7 @@ export const chapterReportApi = {
     per_page?: number;
     page?: number;
   }): Promise<PaginatedResponse<ChapterReport>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<ChapterReport>>(
       `/user/chapter-reports${query}`
     );

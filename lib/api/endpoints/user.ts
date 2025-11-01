@@ -43,7 +43,7 @@ export const userFavoritesApi = {
     per_page?: number;
     page?: number;
   }): Promise<PaginatedResponse<FavoriteManga>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<FavoriteManga>>(
       `/user/favorites${query}`
     );
@@ -80,7 +80,7 @@ export const userHistoryApi = {
     per_page?: number;
     page?: number;
   }): Promise<PaginatedResponse<ReadingHistoryItem>> => {
-    const query = buildQueryString(params);
+    const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<ReadingHistoryItem>>(
       `/user/histories${query}`
     );

@@ -89,27 +89,27 @@
 
 ### 1.4 Base UI Components
 
-- [ ] 🔴 Atoms (shadcn/ui + custom)
-  - [ ] Button
-  - [ ] Input
-  - [ ] Card
-  - [ ] Badge
-  - [ ] Avatar
-  - [ ] Skeleton
-  - [ ] Spinner
-  - [ ] Dialog/Modal
-  - [ ] Dropdown Menu
-  - [ ] Toast
-- [ ] 🔴 Layout Components
-  - [ ] Header/Navbar
-  - [ ] Footer
-  - [ ] Sidebar (mobile)
-  - [ ] Container/Wrapper
-  - [ ] ErrorBoundary
-- [ ] 🔴 Loading States
-  - [ ] Page skeleton
-  - [ ] Card skeleton
-  - [ ] List skeleton
+- [x] 🔴 Atoms (shadcn/ui + custom)
+  - [x] Button
+  - [x] Input
+  - [x] Card
+  - [x] Badge
+  - [x] Avatar
+  - [x] Skeleton
+  - [x] Spinner (Hoặc Loader2 từ lucide)
+  - [x] Dialog/Modal
+  - [x] Dropdown Menu
+  - [x] Toast
+- [x] 🔴 Layout Components
+  - [x] Header/Navbar
+  - [x] Footer
+  - [x] Sidebar (mobile)
+  - [x] Container/Wrapper
+  - [x] ErrorBoundary
+- [x] 🔴 Loading States
+  - [x] Page skeleton
+  - [x] Card skeleton
+  - [x] List skeleton
 
 **Deliverables Phase 1:**
 
