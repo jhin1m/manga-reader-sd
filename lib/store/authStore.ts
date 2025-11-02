@@ -14,6 +14,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  lastValidated: number | null; // Timestamp of last token validation
 }
 
 /**
@@ -24,6 +25,7 @@ interface AuthActions {
   updateUser: (user: Partial<User>) => void;
   logout: () => void;
   getToken: () => string | null;
+  setLastValidated: (timestamp: number) => void;
 }
 
 /**
@@ -38,6 +40,7 @@ const initialState: AuthState = {
   user: null,
   token: null,
   isAuthenticated: false,
+  lastValidated: null,
 };
 
 /**
@@ -56,6 +59,7 @@ export const useAuthStore = create<AuthStore>()(
           user,
           token,
           isAuthenticated: true,
+          lastValidated: Date.now(),
         }),
 
       /**
@@ -75,6 +79,14 @@ export const useAuthStore = create<AuthStore>()(
        * Get current token (helper method)
        */
       getToken: () => get().token,
+
+      /**
+       * Update last validation timestamp
+       */
+      setLastValidated: (timestamp) =>
+        set({
+          lastValidated: timestamp,
+        }),
     }),
     {
       name: "auth-storage", // localStorage key
@@ -84,6 +96,7 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        lastValidated: state.lastValidated,
       }),
     }
   )
