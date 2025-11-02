@@ -14,7 +14,7 @@
 
 | Phase       | Mô tả                            | Timeline | Status         | Progress |
 | ----------- | -------------------------------- | -------- | -------------- | -------- |
-| **Phase 1** | Core Setup & Infrastructure      | Week 1   | 🔴 Not Started | 0%       |
+| **Phase 1** | Core Setup & Infrastructure      | Week 1   | 🟢 Completed   | 100%     |
 | **Phase 2** | Authentication & User Management | Week 1-2 | 🔴 Not Started | 0%       |
 | **Phase 3** | Manga Features (Core)            | Week 2-3 | 🔴 Not Started | 0%       |
 | **Phase 4** | User Features & Interactions     | Week 3-4 | 🔴 Not Started | 0%       |
@@ -111,15 +111,31 @@
   - [x] Card skeleton
   - [x] List skeleton
 
+### 1.5 SEO & i18n Infrastructure
+
+- [x] 🟢 Setup Internationalization (i18n)
+  - [x] Cài đặt next-intl
+  - [x] Config default locale (vi - Tiếng Việt)
+  - [x] Tạo cấu trúc thư mục translations (`/messages/vi.json`)
+  - [x] Setup i18n middleware
+  - [x] Create translation helpers/hooks
+- [x] 🟢 Centralized SEO Configuration
+  - [x] Tạo `/lib/seo/config.ts` - SEO config templates
+  - [x] Tạo `/lib/seo/metadata.ts` - Metadata generators
+  - [x] Tạo `/lib/seo/json-ld.ts` - JSON-LD schema generators
+  - [x] Create SEO helper functions (generatePageMetadata, etc.)
+  - [x] Setup default metadata trong root layout
+
 **Deliverables Phase 1:**
 
 - ✅ Cấu trúc project hoàn chỉnh
 - ✅ API client functional
 - ✅ Base components library
 - ✅ Type safety đầy đủ
+- ✅ SEO & i18n infrastructure ready
 
 **Timeline**: Days 1-4
-**Progress**: 0/15 tasks (0%)
+**Progress**: 17/17 tasks (100%) ✅
 
 ---
 
@@ -129,29 +145,29 @@
 
 ### 2.1 Authentication State Management
 
-- [ ] 🔴 Setup Zustand auth store
-  - [ ] User state
-  - [ ] Token state
-  - [ ] Login/Logout actions
-  - [ ] Persist to localStorage
-  - [ ] Auto-refresh token logic
+- [x] 🔴 Setup Zustand auth store
+  - [x] User state
+  - [x] Token state
+  - [x] Login/Logout actions
+  - [x] Persist to localStorage
+  - [x] Auto-refresh token logic
 
 ### 2.2 Login Page
 
-- [ ] 🔴 Create `/app/(auth)/login/page.tsx`
-- [ ] 🔴 Login form với validation
-  - [ ] Email validation (Zod)
-  - [ ] Password validation
-  - [ ] Error messages
-  - [ ] Loading states
-- [ ] 🔴 API integration
-  - [ ] Call `POST /auth/login`
-  - [ ] Store token
-  - [ ] Redirect to homepage
-- [ ] 🔴 Google OAuth button
-  - [ ] Setup Google OAuth client
-  - [ ] Handle OAuth flow
-  - [ ] Call `POST /auth/google`
+- [x] 🟢 Create `/app/(auth)/login/page.tsx`
+- [x] 🟢 Login form với validation
+  - [x] Email validation (Zod)
+  - [x] Password validation
+  - [x] Error messages
+  - [x] Loading states
+- [x] 🟢 API integration
+  - [x] Call `POST /auth/login`
+  - [x] Store token
+  - [x] Redirect to homepage
+- [x] 🟢 Google OAuth button
+  - [x] Setup Google OAuth client
+  - [x] Handle OAuth flow
+  - [x] Call `POST /auth/google`
 
 ### 2.3 Register Page
 
@@ -192,7 +208,7 @@
 - ✅ Token refresh automatic
 
 **Timeline**: Days 5-9
-**Progress**: 0/13 tasks (0%)
+**Progress**: 4/13 tasks (31%)
 
 ---
 
@@ -559,7 +575,7 @@ Các tính năng có thể thêm sau khi hoàn thành MVP:
 ### Priority Medium
 
 - [ ] Dark/Light theme toggle
-- [ ] Multi-language support (i18n)
+- [ ] Multi-language support - Add more locales (i18n infrastructure đã có ở Phase 1, chỉ cần add thêm en, ja, etc.)
 - [ ] Download chapters (offline reading)
 - [ ] Reading list (custom collections)
 - [ ] Following authors/artists
