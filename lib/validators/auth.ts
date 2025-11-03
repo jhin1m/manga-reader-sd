@@ -22,7 +22,7 @@ export const loginSchema = z.object({
 
 /**
  * Register validation schema
- * Validates registration form with password confirmation
+ * Validates registration form with password confirmation and terms acceptance
  */
 export const registerSchema = z
   .object({
@@ -41,6 +41,9 @@ export const registerSchema = z
       .min(6, "Password must be at least 6 characters")
       .max(100, "Password must not exceed 100 characters"),
     password_confirmation: z.string().min(1, "Please confirm your password"),
+    terms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions",
+    }),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Passwords do not match",
