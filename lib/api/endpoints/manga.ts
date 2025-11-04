@@ -43,11 +43,9 @@ export const mangaApi = {
    * Get paginated list of mangas with filtering and sorting
    * GET /mangas
    */
-  getList: async (
-    params?: MangaListParams
-  ): Promise<PaginatedResponse<MangaListItem>> => {
+  getList: async (params?: MangaListParams): Promise<MangaListItem[]> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<PaginatedResponse<MangaListItem>>(`/mangas${query}`);
+    return apiClient.get<MangaListItem[]>(`/mangas${query}`);
   },
 
   /**
@@ -56,11 +54,9 @@ export const mangaApi = {
    */
   getRecent: async (
     params?: Partial<MangaListParams>
-  ): Promise<PaginatedResponse<MangaListItem>> => {
+  ): Promise<MangaListItem[]> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<PaginatedResponse<MangaListItem>>(
-      `/mangas/recent${query}`
-    );
+    return apiClient.get<MangaListItem[]>(`/mangas/recent${query}`);
   },
 
   /**
@@ -69,26 +65,20 @@ export const mangaApi = {
    */
   getHot: async (
     params?: Partial<MangaListParams>
-  ): Promise<PaginatedResponse<MangaListItem>> => {
+  ): Promise<MangaListItem[]> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<PaginatedResponse<MangaListItem>>(
-      `/mangas/hot${query}`
-    );
+    return apiClient.get<MangaListItem[]>(`/mangas/hot${query}`);
   },
 
   /**
    * Search mangas by name
    * GET /mangas/search
    */
-  search: async (
-    params: MangaSearchParams
-  ): Promise<PaginatedResponse<MangaListItem>> => {
+  search: async (params: MangaSearchParams): Promise<MangaListItem[]> => {
     const query = buildQueryString(
       params as unknown as Record<string, unknown>
     );
-    return apiClient.get<PaginatedResponse<MangaListItem>>(
-      `/mangas/search${query}`
-    );
+    return apiClient.get<MangaListItem[]>(`/mangas/search${query}`);
   },
 
   /**
@@ -106,11 +96,9 @@ export const mangaApi = {
   getChapters: async (
     slug: string,
     params?: ChapterListParams
-  ): Promise<PaginatedResponse<ChapterListItem>> => {
+  ): Promise<ChapterListItem[]> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<PaginatedResponse<ChapterListItem>>(
-      `/mangas/${slug}/chapters${query}`
-    );
+    return apiClient.get<ChapterListItem[]>(`/mangas/${slug}/chapters${query}`);
   },
 };
 

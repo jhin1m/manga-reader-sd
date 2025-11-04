@@ -133,7 +133,7 @@
     "noResults": "Không tìm thấy kết quả nào",
     "searchFor": "Kết quả cho \"{query}\"",
     "advancedSearch": "Tìm kiếm nâng cao",
-    "filters": "Bộ lọc",
+    "filters": "bộ lọc",
     "sortBy": "Sắp xếp theo",
     "sort": {
       "latest": "Mới nhất",
@@ -194,5 +194,41 @@
     "bookmarkRemoved": "Đã xóa khỏi đã lưu",
     "profileUpdated": "Đã cập nhật hồ sơ",
     "passwordChanged": "Đã đổi mật khẩu"
+  },
+  "homepage": {
+    "hero": {
+      "title": "Đọc Manga Online",
+      "titleHighlight": "Miễn Phí & Không Quảng Cáo",
+      "description": "Hàng ngàn bộ manga hot nhất, cập nhật liên tục. Đọc truyện tranh tiếng Việt chất lượng cao, mượt mà trên mọi thiết bị.",
+      "exploreNow": "Khám phá ngay",
+      "browseGenres": "Xem thể loại",
+      "exploreMore": "Khám phá thêm",
+      "hot": "Hot",
+      "ongoing": "Đang ra",
+      "completed": "Hoàn thành"
+    },
+    "sections": {
+      "recentlyUpdated": "Mới cập nhật",
+      "hotManga": "Manga Hot",
+      "topRanked": "Xếp hạng",
+      "recommended": "Đề xuất cho bạn",
+      "viewAll": "Xem tất cả",
+      "tabs": {
+        "day": "Ngày",
+        "week": "Tuần",
+        "all": "Tất cả"
+      }
+    },
+    "mangaCard": {
+      "hot": "Hot",
+      "ongoing": "Đang ra",
+      "completed": "Hoàn thành",
+      "chapter": "Chương"
+    },
+    "emptyStates": {
+      "noManga": "Không có manga nào",
+      "loadError": "Không thể tải danh sách manga. Vui lòng thử lại sau.",
+      "loadErrorHot": "Không thể tải danh sách manga hot. Vui lòng thử lại sau."
+    }
   }
 }

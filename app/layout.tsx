@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { GoogleOAuthProvider } from "@/components/providers/google-oauth-provider";
+import { ReactQueryProvider } from "@/components/providers/query-client-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/layout/header/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -11,13 +12,8 @@ import { getMessages } from "next-intl/server";
 import { defaultMetadata } from "@/lib/seo/config";
 import { generateWebsiteSchema } from "@/lib/seo/json-ld";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const notoSans = Noto_Sans({
+  variable: "--font-noto-sans",
   subsets: ["latin"],
 });
 
@@ -48,25 +44,25 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${notoSans.variable} antialiased`}>
         <NextIntlClientProvider
           messages={messages}
           locale="vi"
           timeZone="Asia/Ho_Chi_Minh"
           now={new Date()}
         >
-          <GoogleOAuthProvider>
-            <ThemeProvider>
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-              <Toaster />
-            </ThemeProvider>
-          </GoogleOAuthProvider>
+          <ReactQueryProvider>
+            <GoogleOAuthProvider>
+              <ThemeProvider>
+                <div className="flex min-h-screen flex-col">
+                  <Navbar />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+                <Toaster />
+              </ThemeProvider>
+            </GoogleOAuthProvider>
+          </ReactQueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>

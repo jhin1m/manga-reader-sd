@@ -1,20 +1,31 @@
 "use client";
 
+/**
+ * SearchBar Component
+ * Search input with debounced navigation to search results page
+ */
+
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface SearchBarProps {
+export interface SearchBarProps {
   className?: string;
   placeholder?: string;
 }
 
-export function SearchBar({
-  className,
-  placeholder = "Search manga...",
-}: SearchBarProps) {
+/**
+ * SearchBar component with debounced search
+ *
+ * @param className - Optional additional CSS classes
+ * @param placeholder - Optional custom placeholder text (overrides i18n default)
+ */
+export function SearchBar({ className, placeholder }: SearchBarProps) {
+  const t = useTranslations("search");
   const router = useRouter();
   const [query, setQuery] = useState("");
 
@@ -45,7 +56,7 @@ export function SearchBar({
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="search"
-        placeholder={placeholder}
+        placeholder={placeholder || t("searchPlaceholder")}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="pl-9"
