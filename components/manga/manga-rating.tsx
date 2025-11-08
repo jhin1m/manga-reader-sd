@@ -25,8 +25,8 @@ interface MangaRatingProps {
 
 export function MangaRating({
   slug,
-  averageRating,
-  totalRatings,
+  averageRating = 0,
+  totalRatings = 0,
 }: MangaRatingProps) {
   const t = useTranslations("rating");
   const tErrors = useTranslations("errors");
@@ -35,6 +35,10 @@ export function MangaRating({
 
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
+
+  // Ensure we have valid numbers
+  const safeAverageRating = Number(averageRating) || 0;
+  const safeTotalRatings = Number(totalRatings) || 0;
 
   const rateMutation = useMutation({
     mutationFn: (rating: number) => ratingApi.rateManga(slug, { rating }),
@@ -61,7 +65,7 @@ export function MangaRating({
     rateMutation.mutate(rating);
   };
 
-  const displayRating = hoveredRating || selectedRating || averageRating;
+  const displayRating = hoveredRating || selectedRating || safeAverageRating;
 
   return (
     <Card>
@@ -75,12 +79,12 @@ export function MangaRating({
         <div className="space-y-4">
           {/* Average Rating Display */}
           <div className="text-center">
-            <div className="text-4xl font-bold">{averageRating.toFixed(1)}</div>
+            <div className="text-4xl font-bold">{safeAverageRating.toFixed(1)}</div>
             <div className="text-sm text-muted-foreground">
               {t("averageRating")}
             </div>
             <div className="text-xs text-muted-foreground mt-1">
-              {t("totalRatings", { count: formatNumber(totalRatings) })}
+              {t("totalRatings", { count: formatNumber(safeTotalRatings) })}
             </div>
           </div>
 
