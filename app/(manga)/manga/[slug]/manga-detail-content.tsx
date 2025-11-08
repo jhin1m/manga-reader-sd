@@ -25,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
+import { MangaRating } from "@/components/manga/manga-rating";
+import { MangaCommentsSection } from "@/components/manga/manga-comments-section";
 import { MangaDetailSkeleton } from "@/components/layout/loading";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { userFavoritesApi } from "@/lib/api/endpoints/user";
@@ -428,12 +430,22 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
   return (
     <div className="container mx-auto max-w-screen-xl px-4 py-8">
       <Breadcrumb items={breadcrumbItems} />
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
         <MangaDetail
           manga={manga}
           chapters={chapters || []}
           isBookmarked={isBookmarked}
         />
+
+        {/* Rating Section */}
+        <MangaRating
+          slug={manga.slug}
+          averageRating={manga.average_rating}
+          totalRatings={manga.total_ratings}
+        />
+
+        {/* Comments Section */}
+        <MangaCommentsSection manga={manga} />
       </div>
     </div>
   );
