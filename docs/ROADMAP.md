@@ -15,7 +15,7 @@
 | Phase       | Mô tả                            | Timeline | Status         | Progress |
 | ----------- | -------------------------------- | -------- | -------------- | -------- |
 | **Phase 1** | Core Setup & Infrastructure      | Week 1   | 🟢 Completed   | 100%     |
-| **Phase 2** | Authentication & User Management | Week 1-2 | 🔴 Not Started | 0%       |
+| **Phase 2** | Authentication & User Management | Week 1-2 | 🟢 Completed   | 100%     |
 | **Phase 3** | Manga Features (Core)            | Week 2-3 | 🔴 Not Started | 0%       |
 | **Phase 4** | User Features & Interactions     | Week 3-4 | 🔴 Not Started | 0%       |
 | **Phase 5** | Polish & Optimization            | Week 4-5 | 🔴 Not Started | 0%       |
@@ -171,34 +171,34 @@
 
 ### 2.3 Register Page
 
-- [ ] 🔴 Create `/app/(auth)/register/page.tsx`
-- [ ] 🔴 Register form với validation
-  - [ ] Name, Email, Password fields
-  - [ ] Password confirmation
-  - [ ] Terms & conditions checkbox
-- [ ] 🔴 API integration
-  - [ ] Call `POST /auth/register`
-  - [ ] Auto-login after register
-  - [ ] Welcome message
+- [x] 🟢 Create `/app/(auth)/register/page.tsx`
+- [x] 🟢 Register form với validation
+  - [x] Name, Email, Password fields
+  - [x] Password confirmation
+  - [x] Terms & conditions checkbox
+- [x] 🟢 API integration
+  - [x] Call `POST /auth/register`
+  - [x] Auto-login after register
+  - [x] Welcome message
 
 ### 2.4 Protected Routes & Middleware
 
-- [ ] 🔴 Create Next.js middleware
-  - [ ] Check auth token
-  - [ ] Redirect unauthenticated users
-  - [ ] Public vs Private routes config
-- [ ] 🔴 Auth HOC/wrapper components
-  - [ ] `<ProtectedRoute>`
-  - [ ] `<GuestOnly>`
+- [x] 🟢 Create Next.js proxy (middleware)
+  - [x] Check auth token (client-side via localStorage)
+  - [x] Redirect unauthenticated users (via wrapper components)
+  - [x] Public vs Private routes config
+- [x] 🟢 Auth HOC/wrapper components
+  - [x] `<ProtectedRoute>` - Protects routes requiring authentication
+  - [x] `<GuestOnly>` - Protects auth routes from authenticated users
 
 ### 2.5 User Context & Hooks
 
-- [ ] 🔴 Custom hooks
-  - [ ] `useAuth()` - Get auth state
-  - [ ] `useUser()` - Get current user
-  - [ ] `useLogin()` - Login mutation
-  - [ ] `useLogout()` - Logout action
-  - [ ] `useRegister()` - Register mutation
+- [x] 🟢 Custom hooks
+  - [x] `useAuth()` - Get auth state
+  - [x] `useUser()` - Get current user (via useAuth)
+  - [x] `useLogin()` - Login mutation
+  - [x] `useLogout()` - Logout action
+  - [x] `useRegister()` - Register mutation
 
 **Deliverables Phase 2:**
 
@@ -208,7 +208,7 @@
 - ✅ Token refresh automatic
 
 **Timeline**: Days 5-9
-**Progress**: 4/13 tasks (31%)
+**Progress**: 10/10 tasks (100%) ✅
 
 ---
 
@@ -218,22 +218,17 @@
 
 ### 3.1 Homepage
 
-- [ ] 🔴 Create `/app/page.tsx`
-- [ ] 🔴 Sections
-  - [ ] Hero/Banner section
-  - [ ] Recently Updated (API: `GET /mangas/recent`)
-  - [ ] Hot/Trending (API: `GET /mangas/hot`)
-  - [ ] Recommended for you (if logged in)
-- [ ] 🔴 Components
-  - [ ] `<MangaCard>` - Display manga item
-  - [ ] `<MangaGrid>` - Grid layout
-  - [ ] `<MangaCarousel>` - Horizontal scroll
-  - [ ] `<GenreFilter>` - Filter by genre
-  - [ ] `<SearchBar>` - Quick search
-- [ ] 🔴 Pagination
-  - [ ] Load more button
-  - [ ] Infinite scroll (optional)
-- [ ] 🔴 Loading & Error states
+- [x] 🟢 Create `/app/page.tsx`
+- [x] 🟢 Sections
+  - [x] Hero/Banner section
+  - [x] Recently Updated (API: `GET /mangas/recent`)
+  - [x] Hot/Trending (API: `GET /mangas/hot`)
+- [x] 🟢 Components
+  - [x] `<MangaCard>` - Display manga item
+  - [x] `<MangaGrid>` - Grid layout
+  - [x] `<MangaCarousel>` - Horizontal scroll
+  - [x] `<GenreFilter>` - Filter by genre
+  - [x] `<SearchBar>` - Quick search
 
 ### 3.2 Manga Detail Page
 
@@ -249,11 +244,9 @@
 - [ ] 🔴 Chapter list
   - [ ] Fetch chapters (API: `GET /mangas/{slug}/chapters`)
   - [ ] Sorting (asc/desc)
-  - [ ] Pagination
   - [ ] Chapter card with date, views
 - [ ] 🔴 Actions
   - [ ] Bookmark button (add to library)
-  - [ ] Share button
   - [ ] Read First Chapter button
   - [ ] Continue Reading button (if history exists)
 - [ ] 🔴 Rating & Comments
@@ -592,27 +585,6 @@ Các tính năng có thể thêm sau khi hoàn thành MVP:
 - [ ] Achievements system
 - [ ] Leaderboards
 - [ ] Admin panel (if needed)
-
----
-
-### Daily Log
-
-#### 2025-10-31 (Day 1)
-
-- ✅ Khởi tạo project với Next.js
-- ✅ Đọc và phân tích API documentation
-- ✅ Tạo CLAUDE.md với workflow
-- ✅ Tạo ROADMAP.md
-- 🟡 Next: Bắt đầu Phase 1 - Setup project structure
-
----
-
-## 🎯 Current Focus
-
-**Current Sprint**: Phase 1 - Core Setup
-**Current Task**: Setup project structure
-**Next Milestone**: Complete base UI components
-**Blockers**: None
 
 ---
 

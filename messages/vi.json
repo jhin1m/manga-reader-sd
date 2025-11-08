@@ -61,7 +61,17 @@
     "noResults": "Không tìm thấy truyện nào",
     "addToBookmarks": "Thêm vào đã lưu",
     "removeFromBookmarks": "Xóa khỏi đã lưu",
-    "bookmarked": "Đã lưu"
+    "bookmarked": "Đã lưu",
+    "detail": {
+      "uploadedBy": "Đăng bởi",
+      "updatedAt": "Cập nhật",
+      "chapterCount": "Tổng số chương",
+      "sortNewest": "Mới nhất",
+      "sortOldest": "Cũ nhất",
+      "readingProgress": "Tiến độ đọc",
+      "totalViews": "Tổng lượt xem",
+      "searchChapter": "Tìm chương..."
+    }
   },
   "chapter": {
     "chapter": "Chương",

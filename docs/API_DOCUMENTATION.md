@@ -369,7 +369,7 @@ Get paginated list of mangas with filtering and sorting.
 - `sort` (string): Sort field (-updated_at, views, rating, name)
 - `filter[name]` (string): Search by name
 - `filter[status]` (string): Filter by status (1=ongoing, 2=completed)
-- `filter[genre_id]` (int): Filter by genre
+- Allowed filter(s) are `id, name, status, group_id, user_id, artist_id, doujinshi_id, is_reviewed, search, artist, doujinshi, accept_genres, reject_genres`.
 - `include` (string): Include relationships (genres,artist,latest_chapter,group)
 
 **Example Request:**
@@ -482,13 +482,13 @@ Get recently updated mangas.
 **Query Parameters:**
 
 - `per_page` (int): Items per page (default: 20)
-- `genre_id` (int): Filter by genre ID
+- `accept_genre` (int): Filter by genre ID
 - `page` (int): Page number
 
 **Example Request:**
 
 ```
-GET /api/v1/mangas/recent?per_page=20&genre_id=7
+GET /api/v1/mangas/recent?per_page=20&accept_genre=7
 ```
 
 **Success Response (200):**
@@ -853,23 +853,23 @@ GET /api/v1/chapters/chapter-1095
     "created_at": "2024-03-15T09:00:00.000000Z",
     "updated_at": "2024-03-15T09:00:00.000000Z",
     "content": [
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/1.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/2.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/3.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/4.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/5.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/6.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/7.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/8.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/9.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/10.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/11.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/12.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/13.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/14.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/15.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/16.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/17.jpg"
+      "https://domain.example/dcn/manga/chapter/1.jpg",
+      "https://domain.example/dcn/manga/chapter/2.jpg",
+      "https://domain.example/dcn/manga/chapter/3.jpg",
+      "https://domain.example/dcn/manga/chapter/4.jpg",
+      "https://domain.example/dcn/manga/chapter/5.jpg",
+      "https://domain.example/dcn/manga/chapter/6.jpg",
+      "https://domain.example/dcn/manga/chapter/7.jpg",
+      "https://domain.example/dcn/manga/chapter/8.jpg",
+      "https://domain.example/dcn/manga/chapter/9.jpg",
+      "https://domain.example/dcn/manga/chapter/10.jpg",
+      "https://domain.example/dcn/manga/chapter/11.jpg",
+      "https://domain.example/dcn/manga/chapter/12.jpg",
+      "https://domain.example/dcn/manga/chapter/13.jpg",
+      "https://domain.example/dcn/manga/chapter/14.jpg",
+      "https://domain.example/dcn/manga/chapter/15.jpg",
+      "https://domain.example/dcn/manga/chapter/16.jpg",
+      "https://domain.example/dcn/manga/chapter/17.jpg"
     ],
     "manga": {
       "id": 42,
