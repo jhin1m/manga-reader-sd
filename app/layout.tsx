@@ -13,7 +13,7 @@ import { defaultMetadata } from "@/lib/seo/config";
 import { generateWebsiteSchema } from "@/lib/seo/json-ld";
 
 const notoSans = Noto_Sans({
-  variable: "--font-noto-sans",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
