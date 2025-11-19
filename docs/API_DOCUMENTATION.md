@@ -91,7 +91,7 @@ Login user and get access token.
       "uuid": "550e8400-e29b-41d4-a716-446655440000",
       "name": "Nguyễn Văn A",
       "email": "user@example.com",
-      "avatar_full_url": "https://domain.example/storage/images/avatars/user-15.jpg",
+      "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg",
       "total_points": 1500,
       "used_points": 300,
       "available_points": 1200,
@@ -156,7 +156,7 @@ Register new user account.
       "uuid": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "name": "Nguyễn Văn B",
       "email": "newuser@example.com",
-      "avatar_full_url": "https://domain.example/storage/images/avatars/default.jpg",
+      "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/default.jpg",
       "total_points": 100,
       "used_points": 0,
       "available_points": 100,
@@ -251,7 +251,7 @@ Get authenticated user profile with achievements and pets.
     "uuid": "550e8400-e29b-41d4-a716-446655440000",
     "name": "Nguyễn Văn A",
     "email": "user@example.com",
-    "avatar_full_url": "https://domain.example/storage/images/avatars/user-15.jpg",
+    "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg",
     "total_points": 1500,
     "used_points": 300,
     "available_points": 1200,
@@ -309,7 +309,7 @@ avatar=<file>
     "uuid": "550e8400-e29b-41d4-a716-446655440000",
     "name": "Nguyễn Văn A Updated",
     "email": "updated@example.com",
-    "avatar_full_url": "https://domain.example/storage/images/avatars/user-15-new.jpg",
+    "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15-new.jpg",
     "total_points": 1500,
     "used_points": 300,
     "available_points": 1200,
@@ -369,7 +369,7 @@ Get paginated list of mangas with filtering and sorting.
 - `sort` (string): Sort field (-updated_at, views, rating, name)
 - `filter[name]` (string): Search by name
 - `filter[status]` (string): Filter by status (1=ongoing, 2=completed)
-- Allowed filter(s) are `id, name, status, group_id, user_id, artist_id, doujinshi_id, is_reviewed, search, artist, doujinshi, accept_genres, reject_genres`.
+- `filter[genre_id]` (int): Filter by genre
 - `include` (string): Include relationships (genres,artist,latest_chapter,group)
 
 **Example Request:**
@@ -399,7 +399,7 @@ GET /api/v1/mangas?per_page=20&page=1&sort=-updated_at&include=genres,latest_cha
       "average_rating": 4.75,
       "total_ratings": 1523,
       "is_hot": true,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "created_at": "2023-01-10T08:15:00.000000Z",
       "updated_at": "2024-03-28T16:30:00.000000Z",
       "genres": [
@@ -436,7 +436,7 @@ GET /api/v1/mangas?per_page=20&page=1&sort=-updated_at&include=genres,latest_cha
       "average_rating": 4.5,
       "total_ratings": 892,
       "is_hot": false,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-58.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-58.jpg",
       "created_at": "2023-02-15T10:20:00.000000Z",
       "updated_at": "2024-03-20T14:15:00.000000Z",
       "genres": [
@@ -482,13 +482,13 @@ Get recently updated mangas.
 **Query Parameters:**
 
 - `per_page` (int): Items per page (default: 20)
-- `accept_genre` (int): Filter by genre ID
+- `genre_id` (int): Filter by genre ID
 - `page` (int): Page number
 
 **Example Request:**
 
 ```
-GET /api/v1/mangas/recent?per_page=20&accept_genre=7
+GET /api/v1/mangas/recent?per_page=20&genre_id=7
 ```
 
 **Success Response (200):**
@@ -509,7 +509,7 @@ GET /api/v1/mangas/recent?per_page=20&accept_genre=7
       "average_rating": 4.75,
       "total_ratings": 1523,
       "is_hot": true,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "updated_at": "2024-03-28T16:30:00.000000Z",
       "latest_chapter": {
         "id": 1523,
@@ -572,7 +572,7 @@ GET /api/v1/mangas/hot?per_page=10
       "views_week": 45000,
       "average_rating": 4.75,
       "is_hot": true,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "updated_at": "2024-03-28T16:30:00.000000Z"
     }
   ],
@@ -623,7 +623,7 @@ GET /api/v1/mangas/search?q=One Piece&per_page=20
       "status": 1,
       "views": 1250000,
       "average_rating": 4.75,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "updated_at": "2024-03-28T16:30:00.000000Z"
     }
   ],
@@ -686,7 +686,7 @@ GET /api/v1/mangas/one-piece
     "total_ratings": 1523,
     "is_hot": true,
     "is_reviewed": 1,
-    "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+    "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
     "created_at": "2023-01-10T08:15:00.000000Z",
     "updated_at": "2024-03-28T16:30:00.000000Z",
     "genres": [
@@ -758,7 +758,7 @@ GET /api/v1/mangas/one-piece
 
 ---
 
-### GET /mangas/{slug}/chapters
+### GET /mangas/{id}/chapters
 
 Get all chapters for a specific manga.
 
@@ -826,14 +826,14 @@ GET /api/v1/mangas/one-piece/chapters?per_page=50&sort=desc&page=1
 
 ## Chapter Endpoints
 
-### GET /chapters/{slug}
+### GET /mangas/{manga_slug}/chapters/{chapter_slug}
 
 Get chapter details with content and navigation.
 
 **Example Request:**
 
 ```
-GET /api/v1/chapters/chapter-1095
+GET /api/v1/mangas/one-piece/chapters/chapter-1095
 ```
 
 **Success Response (200):**
@@ -853,23 +853,23 @@ GET /api/v1/chapters/chapter-1095
     "created_at": "2024-03-15T09:00:00.000000Z",
     "updated_at": "2024-03-15T09:00:00.000000Z",
     "content": [
-      "https://domain.example/dcn/manga/chapter/1.jpg",
-      "https://domain.example/dcn/manga/chapter/2.jpg",
-      "https://domain.example/dcn/manga/chapter/3.jpg",
-      "https://domain.example/dcn/manga/chapter/4.jpg",
-      "https://domain.example/dcn/manga/chapter/5.jpg",
-      "https://domain.example/dcn/manga/chapter/6.jpg",
-      "https://domain.example/dcn/manga/chapter/7.jpg",
-      "https://domain.example/dcn/manga/chapter/8.jpg",
-      "https://domain.example/dcn/manga/chapter/9.jpg",
-      "https://domain.example/dcn/manga/chapter/10.jpg",
-      "https://domain.example/dcn/manga/chapter/11.jpg",
-      "https://domain.example/dcn/manga/chapter/12.jpg",
-      "https://domain.example/dcn/manga/chapter/13.jpg",
-      "https://domain.example/dcn/manga/chapter/14.jpg",
-      "https://domain.example/dcn/manga/chapter/15.jpg",
-      "https://domain.example/dcn/manga/chapter/16.jpg",
-      "https://domain.example/dcn/manga/chapter/17.jpg"
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/1.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/2.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/3.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/4.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/5.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/6.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/7.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/8.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/9.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/10.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/11.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/12.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/13.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/14.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/15.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/16.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/17.jpg"
     ],
     "manga": {
       "id": 42,
@@ -877,7 +877,7 @@ GET /api/v1/chapters/chapter-1095
       "name": "One Piece",
       "name_alt": "Vua Hải Tặc",
       "slug": "one-piece",
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg"
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg"
     }
   },
   "meta": {
@@ -911,20 +911,20 @@ GET /api/v1/chapters/chapter-1095
 ```json
 {
   "success": false,
-  "message": "Chapter not found"
+  "message": "Chapter not found or does not belong to this manga"
 }
 ```
 
 ---
 
-### GET /chapters/{slug}/images
+### GET /mangas/{manga_slug}/chapters/{chapter_slug}/images
 
 Get chapter images for reading interface.
 
 **Example Request:**
 
 ```
-GET /api/v1/chapters/chapter-1095/images
+GET /api/v1/mangas/one-piece/chapters/chapter-1095/images
 ```
 
 **Headers:** `Authorization: Bearer {token}` (optional)
@@ -951,23 +951,23 @@ GET /api/v1/chapters/chapter-1095/images
       }
     },
     "images": [
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/1.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/2.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/3.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/4.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/5.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/6.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/7.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/8.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/9.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/10.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/11.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/12.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/13.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/14.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/15.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/16.jpg",
-      "https://domain.example/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/17.jpg"
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/1.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/2.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/3.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/4.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/5.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/6.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/7.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/8.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/9.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/10.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/11.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/12.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/13.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/14.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/15.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/16.jpg",
+      "https://dcnvn2.mgcdnxyz.cfd/dcn/7c9e6679-7425-40de-944b-e07fc1f90ae7/3fa85f64-5717-4562-b3fc-2c963f66afa6/17.jpg"
     ]
   }
 }
@@ -977,7 +977,7 @@ GET /api/v1/chapters/chapter-1095/images
 
 ---
 
-### POST /chapters/{slug}/views
+### POST /mangas/{manga_slug}/chapters/{chapter_slug}/views
 
 Increment chapter and manga view counters.
 
@@ -986,7 +986,7 @@ Increment chapter and manga view counters.
 **Example Request:**
 
 ```
-POST /api/v1/chapters/chapter-1095/views
+POST /api/v1/mangas/one-piece/chapters/chapter-1095/views
 ```
 
 **Success Response (200):**
@@ -1146,7 +1146,7 @@ GET /api/v1/genres/action/mangas?per_page=20&sort=-updated_at
       "status": 1,
       "views": 1250000,
       "average_rating": 4.75,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "updated_at": "2024-03-28T16:30:00.000000Z",
       "latest_chapter": {
         "id": 1523,
@@ -1288,7 +1288,7 @@ GET /api/v1/artists/oda-eiichiro/mangas
       "status": 1,
       "views": 1250000,
       "average_rating": 4.75,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "updated_at": "2024-03-28T16:30:00.000000Z"
     }
   ],
@@ -1423,7 +1423,7 @@ GET /api/v1/groups/team-viet-hoa/mangas
       "status": 1,
       "views": 1250000,
       "average_rating": 4.75,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "updated_at": "2024-03-28T16:30:00.000000Z"
     }
   ],
@@ -1558,7 +1558,7 @@ GET /api/v1/doujinshis/fate-series/mangas
       "status": 2,
       "views": 50000,
       "average_rating": 4.2,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-156.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-156.jpg",
       "updated_at": "2024-03-15T10:00:00.000000Z"
     }
   ],
@@ -1619,7 +1619,7 @@ GET /api/v1/user/favorites?per_page=20
       "status": 1,
       "views": 1250000,
       "average_rating": 4.75,
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
       "updated_at": "2024-03-28T16:30:00.000000Z",
       "latest_chapter": {
         "id": 1523,
@@ -1670,7 +1670,7 @@ Add manga to user's favorites.
       "uuid": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "name": "One Piece",
       "slug": "one-piece",
-      "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg"
+      "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg"
     },
     "favorited": true
   }
@@ -1748,7 +1748,7 @@ GET /api/v1/user/histories?per_page=20
         "name": "One Piece",
         "slug": "one-piece",
         "status": 1,
-        "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg"
+        "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg"
       },
       "last_read_chapter": {
         "id": 1523,
@@ -1766,7 +1766,7 @@ GET /api/v1/user/histories?per_page=20
         "name": "Naruto",
         "slug": "naruto",
         "status": 2,
-        "cover_full_url": "https://domain.example/storage/images/covers/manga-58.jpg"
+        "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-58.jpg"
       },
       "last_read_chapter": {
         "id": 2847,
@@ -1953,7 +1953,9 @@ GET /api/v1/user/pets
 
 ### Comments
 
-#### GET /chapters/{slug}/comments
+Comments can be added to both mangas and chapters. The manga comments endpoint returns both direct manga comments and all chapter comments in a unified view, with optional filtering by type. Chapter comment endpoints require both manga and chapter slugs to ensure uniqueness, while manga comment endpoints use only manga slugs.
+
+#### GET /mangas/{manga_slug}/chapters/{chapter_slug}/comments
 
 Get comments for a chapter with nested replies.
 
@@ -1966,7 +1968,7 @@ Get comments for a chapter with nested replies.
 **Example Request:**
 
 ```
-GET /api/v1/chapters/chapter-1095/comments?per_page=20&sort=desc
+GET /api/v1/mangas/one-piece/chapters/chapter-1095/comments?per_page=20&sort=desc
 ```
 
 **Success Response (200):**
@@ -1989,7 +1991,7 @@ GET /api/v1/chapters/chapter-1095/comments?per_page=20&sort=desc
         "id": 15,
         "uuid": "550e8400-e29b-41d4-a716-446655440000",
         "name": "Nguyễn Văn A",
-        "avatar_full_url": "https://domain.example/storage/images/avatars/user-15.jpg"
+        "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg"
       },
       "replies": [
         {
@@ -2002,7 +2004,7 @@ GET /api/v1/chapters/chapter-1095/comments?per_page=20&sort=desc
             "id": 22,
             "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
             "name": "Trần Thị B",
-            "avatar_full_url": "https://domain.example/storage/images/avatars/user-22.jpg"
+            "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-22.jpg"
           },
           "replies_count": 0,
           "can_edit": false,
@@ -2026,7 +2028,7 @@ GET /api/v1/chapters/chapter-1095/comments?per_page=20&sort=desc
         "id": 18,
         "uuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "name": "Lê Văn C",
-        "avatar_full_url": "https://domain.example/storage/images/avatars/user-18.jpg"
+        "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-18.jpg"
       },
       "replies": [],
       "replies_count": 0,
@@ -2054,7 +2056,7 @@ GET /api/v1/chapters/chapter-1095/comments?per_page=20&sort=desc
 
 ---
 
-#### POST /chapters/{slug}/comments
+#### POST /mangas/{manga_slug}/chapters/{chapter_slug}/comments
 
 Add comment to a chapter (or reply to another comment).
 
@@ -2097,7 +2099,7 @@ Add comment to a chapter (or reply to another comment).
       "id": 15,
       "uuid": "550e8400-e29b-41d4-a716-446655440000",
       "name": "Nguyễn Văn A",
-      "avatar_full_url": "https://domain.example/storage/images/avatars/user-15.jpg"
+      "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg"
     },
     "replies": [],
     "replies_count": 0,
@@ -2157,7 +2159,7 @@ Update your own comment.
       "id": 15,
       "uuid": "550e8400-e29b-41d4-a716-446655440000",
       "name": "Nguyễn Văn A",
-      "avatar_full_url": "https://domain.example/storage/images/avatars/user-15.jpg"
+      "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg"
     },
     "can_edit": true,
     "can_delete": true
@@ -2211,9 +2213,278 @@ DELETE /api/v1/comments/798
 
 ---
 
+#### GET /mangas/{slug}/comments
+
+Get comments for a manga, including both manga comments and all chapter comments with nested replies.
+
+**Query Parameters:**
+
+- `per_page` (int): Items per page (default: 20)
+- `sort` (string): Order (asc, desc - default: desc)
+- `type` (string): Filter by comment type (manga, chapter, all - default: all)
+- `page` (int): Page number
+
+**Example Request:**
+
+```
+GET /api/v1/mangas/one-piece/comments?per_page=20&sort=desc&type=all
+```
+
+**Example Request (Manga comments only):**
+
+```
+GET /api/v1/mangas/one-piece/comments?type=manga
+```
+
+**Example Request (Chapter comments only):**
+
+```
+GET /api/v1/mangas/one-piece/comments?type=chapter
+```
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Comments retrieved successfully",
+  "data": [
+    {
+      "id": 456,
+      "uuid": "8a9b0c1d-2e3f-4a5b-6c7d-8e9f0a1b2c3d",
+      "content": "Manga này hay quá! Cốt truyện rất cuốn hút!",
+      "commentable_type": "App\\Models\\Manga",
+      "commentable_id": 42,
+      "parent_id": null,
+      "created_at": "2024-03-28T10:15:00.000000Z",
+      "updated_at": "2024-03-28T10:15:00.000000Z",
+      "user": {
+        "id": 15,
+        "uuid": "550e8400-e29b-41d4-a716-446655440000",
+        "name": "Nguyễn Văn A",
+        "email": "user@example.com",
+        "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg",
+        "total_points": 1500,
+        "used_points": 300,
+        "available_points": 1200,
+        "achievements_points": 250,
+        "limit_pet_points": 1000,
+        "limit_achievement_points": 1000,
+        "created_at": "2024-01-15T10:30:00.000000Z",
+        "updated_at": "2024-03-20T14:25:00.000000Z",
+        "pet": {
+          "id": 5,
+          "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
+          "name": "Rồng Vàng",
+          "description": "Pet huyền thoại",
+          "image": "/storage/images/pets/golden-dragon.png",
+          "points": 500
+        },
+        "achievement": {
+          "id": 8,
+          "uuid": "7f8a9b0c-1d2e-3f4a-5b6c-7d8e9f0a1b2c",
+          "name": "Veteran Reader",
+          "description": "Đọc hơn 1000 chương",
+          "icon": "🏆",
+          "points": 200
+        }
+      },
+      "replies": [
+        {
+          "id": 458,
+          "uuid": "9b0c1d2e-3f4a-5b6c-7d8e-9f0a1b2c3d4e",
+          "content": "Đồng ý! Đây là manga hay nhất mình từng đọc!",
+          "parent_id": 456,
+          "created_at": "2024-03-28T10:25:00.000000Z",
+          "user": {
+            "id": 22,
+            "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
+            "name": "Trần Thị B",
+            "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-22.jpg"
+          },
+          "replies_count": 0,
+          "can_edit": false,
+          "can_delete": false
+        }
+      ],
+      "replies_count": 3,
+      "can_edit": true,
+      "can_delete": true
+    },
+    {
+      "id": 789,
+      "uuid": "4c5d6e7f-8a9b-0c1d-2e3f-4a5b6c7d8e9f",
+      "content": "Chapter 1095 hay quá! Cảm ơn team đã dịch!",
+      "commentable_type": "App\\Models\\Chapter",
+      "commentable_id": 1523,
+      "parent_id": null,
+      "created_at": "2024-03-28T11:30:00.000000Z",
+      "updated_at": "2024-03-28T11:30:00.000000Z",
+      "chapter_info": {
+        "id": 1523,
+        "name": "Chapter 1095",
+        "number": null,
+        "slug": "chapter-1095"
+      },
+      "user": {
+        "id": 18,
+        "uuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "name": "Lê Văn C",
+        "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-18.jpg"
+      },
+      "replies": [],
+      "replies_count": 0,
+      "can_edit": false,
+      "can_delete": false
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 2,
+    "links": [
+      {
+        "url": null,
+        "label": "Trước",
+        "active": false
+      },
+      {
+        "url": "http://localhost:8000/api/v1/mangas/one-piece/comments?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": "http://localhost:8000/api/v1/mangas/one-piece/comments?page=2",
+        "label": "2",
+        "active": false
+      },
+      {
+        "url": "http://localhost:8000/api/v1/mangas/one-piece/comments?page=2",
+        "label": "Sau",
+        "active": false
+      }
+    ],
+    "path": "http://localhost:8000/api/v1/mangas/one-piece/comments",
+    "per_page": 20,
+    "to": 20,
+    "total": 35,
+    "pagination": {
+      "current_page": 1,
+      "last_page": 2,
+      "per_page": 20,
+      "total": 35
+    },
+    "manga": {
+      "id": 42,
+      "name": "One Piece",
+      "slug": "one-piece"
+    },
+    "filter": {
+      "type": "all"
+    }
+  }
+}
+```
+
+**Note:**
+
+- When `type=all` (default), returns both manga comments and chapter comments
+- When `type=manga`, returns only comments directly on the manga
+- When `type=chapter`, returns only comments on the manga's chapters
+- Chapter comments include `chapter_info` with chapter details (id, name, number, slug)
+- Manga comments do not have `chapter_info` field
+
+---
+
+#### POST /mangas/{slug}/comments
+
+Add comment to a manga (or reply to another comment).
+
+**Headers:** `Authorization: Bearer {token}`
+
+**Request Body:**
+
+```json
+{
+  "content": "Manga này hay quá! Cốt truyện rất cuốn hút!",
+  "parent_id": null
+}
+```
+
+**Request Body (Reply):**
+
+```json
+{
+  "content": "Đồng ý! Đây là manga hay nhất!",
+  "parent_id": 456
+}
+```
+
+**Success Response (201):**
+
+```json
+{
+  "success": true,
+  "message": "Comment created successfully",
+  "data": {
+    "id": 460,
+    "uuid": "0c1d2e3f-4a5b-6c7d-8e9f-0a1b2c3d4e5f",
+    "content": "Manga này hay quá! Cốt truyện rất cuốn hút!",
+    "commentable_type": "App\\Models\\Manga",
+    "commentable_id": 42,
+    "parent_id": null,
+    "created_at": "2024-03-28T17:00:00.000000Z",
+    "updated_at": "2024-03-28T17:00:00.000000Z",
+    "user": {
+      "id": 15,
+      "uuid": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Nguyễn Văn A",
+      "email": "user@example.com",
+      "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg",
+      "total_points": 1500,
+      "used_points": 300,
+      "available_points": 1200,
+      "achievements_points": 250,
+      "created_at": "2024-01-15T10:30:00.000000Z",
+      "updated_at": "2024-03-20T14:25:00.000000Z"
+    },
+    "replies": [],
+    "replies_count": 0,
+    "can_edit": true,
+    "can_delete": true
+  }
+}
+```
+
+**Validation Error (422):**
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "content": [
+      "The content field is required.",
+      "The content must be at least 3 characters."
+    ]
+  }
+}
+```
+
+**Error Response (404):**
+
+```json
+{
+  "success": false,
+  "message": "Manga not found"
+}
+```
+
+---
+
 ### Ratings
 
-#### POST /mangas/{slug}/rating
+#### POST /mangas/{id}/rating
 
 Rate a manga (or update existing rating).
 
@@ -2276,6 +2547,151 @@ Rate a manga (or update existing rating).
 
 ---
 
+## Sticker Endpoints
+
+### GET /stickers
+
+Get all active sticker sets with their stickers.
+
+**Rate Limit:** 60 requests per minute
+
+**Query Parameters:**
+
+- `paginate` (boolean, optional): Enable pagination. Default: `false`
+- `per_page` (integer, optional): Items per page when paginated. Default: `10`
+
+**Example Request (All stickers):**
+
+```
+GET /api/v1/stickers
+```
+
+**Example Request (Paginated):**
+
+```
+GET /api/v1/stickers?paginate=true&per_page=5
+```
+
+**Success Response (200) - Without Pagination:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid-here",
+      "name": "Cute Cats",
+      "thumbnail_full_url": "https://example.com/storage/images/sticker-sets/thumbnail.png",
+      "order": 0,
+      "is_active": true,
+      "created_at": "2025-11-15T10:00:00.000000Z",
+      "updated_at": "2025-11-15T10:00:00.000000Z",
+      "stickers": [
+        {
+          "id": "sticker-uuid",
+          "sticker_set_id": "uuid-here",
+          "name": "Happy Cat",
+          "image_full_url": "https://example.com/storage/images/stickers/cat1.png",
+          "order": 0,
+          "is_active": true,
+          "created_at": "2025-11-15T10:00:00.000000Z",
+          "updated_at": "2025-11-15T10:00:00.000000Z"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Success Response (200) - With Pagination:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "current_page": 1,
+    "data": [...],
+    "first_page_url": "http://localhost:8000/api/v1/stickers?page=1",
+    "from": 1,
+    "last_page": 2,
+    "last_page_url": "http://localhost:8000/api/v1/stickers?page=2",
+    "next_page_url": "http://localhost:8000/api/v1/stickers?page=2",
+    "path": "http://localhost:8000/api/v1/stickers",
+    "per_page": 5,
+    "prev_page_url": null,
+    "to": 5,
+    "total": 7
+  }
+}
+```
+
+**Performance Notes:**
+
+- Non-paginated responses are cached for 24 hours
+- Paginated responses are not cached
+- Use pagination for large datasets or mobile apps
+- Cached responses provide sub-millisecond response times
+
+---
+
+### GET /stickers/{id}
+
+Get a specific sticker set by ID with its stickers.
+
+**Rate Limit:** 60 requests per minute
+
+**Example Request:**
+
+```
+GET /api/v1/stickers/uuid-here
+```
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid-here",
+    "name": "Cute Cats",
+    "thumbnail_full_url": "https://example.com/storage/images/sticker-sets/thumbnail.png",
+    "order": 0,
+    "is_active": true,
+    "created_at": "2025-11-15T10:00:00.000000Z",
+    "updated_at": "2025-11-15T10:00:00.000000Z",
+    "stickers": [
+      {
+        "id": "sticker-uuid",
+        "sticker_set_id": "uuid-here",
+        "name": "Happy Cat",
+        "image_full_url": "https://example.com/storage/images/stickers/cat1.png",
+        "order": 0,
+        "is_active": true,
+        "created_at": "2025-11-15T10:00:00.000000Z",
+        "updated_at": "2025-11-15T10:00:00.000000Z"
+      }
+    ]
+  }
+}
+```
+
+**Error Response (404):**
+
+```json
+{
+  "success": false,
+  "message": "Sticker set not found or inactive"
+}
+```
+
+**Performance Notes:**
+
+- Responses are cached for 24 hours per sticker set
+- Cache automatically invalidates when stickers are updated
+- Optimized for high-frequency access
+
+---
+
 ## Chapter Reports
 
 ### GET /chapter-reports/types
@@ -2307,7 +2723,7 @@ GET /api/v1/chapter-reports/types
 
 ---
 
-### POST /chapters/{slug}/reports
+### POST /mangas/{manga_slug}/chapters/{chapter_slug}/reports
 
 Submit a chapter error report.
 
@@ -2468,7 +2884,7 @@ Complete resource structures used throughout the API.
   "uuid": "550e8400-e29b-41d4-a716-446655440000",
   "name": "Nguyễn Văn A",
   "email": "user@example.com",
-  "avatar_full_url": "https://domain.example/storage/images/avatars/user-15.jpg",
+  "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg",
   "total_points": 1500,
   "used_points": 300,
   "available_points": 1200,
@@ -2523,7 +2939,7 @@ Complete resource structures used throughout the API.
   "total_ratings": 1523,
   "is_hot": true,
   "is_reviewed": 1,
-  "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg",
+  "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
   "created_at": "2023-01-10T08:15:00.000000Z",
   "updated_at": "2024-03-28T16:30:00.000000Z",
   "genres": [
@@ -2587,16 +3003,16 @@ Complete resource structures used throughout the API.
   "created_at": "2024-03-15T09:00:00.000000Z",
   "updated_at": "2024-03-15T09:00:00.000000Z",
   "content": [
-    "https://domain.example/dcn/manga-uuid/chapter-uuid/1.jpg",
-    "https://domain.example/dcn/manga-uuid/chapter-uuid/2.jpg",
-    "https://domain.example/dcn/manga-uuid/chapter-uuid/3.jpg"
+    "https://dcnvn2.mgcdnxyz.cfd/dcn/manga-uuid/chapter-uuid/1.jpg",
+    "https://dcnvn2.mgcdnxyz.cfd/dcn/manga-uuid/chapter-uuid/2.jpg",
+    "https://dcnvn2.mgcdnxyz.cfd/dcn/manga-uuid/chapter-uuid/3.jpg"
   ],
   "manga": {
     "id": 42,
     "uuid": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
     "name": "One Piece",
     "slug": "one-piece",
-    "cover_full_url": "https://domain.example/storage/images/covers/manga-42.jpg"
+    "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg"
   }
 }
 ```
@@ -2604,8 +3020,8 @@ Complete resource structures used throughout the API.
 **Fields:**
 
 - `chapter_number`: Extracted from chapter name
-- `content`: Array of image URLs (only on /chapters/{slug} and /chapters/{slug}/images endpoints)
-- `images`: Alias for content field (only on /chapters/{slug}/images endpoint)
+- `content`: Array of image URLs (only on /mangas/{manga_slug}/chapters/{chapter_slug} and /mangas/{manga_slug}/chapters/{chapter_slug}/images endpoints)
+- `images`: Alias for content field (only on /mangas/{manga_slug}/chapters/{chapter_slug}/images endpoint)
 - `manga`: Only included when relationship is loaded
 
 ---
@@ -2702,7 +3118,7 @@ Complete resource structures used throughout the API.
     "id": 15,
     "uuid": "550e8400-e29b-41d4-a716-446655440000",
     "name": "Nguyễn Văn A",
-    "avatar_full_url": "https://domain.example/storage/images/avatars/user-15.jpg"
+    "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg"
   },
   "replies": [],
   "replies_count": 5,

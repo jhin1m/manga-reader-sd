@@ -1,0 +1,765 @@
+# Forms & Validation
+
+**Building type-safe forms with React Hook Form and Zod**
+
+**Prerequisites:**
+
+- [State Management](./03-STATE-MANAGEMENT.md) - Understanding form state
+- [UI Components](./08-UI-COMPONENTS.md) - shadcn/ui Form components
+
+---
+
+## Table of Contents
+
+- [Three-Step Pattern](#three-step-pattern)
+- [Creating Zod Schemas](#creating-zod-schemas)
+- [Using React Hook Form](#using-react-hook-form)
+- [Form UI with shadcn/ui](#form-ui-with-shadcnui)
+- [Common Validation Patterns](#common-validation-patterns)
+- [Error Handling](#error-handling)
+
+---
+
+## Three-Step Pattern
+
+### The Standard Flow
+
+1. **Define Zod schema** in `lib/validators/`
+2. **Create form with React Hook Form** using zodResolver
+3. **Build UI** with shadcn/ui Form components
+
+---
+
+## Creating Zod Schemas
+
+### Location
+
+`lib/validators/[feature].ts`
+
+```
+lib/validators/
+├── auth.ts         # Login, register schemas
+├── manga.ts        # Manga-related forms
+├── comment.ts      # Comment form schema
+└── ...
+```
+
+### Basic Schema Pattern
+
+**`lib/validators/auth.ts`:**
+
+```typescript
+import { z } from "zod";
+
+/**
+ * Login form validation schema
+ */
+export const loginSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+// Type inference from schema
+export type LoginFormData = z.infer<typeof loginSchema>;
+```
+
+### Register Schema Example
+
+```typescript
+/**
+ * Registration form validation schema
+ */
+export const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .min(2, "Name must be at least 2 characters")
+      .max(50, "Name must not exceed 50 characters"),
+
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Invalid email address"),
+
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must contain uppercase, lowercase, and number"
+      ),
+
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type RegisterFormData = z.infer<typeof registerSchema>;
+```
+
+### Complex Schema with Nested Objects
+
+```typescript
+/**
+ * Manga create/update schema
+ */
+export const mangaSchema = z.object({
+  name: z.string().min(1, "Manga name is required").max(200, "Name too long"),
+
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters")
+    .max(5000, "Description too long"),
+
+  author: z.string().min(1, "Author is required"),
+
+  genres: z
+    .array(z.string())
+    .min(1, "Select at least one genre")
+    .max(5, "Maximum 5 genres allowed"),
+
+  status: z.enum(["ongoing", "completed", "hiatus"], {
+    errorMap: () => ({ message: "Invalid status" }),
+  }),
+
+  coverImage: z
+    .instanceof(File, { message: "Cover image is required" })
+    .refine((file) => file.size <= 5 * 1024 * 1024, {
+      message: "Image must be less than 5MB",
+    })
+    .refine(
+      (file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type),
+      { message: "Only JPEG, PNG, or WebP allowed" }
+    ),
+});
+
+export type MangaFormData = z.infer<typeof mangaSchema>;
+```
+
+---
+
+## Using React Hook Form
+
+### Basic Setup
+
+```tsx
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginFormData } from "@/lib/validators/auth";
+
+export function LoginForm() {
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(data: LoginFormData) {
+    // data is fully typed and validated
+    console.log(data);
+  }
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>{/* Form fields */}</form>
+  );
+}
+```
+
+### With React Query Mutation
+
+```tsx
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { authApi } from "@/lib/api/endpoints/auth";
+import { useAuthStore } from "@/lib/store/authStore";
+
+export function LoginForm() {
+  const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: authApi.login,
+    onSuccess: (response) => {
+      setAuth(response.user, response.token);
+      toast.success("Login successful!");
+      router.push("/");
+    },
+    onError: (error) => {
+      toast.error("Login failed", {
+        description: error.response?.data?.message || "Invalid credentials",
+      });
+    },
+  });
+
+  async function onSubmit(data: LoginFormData) {
+    mutation.mutate(data);
+  }
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* Form fields */}
+      <button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? "Logging in..." : "Login"}
+      </button>
+    </form>
+  );
+}
+```
+
+---
+
+## Form UI with shadcn/ui
+
+### Standard Form Field
+
+```tsx
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+<Form {...form}>
+  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <FormField
+      control={form.control}
+      name="email"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Email</FormLabel>
+          <FormControl>
+            <Input type="email" placeholder="you@example.com" {...field} />
+          </FormControl>
+          <FormDescription>We'll never share your email</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+
+    <FormField
+      control={form.control}
+      name="password"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Password</FormLabel>
+          <FormControl>
+            <Input type="password" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+
+    <button type="submit">Submit</button>
+  </form>
+</Form>;
+```
+
+### With Translations (MANDATORY)
+
+```tsx
+import { useTranslations } from "next-intl";
+
+export function LoginForm() {
+  const t = useTranslations("auth.login");
+  const tCommon = useTranslations("common");
+
+  // ... form setup
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("emailLabel")}</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder={t("emailPlaceholder")}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? t("submitting") : t("submit")}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+```
+
+### Select Field
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+<FormField
+  control={form.control}
+  name="status"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>{t("status")}</FormLabel>
+      <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <FormControl>
+          <SelectTrigger>
+            <SelectValue placeholder={t("selectStatus")} />
+          </SelectTrigger>
+        </FormControl>
+        <SelectContent>
+          <SelectItem value="ongoing">{t("status.ongoing")}</SelectItem>
+          <SelectItem value="completed">{t("status.completed")}</SelectItem>
+          <SelectItem value="hiatus">{t("status.hiatus")}</SelectItem>
+        </SelectContent>
+      </Select>
+      <FormMessage />
+    </FormItem>
+  )}
+/>;
+```
+
+### Textarea Field
+
+```tsx
+import { Textarea } from "@/components/ui/textarea";
+
+<FormField
+  control={form.control}
+  name="description"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>{t("description")}</FormLabel>
+      <FormControl>
+        <Textarea
+          placeholder={t("descriptionPlaceholder")}
+          className="min-h-32"
+          {...field}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>;
+```
+
+### Checkbox Field
+
+```tsx
+import { Checkbox } from "@/components/ui/checkbox";
+
+<FormField
+  control={form.control}
+  name="terms"
+  render={({ field }) => (
+    <FormItem className="flex items-center space-x-2">
+      <FormControl>
+        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+      </FormControl>
+      <FormLabel className="cursor-pointer">{t("agreeToTerms")}</FormLabel>
+      <FormMessage />
+    </FormItem>
+  )}
+/>;
+```
+
+---
+
+## Common Validation Patterns
+
+### Email Validation
+
+```typescript
+email: z.string().min(1, "Email is required").email("Invalid email address");
+```
+
+### Password Validation
+
+```typescript
+// Basic
+password: z.string().min(8, "Password must be at least 8 characters");
+
+// Strong password
+password: z.string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
+    "Password must contain uppercase, lowercase, number, and special character"
+  );
+```
+
+### Confirm Password
+
+```typescript
+export const schema = z
+  .object({
+    password: z.string().min(8),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+```
+
+### URL Validation
+
+```typescript
+website: z.string().url("Invalid URL").optional().or(z.literal(""));
+```
+
+### Number Range
+
+```typescript
+age: z.number()
+  .min(13, "Must be at least 13 years old")
+  .max(120, "Invalid age");
+
+rating: z.number().min(1).max(5);
+```
+
+### Array Validation
+
+```typescript
+genres: z.array(z.string())
+  .min(1, "Select at least one genre")
+  .max(5, "Maximum 5 genres");
+```
+
+### File Validation
+
+```typescript
+avatar: z.instanceof(File)
+  .refine((file) => file.size <= 2 * 1024 * 1024, {
+    message: "File must be less than 2MB",
+  })
+  .refine((file) => ["image/jpeg", "image/png"].includes(file.type), {
+    message: "Only JPEG or PNG allowed",
+  });
+```
+
+### Optional Fields
+
+```typescript
+// Method 1: optional()
+bio: z.string().max(500).optional();
+
+// Method 2: or(z.literal(''))
+bio: z.string().max(500).or(z.literal(""));
+
+// Method 3: nullish
+bio: z.string().max(500).nullish();
+```
+
+### Custom Validation
+
+```typescript
+username: z.string()
+  .min(3)
+  .refine((username) => /^[a-zA-Z0-9_]+$/.test(username), {
+    message: "Username can only contain letters, numbers, and underscores",
+  })
+  .refine(
+    async (username) => {
+      // API call to check availability
+      const available = await checkUsernameAvailable(username);
+      return available;
+    },
+    { message: "Username already taken" }
+  );
+```
+
+---
+
+## Error Handling
+
+### Validation Errors
+
+Automatically displayed by `<FormMessage />`:
+
+```tsx
+<FormField
+  control={form.control}
+  name="email"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Email</FormLabel>
+      <FormControl>
+        <Input {...field} />
+      </FormControl>
+      <FormMessage /> {/* Shows validation errors */}
+    </FormItem>
+  )}
+/>
+```
+
+### Manual Form Errors
+
+```tsx
+// Set field error
+form.setError("email", {
+  type: "manual",
+  message: "Email already exists",
+});
+
+// Set root error (not tied to specific field)
+form.setError("root", {
+  type: "manual",
+  message: "Something went wrong",
+});
+
+// Display root error
+{
+  form.formState.errors.root && (
+    <div className="text-red-500">{form.formState.errors.root.message}</div>
+  );
+}
+```
+
+### API Error Handling
+
+```tsx
+const mutation = useMutation({
+  mutationFn: authApi.register,
+  onSuccess: () => {
+    toast.success("Registration successful!");
+    router.push("/login");
+  },
+  onError: (error) => {
+    // Handle field-specific errors from API
+    if (error.response?.data?.errors) {
+      Object.entries(error.response.data.errors).forEach(
+        ([field, messages]) => {
+          form.setError(field as keyof RegisterFormData, {
+            type: "manual",
+            message: messages[0],
+          });
+        }
+      );
+    } else {
+      toast.error("Registration failed", {
+        description: error.response?.data?.message || "Please try again",
+      });
+    }
+  },
+});
+```
+
+---
+
+## Complete Form Example
+
+**`components/auth/register-form.tsx`:**
+
+```tsx
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+
+import { registerSchema, type RegisterFormData } from "@/lib/validators/auth";
+import { authApi } from "@/lib/api/endpoints/auth";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+
+export function RegisterForm() {
+  const t = useTranslations("auth.register");
+  const tCommon = useTranslations("common");
+  const router = useRouter();
+
+  const form = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: authApi.register,
+    onSuccess: () => {
+      toast.success(t("success"));
+      router.push("/login");
+    },
+    onError: (error) => {
+      toast.error(t("error"), {
+        description: error.response?.data?.message,
+      });
+    },
+  });
+
+  async function onSubmit(data: RegisterFormData) {
+    mutation.mutate(data);
+  }
+
+  return (
+    <div className="w-full max-w-md space-y-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-muted-foreground">{t("subtitle")}</p>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("nameLabel")}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t("namePlaceholder")} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("emailLabel")}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder={t("emailPlaceholder")}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("passwordLabel")}</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("confirmPasswordLabel")}</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? t("submitting") : t("submit")}
+          </Button>
+        </form>
+      </Form>
+
+      <p className="text-center text-sm">
+        {t("hasAccount")}{" "}
+        <Link href="/login" className="text-primary hover:underline">
+          {t("loginLink")}
+        </Link>
+      </p>
+    </div>
+  );
+}
+```
+
+---
+
+## Best Practices
+
+1. **Always use Zod schemas** - Don't write manual validation
+2. **Type-safe forms** - Infer types from schemas with `z.infer`
+3. **Translate all text** - Use `useTranslations()` for labels, errors, placeholders
+4. **Handle loading states** - Disable submit button when pending
+5. **Provide feedback** - Use toast notifications for success/error
+6. **Reset on success** - `form.reset()` after successful submission
+7. **Server-side validation** - Always validate on backend too
+
+---
+
+## Related Guides
+
+- **[i18n Guide](./06-I18N-GUIDE.md)** - Translating form labels and errors
+- **[UI Components](./08-UI-COMPONENTS.md)** - Using shadcn/ui Form components
+- **[API Integration](./04-API-INTEGRATION.md)** - Using mutations with forms
+- **[State Management](./03-STATE-MANAGEMENT.md)** - Form state patterns
+
+---
+
+## Reference Files
+
+- `lib/validators/auth.ts` - Auth validation schemas
+- `components/auth/login-form.tsx` - Login form example (needs i18n fixes)
+- `components/auth/register-form.tsx` - Register form example (needs i18n fixes)
+
+---
+
+**Last updated**: 2025-11-15
