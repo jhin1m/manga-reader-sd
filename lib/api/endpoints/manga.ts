@@ -113,9 +113,9 @@ export const genreApi = {
   getList: async (params?: {
     per_page?: number;
     page?: number;
-  }): Promise<PaginatedResponse<Genre>> => {
+  }): Promise<Genre[]> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<PaginatedResponse<Genre>>(`/genres${query}`);
+    return apiClient.get<Genre[]>(`/genres${query}`);
   },
 
   /**

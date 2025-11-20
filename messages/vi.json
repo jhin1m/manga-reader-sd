@@ -26,13 +26,17 @@
     "home": "Trang chủ",
     "library": "Thư viện",
     "genres": "Thể loại",
+    "hot": "Hot",
+    "recent": "Mới cập nhật",
     "profile": "Tài khoản",
     "history": "Lịch sử",
     "bookmarks": "Đã lưu",
     "settings": "Cài đặt",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "allGenres": "Tất cả thể loại",
+    "loadingGenres": "Đang tải thể loại..."
   },
   "manga": {
     "status": {
@@ -145,6 +149,8 @@
     "advancedSearch": "Tìm kiếm nâng cao",
     "filters": "bộ lọc",
     "sortBy": "Sắp xếp theo",
+    "toggleSearch": "Bật/tắt tìm kiếm",
+    "closeSearch": "Đóng tìm kiếm",
     "sort": {
       "latest": "Mới nhất",
       "views": "Lượt xem",

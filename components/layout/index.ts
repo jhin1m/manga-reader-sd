@@ -5,3 +5,5 @@ export { Navbar } from "./header/navbar";
 export { SearchBar } from "./header/search-bar";
 export { UserMenu } from "./header/user-menu";
 export { MobileNav } from "./header/mobile-nav";
+export { GenresDropdown } from "./header/genres-dropdown";
+export { ResponsiveSearch } from "./header/responsive-search";
