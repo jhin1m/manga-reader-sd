@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import type { Genre } from "@/types/manga";
 import { genreApi } from "@/lib/api/endpoints/manga";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,7 +42,6 @@ export function GenreFilter({
   showClearButton = true,
 }: GenreFilterProps) {
   const t = useTranslations("search");
-  const tCommon = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
 

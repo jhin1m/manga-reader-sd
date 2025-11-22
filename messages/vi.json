@@ -24,6 +24,7 @@
   },
   "navigation": {
     "home": "Trang chủ",
+    "browse": "Duyệt",
     "library": "Thư viện",
     "genres": "Thể loại",
     "hot": "Hot",
@@ -100,6 +101,29 @@
     "page": "Trang {current}/{total}",
     "loadingImages": "Đang tải ảnh...",
     "errorLoadingChapter": "Lỗi khi tải chương"
+  },
+  "reader": {
+    "settings": {
+      "title": "Cài đặt đọc truyện",
+      "description": "Tùy chỉnh trải nghiệm đọc truyện của bạn",
+      "readingMode": {
+        "label": "Chế độ đọc",
+        "single": "Đọc từng trang",
+        "singleDesc": "Hiển thị từng trang một",
+        "longStrip": "Đọc dọc",
+        "longStripDesc": "Cuộn dọc liên tục"
+      },
+      "readingDirection": {
+        "label": "Hướng đọc",
+        "ltr": "Trái sang phải",
+        "ltrDesc": "Đọc từ trái sang phải",
+        "rtl": "Phải sang trái",
+        "rtlDesc": "Đọc từ phải sang trái (Manga Nhật)"
+      },
+      "zoom": {
+        "label": "Độ phóng to"
+      }
+    }
   },
   "auth": {
     "login": "Đăng nhập",

@@ -379,7 +379,7 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
 
   const isBookmarked =
     manga && favoritesData?.data
-      ? favoritesData.data.some((fav) => fav.manga.id === manga.id)
+      ? favoritesData.data.some((fav) => fav.id === manga.id)
       : false;
 
   if (isMangaLoading || isChaptersLoading) {

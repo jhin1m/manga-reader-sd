@@ -30,7 +30,7 @@ export async function generateMetadata({
     const manga = await mangaApi.getDetail(slug);
 
     return generateMangaMetadata(manga);
-  } catch (error) {
+  } catch {
     // Return basic metadata if manga not found
     return {
       title: "Manga Not Found",
@@ -49,7 +49,7 @@ export default async function MangaDetailPage({ params }: PageProps) {
   let manga;
   try {
     manga = await mangaApi.getDetail(slug);
-  } catch (error) {
+  } catch {
     notFound();
   }
 

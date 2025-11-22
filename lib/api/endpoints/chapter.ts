@@ -42,52 +42,72 @@ function buildQueryString(params?: Record<string, unknown>): string {
 export const chapterApi = {
   /**
    * Get chapter details with content and navigation
-   * GET /chapters/{slug}
+   * GET /mangas/{mangaSlug}/chapters/{chapterSlug}
    */
-  getDetail: async (slug: string): Promise<Chapter> => {
-    return apiClient.get<Chapter>(`/chapters/${slug}`);
+  getDetail: async (
+    mangaSlug: string,
+    chapterSlug: string
+  ): Promise<Chapter> => {
+    return apiClient.get<Chapter>(
+      `/mangas/${mangaSlug}/chapters/${chapterSlug}`
+    );
   },
 
   /**
    * Get chapter images for reading interface
-   * GET /chapters/{slug}/images
+   * GET /mangas/{mangaSlug}/chapters/{chapterSlug}/images
    * Note: Automatically tracks reading history for authenticated users
    */
-  getImages: async (slug: string): Promise<ChapterImagesResponse> => {
-    return apiClient.get<ChapterImagesResponse>(`/chapters/${slug}/images`);
+  getImages: async (
+    mangaSlug: string,
+    chapterSlug: string
+  ): Promise<ChapterImagesResponse> => {
+    return apiClient.get<ChapterImagesResponse>(
+      `/mangas/${mangaSlug}/chapters/${chapterSlug}/images`
+    );
   },
 
   /**
    * Increment chapter and manga view counters
-   * POST /chapters/{slug}/views
+   * POST /mangas/{mangaSlug}/chapters/{chapterSlug}/views
    */
-  trackView: async (slug: string): Promise<TrackViewResponse> => {
-    return apiClient.post<TrackViewResponse>(`/chapters/${slug}/views`);
+  trackView: async (
+    mangaSlug: string,
+    chapterSlug: string
+  ): Promise<TrackViewResponse> => {
+    return apiClient.post<TrackViewResponse>(
+      `/mangas/${mangaSlug}/chapters/${chapterSlug}/views`
+    );
   },
 
   /**
    * Get comments for a chapter
-   * GET /chapters/{slug}/comments
+   * GET /mangas/{mangaSlug}/chapters/{chapterSlug}/comments
    */
   getComments: async (
-    slug: string,
+    mangaSlug: string,
+    chapterSlug: string,
     params?: CommentListParams
   ): Promise<PaginatedResponse<Comment>> => {
     const query = buildQueryString(params as Record<string, unknown>);
     return apiClient.get<PaginatedResponse<Comment>>(
-      `/chapters/${slug}/comments${query}`
+      `/mangas/${mangaSlug}/chapters/${chapterSlug}/comments${query}`
     );
   },
 
   /**
    * Add comment to a chapter (or reply to another comment)
-   * POST /chapters/{slug}/comments
+   * POST /mangas/{mangaSlug}/chapters/{chapterSlug}/comments
    */
   addComment: async (
-    slug: string,
+    mangaSlug: string,
+    chapterSlug: string,
     data: CreateCommentRequest
   ): Promise<Comment> => {
-    return apiClient.post<Comment>(`/chapters/${slug}/comments`, data);
+    return apiClient.post<Comment>(
+      `/mangas/${mangaSlug}/chapters/${chapterSlug}/comments`,
+      data
+    );
   },
 };
 
@@ -105,13 +125,17 @@ export const chapterReportApi = {
 
   /**
    * Submit a chapter error report
-   * POST /chapters/{slug}/reports
+   * POST /mangas/{mangaSlug}/chapters/{chapterSlug}/reports
    */
   create: async (
-    slug: string,
+    mangaSlug: string,
+    chapterSlug: string,
     data: CreateChapterReportRequest
   ): Promise<ChapterReport> => {
-    return apiClient.post<ChapterReport>(`/chapters/${slug}/reports`, data);
+    return apiClient.post<ChapterReport>(
+      `/mangas/${mangaSlug}/chapters/${chapterSlug}/reports`,
+      data
+    );
   },
 
   /**

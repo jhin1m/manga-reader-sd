@@ -261,37 +261,37 @@
 
 ### 3.3 Chapter Reader Page
 
-- [ ] 🔴 Create `/app/manga/[slug]/[chapter]/page.tsx`
-- [ ] 🔴 Fetch chapter data (API: `GET /mangas/{slug}/chapters/{chapter}`)
-- [ ] 🔴 Image display
-  - [ ] Optimized image loading
-  - [ ] Lazy loading
-  - [ ] Progressive loading
-- [ ] 🔴 Reading modes
-  - [ ] Single page mode
-  - [ ] Long strip mode (vertical scroll)
-  - [ ] Switch between modes
-- [ ] 🔴 Navigation controls
-  - [ ] Previous chapter button
-  - [ ] Next chapter button
-  - [ ] Chapter dropdown selector
-  - [ ] Back to manga detail
-- [ ] 🔴 Reader controls
-  - [ ] Zoom in/out
-  - [ ] Fit to width/height
-  - [ ] Fullscreen mode
-- [ ] 🔴 Keyboard shortcuts
-  - [ ] Arrow keys for navigation
-  - [ ] ESC to exit fullscreen
-  - [ ] Space for scroll/next page
-- [ ] 🔴 Reading progress
-  - [ ] Track current page
-  - [ ] Mark chapter as viewed (API: `POST /chapters/{id}/view`)
-  - [ ] Save reading position
-- [ ] 🔴 Mobile gestures
-  - [ ] Swipe for next/prev page
-  - [ ] Pinch to zoom
-  - [ ] Tap zones for navigation
+- [x] 🟢 Create `/app/manga/[slug]/[chapter]/page.tsx`
+- [x] 🟢 Fetch chapter data (API: `GET /mangas/{slug}/chapters/{chapter}`)
+- [x] 🟢 Image display
+  - [x] Optimized image loading
+  - [x] Lazy loading
+  - [x] Progressive loading
+- [x] 🟢 Reading modes
+  - [x] Single page mode
+  - [x] Long strip mode (vertical scroll)
+  - [x] Switch between modes
+- [x] 🟢 Navigation controls
+  - [x] Previous chapter button
+  - [x] Next chapter button
+  - [x] Chapter dropdown selector
+  - [x] Back to manga detail
+- [x] 🟢 Reader controls
+  - [x] Zoom in/out
+  - [x] Fit to width/height
+  - [x] Fullscreen mode
+- [x] 🟢 Keyboard shortcuts
+  - [x] Arrow keys for navigation
+  - [x] ESC to exit fullscreen
+  - [x] Space for scroll/next page
+- [x] 🟢 Reading progress
+  - [x] Track current page
+  - [x] Mark chapter as viewed (API: `POST /chapters/{id}/view`)
+  - [x] Save reading position
+- [x] 🟢 Mobile gestures
+  - [x] Swipe for next/prev page
+  - [x] Pinch to zoom
+  - [x] Tap zones for navigation
 
 ### 3.4 Search & Filter Pages
 

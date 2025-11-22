@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -12,11 +13,18 @@ import { ResponsiveSearch } from "./responsive-search";
 import { BookOpen, Moon, Sun } from "lucide-react";
 
 export function Navbar() {
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const t = useTranslations("navigation");
 
+  // Don't make navbar sticky on chapter reader pages
+  const isReaderPage = pathname?.match(/^\/manga\/[^/]+\/[^/]+$/);
+  const headerClassName = isReaderPage
+    ? "z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    : "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60";
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={headerClassName}>
       <Container>
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Left: Mobile Nav + Logo + Desktop Nav Links */}
