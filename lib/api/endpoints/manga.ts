@@ -43,9 +43,11 @@ export const mangaApi = {
    * Get paginated list of mangas with filtering and sorting
    * GET /mangas
    */
-  getList: async (params?: MangaListParams): Promise<MangaListItem[]> => {
+  getList: async (
+    params?: MangaListParams
+  ): Promise<PaginatedResponse<MangaListItem>> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<MangaListItem[]>(`/mangas${query}`);
+    return apiClient.get<PaginatedResponse<MangaListItem>>(`/mangas${query}`);
   },
 
   /**
@@ -54,9 +56,11 @@ export const mangaApi = {
    */
   getRecent: async (
     params?: Partial<MangaListParams>
-  ): Promise<MangaListItem[]> => {
+  ): Promise<PaginatedResponse<MangaListItem>> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<MangaListItem[]>(`/mangas/recent${query}`);
+    return apiClient.get<PaginatedResponse<MangaListItem>>(
+      `/mangas/recent${query}`
+    );
   },
 
   /**
@@ -65,9 +69,11 @@ export const mangaApi = {
    */
   getHot: async (
     params?: Partial<MangaListParams>
-  ): Promise<MangaListItem[]> => {
+  ): Promise<PaginatedResponse<MangaListItem>> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<MangaListItem[]>(`/mangas/hot${query}`);
+    return apiClient.get<PaginatedResponse<MangaListItem>>(
+      `/mangas/hot${query}`
+    );
   },
 
   /**
@@ -96,9 +102,11 @@ export const mangaApi = {
   getChapters: async (
     slug: string,
     params?: ChapterListParams
-  ): Promise<ChapterListItem[]> => {
+  ): Promise<PaginatedResponse<ChapterListItem>> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<ChapterListItem[]>(`/mangas/${slug}/chapters${query}`);
+    return apiClient.get<PaginatedResponse<ChapterListItem>>(
+      `/mangas/${slug}/chapters${query}`
+    );
   },
 };
 
@@ -113,9 +121,9 @@ export const genreApi = {
   getList: async (params?: {
     per_page?: number;
     page?: number;
-  }): Promise<Genre[]> => {
+  }): Promise<PaginatedResponse<Genre>> => {
     const query = buildQueryString(params as Record<string, unknown>);
-    return apiClient.get<Genre[]>(`/genres${query}`);
+    return apiClient.get<PaginatedResponse<Genre>>(`/genres${query}`);
   },
 
   /**

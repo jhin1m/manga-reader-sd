@@ -59,13 +59,13 @@ function MangaCarouselSection() {
     return <MangaCarouselSkeleton count={8} />;
   }
 
-  if (!data || data.length === 0) {
+  if (!data?.data || data.data.length === 0) {
     return null;
   }
 
   return (
     <MangaCarousel
-      mangas={data}
+      mangas={data.data}
       title={t("hotManga")}
       icon={<TrendingUp className="h-6 w-6 text-primary" />}
       autoplayDelay={5000}

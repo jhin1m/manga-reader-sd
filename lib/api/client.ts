@@ -156,7 +156,16 @@ async function processResponse<T>(response: Response): Promise<T> {
 
   // Parse successful response
   if (isJson) {
-    const data: ApiResponse<T> = await response.json();
+    const jsonData = await response.json();
+
+    // Check if this is a paginated response (has meta.pagination)
+    if (jsonData.meta?.pagination) {
+      // Return the entire response for paginated endpoints
+      return jsonData as T;
+    }
+
+    // For regular API responses, extract the data field
+    const data: ApiResponse<T> = jsonData;
     return data.data;
   }
 

@@ -51,9 +51,9 @@ export function HotMangaSidebar({
 
   // Filter and sort based on active tab
   const rankedMangas = useMemo(() => {
-    if (!data) return [];
+    if (!data?.data) return [];
 
-    const sorted = [...data].sort((a, b) => {
+    const sorted = [...data.data].sort((a, b) => {
       if (activeTab === "day") {
         return (b.views_day || 0) - (a.views_day || 0);
       }
@@ -70,7 +70,7 @@ export function HotMangaSidebar({
     return <HotMangaSidebarSkeleton className={className} count={maxItems} />;
   }
 
-  if (error || !data || data.length === 0) {
+  if (error || !data?.data || data.data.length === 0) {
     return null;
   }
 

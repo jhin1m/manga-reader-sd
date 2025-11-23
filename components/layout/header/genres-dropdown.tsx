@@ -33,7 +33,7 @@ export function GenresDropdown({ className }: GenresDropdownProps) {
     staleTime: 5 * 60 * 1000, // 5 minutes cache
   });
 
-  const genres = data || [];
+  const genres = data?.data || [];
 
   return (
     <DropdownMenu>

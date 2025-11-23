@@ -431,7 +431,7 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
       <div className="mt-6">
         <MangaDetail
           manga={manga}
-          chapters={chapters || []}
+          chapters={chapters?.data || []}
           isBookmarked={isBookmarked}
         />
       </div>

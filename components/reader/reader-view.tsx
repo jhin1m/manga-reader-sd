@@ -57,10 +57,10 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
 
   // Calculate navigation from chapter list
   const navigation = useMemo(() => {
-    if (!chapterList || !chapter) return undefined;
+    if (!chapterList?.data || !chapter) return undefined;
 
     // Sort chapters by chapter_number ascending
-    const sortedChapters = [...chapterList].sort(
+    const sortedChapters = [...chapterList.data].sort(
       (a, b) => a.chapter_number - b.chapter_number
     );
 
@@ -213,7 +213,7 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
       <ReaderControls
         mangaSlug={mangaSlug}
         currentChapterSlug={chapterSlug}
-        chapterList={chapterList}
+        chapterList={chapterList?.data}
         navigation={navigation}
         readingMode={readingMode}
         onReadingModeChange={setReadingMode}

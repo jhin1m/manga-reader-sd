@@ -139,7 +139,7 @@ export interface MangaListItem {
  * Manga list query parameters
  */
 export interface MangaListParams extends ListParams {
-  sort?: "-updated_at" | "views" | "rating" | "name";
+  sort?: "-updated_at" | "-views" | "-rating" | "name";
   "filter[name]"?: string;
   "filter[status]"?: MangaStatus;
   "filter[id]"?: number; // genres id

@@ -270,5 +270,32 @@
       "loadError": "Không thể tải danh sách manga. Vui lòng thử lại sau.",
       "loadErrorHot": "Không thể tải danh sách manga hot. Vui lòng thử lại sau."
     }
+  },
+  "browse": {
+    "title": "Duyệt Manga",
+    "totalResults": "Tìm thấy {count} truyện",
+    "applyFilters": "Lọc",
+    "clearFilters": "Xóa bộ lọc",
+    "searchPlaceholder": "Tìm tên truyện...",
+    "status": {
+      "label": "Trạng thái",
+      "all": "Tất cả",
+      "ongoing": "Đang tiến hành",
+      "completed": "Hoàn thành"
+    },
+    "sort": {
+      "label": "Sắp xếp",
+      "latest": "Mới cập nhật",
+      "views": "Lượt xem",
+      "rating": "Đánh giá",
+      "name": "Tên A-Z"
+    },
+    "pagination": {
+      "previous": "Trước",
+      "next": "Sau",
+      "page": "Trang {page}"
+    },
+    "noResults": "Không tìm thấy truyện nào",
+    "noResultsDescription": "Thử thay đổi bộ lọc hoặc tìm kiếm khác"
   }
 }

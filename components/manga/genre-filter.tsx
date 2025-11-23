@@ -51,7 +51,7 @@ export function GenreFilter({
     queryFn: () => genreApi.getList({ per_page: 100 }),
   });
 
-  const genres = data || [];
+  const genres = data?.data || [];
   const displayGenres = maxDisplay ? genres.slice(0, maxDisplay) : genres;
 
   // Get selected genres from URL or props

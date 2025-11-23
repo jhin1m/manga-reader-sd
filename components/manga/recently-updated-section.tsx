@@ -2,9 +2,10 @@
 
 /**
  * RecentlyUpdatedSection Component
- * Displays recently updated manga in a grid with header and "View All" link
+ * Displays recently updated manga in a grid with header and pagination
  */
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { Clock } from "lucide-react";
 
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaGrid } from "./manga-grid";
+import { Pagination } from "@/components/ui/pagination";
 
 export interface RecentlyUpdatedSectionProps {
   perPage?: number;
@@ -20,9 +22,9 @@ export interface RecentlyUpdatedSectionProps {
 
 /**
  * RecentlyUpdatedSection component
- * Fetches and displays recently updated manga
+ * Fetches and displays recently updated manga using the main mangas API
  *
- * @param perPage - Number of manga items to fetch (default: 12)
+ * @param perPage - Number of manga items to fetch (default: 24)
  * @param className - Optional additional CSS classes
  */
 export function RecentlyUpdatedSection({
@@ -32,10 +34,28 @@ export function RecentlyUpdatedSection({
   const t = useTranslations("homepage.sections");
   const tEmpty = useTranslations("homepage.emptyStates");
 
+  // State for pagination
+  const [page, setPage] = useState(1);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["mangas", "recent"],
-    queryFn: () => mangaApi.getRecent({ per_page: perPage }),
+    queryKey: [
+      "mangas",
+      "list",
+      { page, sort: "-updated_at", per_page: perPage },
+    ],
+    queryFn: () =>
+      mangaApi.getList({
+        page,
+        per_page: perPage,
+        sort: "-updated_at",
+      }),
   });
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    // Optional: Scroll to top of section or page
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <section className={className}>
@@ -64,11 +84,23 @@ export function RecentlyUpdatedSection({
       )}
 
       {!error && (
-        <MangaGrid
-          mangas={data || []}
-          isLoading={isLoading}
-          emptyMessage={tEmpty("noManga")}
-        />
+        <>
+          <MangaGrid
+            mangas={data?.data || []}
+            isLoading={isLoading}
+            emptyMessage={tEmpty("noManga")}
+          />
+
+          {data?.meta?.pagination && data.meta.pagination.last_page > 1 && (
+            <div className="mt-8">
+              <Pagination
+                currentPage={page}
+                totalPages={data.meta.pagination.last_page}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+        </>
       )}
     </section>
   );

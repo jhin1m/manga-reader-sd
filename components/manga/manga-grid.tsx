@@ -17,7 +17,7 @@ export interface MangaGridProps {
   mangas: MangaListItem[];
   className?: string;
   isLoading?: boolean;
-  emptyMessage?: string;
+  emptyMessage?: React.ReactNode;
   columns?: {
     default?: number;
     sm?: number;
