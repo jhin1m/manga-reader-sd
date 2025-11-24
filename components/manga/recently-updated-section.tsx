@@ -15,7 +15,6 @@ import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaGrid } from "./manga-grid";
 import { Pagination } from "@/components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 export interface RecentlyUpdatedSectionProps {
   perPage?: number;

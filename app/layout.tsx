@@ -54,7 +54,11 @@ export default async function RootLayout({
           <ReactQueryProvider>
             <GoogleOAuthProvider>
               <ThemeProvider>
-                <div className="flex min-h-screen flex-col">
+                <div className="relative min-h-screen flex flex-col">
+                  {/* Global Background Layers */}
+                  <div className="fixed inset-0 bg-gradient-to-b from-background to-background/90 z-[-1]" />
+                  <div className="fixed inset-0 bg-[url('/bg-pattern.svg')] opacity-50 z-[-1] pointer-events-none" />
+
                   <Navbar />
                   <main className="flex-1">{children}</main>
                   <Footer />
