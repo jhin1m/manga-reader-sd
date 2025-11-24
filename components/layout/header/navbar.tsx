@@ -47,7 +47,7 @@ export function Navbar() {
                 <Link href="/hot">{t("hot")}</Link>
               </Button>
               <Button asChild variant="ghost" size="sm">
-                <Link href="/recent">{t("recent")}</Link>
+                <Link href="/browse">{t("recent")}</Link>
               </Button>
             </nav>
           </div>

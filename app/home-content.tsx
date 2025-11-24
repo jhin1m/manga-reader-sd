@@ -52,7 +52,11 @@ function MangaCarouselSection() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["mangas", "manga-carousel"],
-    queryFn: () => mangaApi.getHot({ per_page: 16 }),
+    queryFn: () =>
+      mangaApi.getHot({
+        per_page: 16,
+        include: "genres,artist,latest_chapter",
+      }),
   });
 
   if (isLoading) {

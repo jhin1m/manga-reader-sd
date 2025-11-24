@@ -15,11 +15,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StatusFilter } from "./status-filter";
 import { SortSelect, type SortOption } from "./sort-select";
+import { GenreSelect } from "./genre-select";
 
 export interface FilterValues {
   search: string;
   status: string; // "all" | "1" | "2"
   sort: SortOption;
+  genre: string; // "all" | genre_id
 }
 
 export interface BrowseFilterBarProps {
@@ -47,9 +49,10 @@ export function BrowseFilterBar({
   const [search, setSearch] = useState(initialValues.search);
   const [status, setStatus] = useState(initialValues.status);
   const [sort, setSort] = useState(initialValues.sort);
+  const [genre, setGenre] = useState(initialValues.genre || "all");
 
   const handleApply = () => {
-    onApply({ search, status, sort });
+    onApply({ search, status, sort, genre });
   };
 
   const handleClear = () => {
@@ -57,15 +60,20 @@ export function BrowseFilterBar({
       search: "",
       status: "all",
       sort: "-updated_at",
+      genre: "all",
     };
     setSearch(clearedValues.search);
     setStatus(clearedValues.status);
     setSort(clearedValues.sort);
+    setGenre(clearedValues.genre);
     onApply(clearedValues);
   };
 
   const hasFilters =
-    search !== "" || status !== "all" || sort !== "-updated_at";
+    search !== "" ||
+    status !== "all" ||
+    sort !== "-updated_at" ||
+    genre !== "all";
 
   return (
     <Card className={className}>
@@ -99,6 +107,11 @@ export function BrowseFilterBar({
             {/* Status Filter */}
             <div className="w-full sm:w-40">
               <StatusFilter value={status} onChange={setStatus} hideLabel />
+            </div>
+
+            {/* Genre Filter */}
+            <div className="w-full sm:w-40">
+              <GenreSelect value={genre} onChange={setGenre} hideLabel />
             </div>
 
             {/* Action Buttons */}

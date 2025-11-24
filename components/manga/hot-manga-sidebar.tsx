@@ -16,6 +16,7 @@ import { Star } from "lucide-react";
 import type { MangaListItem } from "@/types/manga";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HotMangaSidebarSkeleton } from "@/components/layout/loading";
 import { cn } from "@/lib/utils";
 
@@ -76,38 +77,44 @@ export function HotMangaSidebar({
 
   return (
     <div className={cn(sticky && "sticky top-4", className)}>
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => setActiveTab(v as TabValue)}
-      >
-        {/* Header with icon and title */}
-        <div className="flex items-center gap-3 mb-4">
-          <Star className="h-6 w-6 text-orange-500 fill-orange-500" />
-          <h2 className="text-xl font-bold">{t("topRanked")}</h2>
-        </div>
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <Star className="h-6 w-6 text-orange-500 fill-orange-500" />
+            <CardTitle className="text-xl font-bold">
+              {t("topRanked")}
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => setActiveTab(v as TabValue)}
+          >
+            {/* Tabs */}
+            <TabsList className="w-full grid grid-cols-3 mb-4">
+              <TabsTrigger value="day">{t("tabs.day")}</TabsTrigger>
+              <TabsTrigger value="week">{t("tabs.week")}</TabsTrigger>
+              <TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
+            </TabsList>
 
-        {/* Tabs */}
-        <TabsList className="w-full grid grid-cols-3 mb-4">
-          <TabsTrigger value="day">{t("tabs.day")}</TabsTrigger>
-          <TabsTrigger value="week">{t("tabs.week")}</TabsTrigger>
-          <TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
-        </TabsList>
-
-        {/* Tab content - same for all tabs, just filtered data */}
-        {["day", "week", "all"].map((tab) => (
-          <TabsContent key={tab} value={tab} className="mt-0">
-            <div className="space-y-3">
-              {rankedMangas.map((manga, index) => (
-                <RankedMangaCard
-                  key={manga.id}
-                  manga={manga}
-                  rank={index + 1}
-                />
-              ))}
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+            {/* Tab content - same for all tabs, just filtered data */}
+            {["day", "week", "all"].map((tab) => (
+              <TabsContent key={tab} value={tab} className="mt-0">
+                <div className="space-y-3">
+                  {rankedMangas.map((manga, index) => (
+                    <RankedMangaCard
+                      key={manga.id}
+                      manga={manga}
+                      rank={index + 1}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }

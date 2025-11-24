@@ -14,6 +14,8 @@ import { Clock } from "lucide-react";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaGrid } from "./manga-grid";
 import { Pagination } from "@/components/ui/pagination";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export interface RecentlyUpdatedSectionProps {
   perPage?: number;
@@ -48,6 +50,7 @@ export function RecentlyUpdatedSection({
         page,
         per_page: perPage,
         sort: "-updated_at",
+        include: "genres,artist,latest_chapter",
       }),
   });
 
@@ -58,50 +61,52 @@ export function RecentlyUpdatedSection({
   };
 
   return (
-    <section className={className}>
-      <div className="flex items-center justify-between mb-6">
+    <Card className={className}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
         <div className="flex items-center gap-3">
           <Clock className="h-6 w-6 text-primary" />
-          <h2 className="text-2xl md:text-3xl font-bold">
+          <CardTitle className="text-2xl md:text-3xl font-bold">
             {t("recentlyUpdated")}
-          </h2>
+          </CardTitle>
         </div>
         <Link
-          href="/recent"
+          href="/browse"
           className="text-sm text-primary hover:underline font-medium"
         >
           {t("viewAll")} →
         </Link>
-      </div>
+      </CardHeader>
 
-      {error && (
-        <div className="text-center py-12">
-          <p className="text-destructive mb-2">{tEmpty("loadError")}</p>
-          <p className="text-xs text-muted-foreground">
-            {error instanceof Error ? error.message : "Unknown error"}
-          </p>
-        </div>
-      )}
+      <CardContent>
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-destructive mb-2">{tEmpty("loadError")}</p>
+            <p className="text-xs text-muted-foreground">
+              {error instanceof Error ? error.message : "Unknown error"}
+            </p>
+          </div>
+        )}
 
-      {!error && (
-        <>
-          <MangaGrid
-            mangas={data?.data || []}
-            isLoading={isLoading}
-            emptyMessage={tEmpty("noManga")}
-          />
+        {!error && (
+          <>
+            <MangaGrid
+              mangas={data?.data || []}
+              isLoading={isLoading}
+              emptyMessage={tEmpty("noManga")}
+            />
 
-          {data?.meta?.pagination && data.meta.pagination.last_page > 1 && (
-            <div className="mt-8">
-              <Pagination
-                currentPage={page}
-                totalPages={data.meta.pagination.last_page}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
-        </>
-      )}
-    </section>
+            {data?.meta?.pagination && data.meta.pagination.last_page > 1 && (
+              <div className="mt-8">
+                <Pagination
+                  currentPage={page}
+                  totalPages={data.meta.pagination.last_page}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -39,6 +39,7 @@ interface BrowsePageProps {
     status?: string;
     sort?: string;
     q?: string;
+    genre?: string;
   }>;
 }
 

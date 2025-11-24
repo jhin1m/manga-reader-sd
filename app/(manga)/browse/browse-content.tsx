@@ -22,6 +22,7 @@ interface BrowseContentProps {
     status?: string;
     sort?: string;
     q?: string;
+    genre?: string;
   };
 }
 
@@ -37,6 +38,7 @@ function parseSearchParams(searchParams: BrowseContentProps["searchParams"]): {
       search: searchParams.q || "",
       status: searchParams.status || "all",
       sort: (searchParams.sort as SortOption) || "-updated_at",
+      genre: searchParams.genre || "all",
     },
     page: parseInt(searchParams.page || "1", 10),
   };
@@ -59,6 +61,10 @@ function buildApiParams(filters: FilterValues, page: number): MangaListParams {
 
   if (filters.status && filters.status !== "all") {
     params["filter[status]"] = parseInt(filters.status, 10) as 1 | 2;
+  }
+
+  if (filters.genre && filters.genre !== "all") {
+    params["filter[id]"] = parseInt(filters.genre, 10);
   }
 
   return params;
@@ -84,6 +90,10 @@ function buildUrl(filters: FilterValues, page: number): string {
 
   if (filters.search) {
     params.set("q", filters.search);
+  }
+
+  if (filters.genre && filters.genre !== "all") {
+    params.set("genre", filters.genre);
   }
 
   const queryString = params.toString();
