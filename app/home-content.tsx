@@ -14,6 +14,7 @@ import { MangaCarousel } from "@/components/manga/manga-carousel";
 import { RecentlyUpdatedSection } from "@/components/manga/recently-updated-section";
 import { HotMangaSidebar } from "@/components/manga/hot-manga-sidebar";
 import { MangaCarouselSkeleton } from "@/components/layout/loading";
+import { PopularGenresSection } from "@/components/manga/popular-genres-section";
 
 /**
  * Homepage main content component
@@ -24,6 +25,9 @@ export function HomePageContent() {
       <div className="container mx-auto px-4 py-8 max-w-7xl space-y-12">
         {/* Manga Carousel - Full Width */}
         <MangaCarouselSection />
+
+        {/* Popular Genres Section */}
+        <PopularGenresSection />
 
         {/* Desktop: Flex layout with sidebar, Mobile: Vertical stack */}
         <div className="flex flex-col lg:flex-row gap-8">

@@ -269,6 +269,13 @@
       "noManga": "Không có manga nào",
       "loadError": "Không thể tải danh sách manga. Vui lòng thử lại sau.",
       "loadErrorHot": "Không thể tải danh sách manga hot. Vui lòng thử lại sau."
+    },
+    "genres": {
+      "explore": "Khám phá",
+      "drama": "Kịch tính",
+      "action": "Hành động",
+      "romance": "Lãng mạn",
+      "fantasy": "Phép thuật"
     }
   },
   "browse": {
