@@ -63,7 +63,7 @@
     "hot": "Hot",
     "trending": "Thịnh hành",
     "recommended": "Đề xuất",
-    "noResults": "Không tìm thấy truyện nào",
+    "noResults": "Thật đáng tiếc khi không tìm thấy gì 😭",
     "addToBookmarks": "Thêm vào đã lưu",
     "removeFromBookmarks": "Xóa khỏi đã lưu",
     "bookmarked": "Đã lưu",
@@ -230,8 +230,8 @@
   },
   "notifications": {
     "newChapter": "Chương mới đã được cập nhật",
-    "bookmarkAdded": "Đã thêm vào đã lưu",
-    "bookmarkRemoved": "Đã xóa khỏi đã lưu",
+    "bookmarkAdded": "Đã thêm truyện vào thư viện",
+    "bookmarkRemoved": "Đã xóa khỏi thư viện",
     "profileUpdated": "Đã cập nhật hồ sơ",
     "passwordChanged": "Đã đổi mật khẩu"
   },
@@ -248,9 +248,9 @@
       "completed": "Hoàn thành"
     },
     "sections": {
-      "recentlyUpdated": "Mới cập nhật",
-      "hotManga": "Manga Hot",
-      "topRanked": "Xếp hạng",
+      "recentlyUpdated": "Hàng nóng mới lên",
+      "hotManga": "Được săn đón nhiều",
+      "topRanked": "Top yêu thích",
       "recommended": "Đề xuất cho bạn",
       "viewAll": "Xem tất cả",
       "tabs": {
@@ -295,7 +295,7 @@
       "next": "Sau",
       "page": "Trang {page}"
     },
-    "noResults": "Không tìm thấy truyện nào",
+    "noResults": "Thật đáng tiếc khi không tìm thấy gì 😭",
     "noResultsDescription": "Thử thay đổi bộ lọc hoặc tìm kiếm khác"
   }
 }

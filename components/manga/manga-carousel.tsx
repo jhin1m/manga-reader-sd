@@ -74,9 +74,7 @@ export function MangaCarousel({
               {title ? (
                 <div className="flex items-center gap-3">
                   {icon}
-                  <CardTitle className="text-2xl font-bold tracking-tight">
-                    {title}
-                  </CardTitle>
+                  <CardTitle className="text-2xl font-bold">{title}</CardTitle>
                 </div>
               ) : (
                 <div />

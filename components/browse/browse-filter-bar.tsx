@@ -77,7 +77,7 @@ export function BrowseFilterBar({
 
   return (
     <Card className={className}>
-      <div className="p-4">
+      <div className="px-6">
         {/* Single Row Layout - Responsive */}
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search Input - Full width on mobile, flex-1 on desktop */}

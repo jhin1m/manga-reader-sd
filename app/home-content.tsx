@@ -8,7 +8,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { TrendingUp } from "lucide-react";
 
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaCarousel } from "@/components/manga/manga-carousel";
@@ -71,7 +70,7 @@ function MangaCarouselSection() {
     <MangaCarousel
       mangas={data.data}
       title={t("hotManga")}
-      icon={<TrendingUp className="h-6 w-6 text-primary" />}
+      icon={<span className="text-2xl">🔥</span>}
       autoplayDelay={5000}
     />
   );

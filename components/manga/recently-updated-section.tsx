@@ -5,11 +5,10 @@
  * Displays recently updated manga in a grid with header and pagination
  */
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { Clock } from "lucide-react";
 
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaGrid } from "./manga-grid";
@@ -34,6 +33,7 @@ export function RecentlyUpdatedSection({
 }: RecentlyUpdatedSectionProps) {
   const t = useTranslations("homepage.sections");
   const tEmpty = useTranslations("homepage.emptyStates");
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   // State for pagination
   const [page, setPage] = useState(1);
@@ -55,16 +55,44 @@ export function RecentlyUpdatedSection({
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    // Optional: Scroll to top of section or page
-    // window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (sectionRef.current) {
+      const yOffset = -100; // Offset for header
+      const element = sectionRef.current;
+      const targetY =
+        element.getBoundingClientRect().top + window.scrollY + yOffset;
+
+      // Custom smooth scroll function for slower speed and better reliability
+      const startY = window.scrollY;
+      const distance = targetY - startY;
+      const duration = 800; // ms
+      let startTime: number | null = null;
+
+      const animation = (currentTime: number) => {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+
+        // Ease out cubic function for smooth deceleration
+        const progress = Math.min(timeElapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        window.scrollTo(0, startY + distance * ease);
+
+        if (timeElapsed < duration) {
+          requestAnimationFrame(animation);
+        }
+      };
+
+      requestAnimationFrame(animation);
+    }
   };
 
   return (
-    <Card className={className}>
+    <Card ref={sectionRef} className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
         <div className="flex items-center gap-3">
-          <Clock className="h-6 w-6 text-primary" />
-          <CardTitle className="text-2xl md:text-3xl font-bold">
+          <span className="text-2xl">🌇</span>
+          <CardTitle className="text-2xl font-bold">
             {t("recentlyUpdated")}
           </CardTitle>
         </div>

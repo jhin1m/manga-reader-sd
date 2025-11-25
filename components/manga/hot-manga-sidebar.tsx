@@ -80,8 +80,8 @@ export function HotMangaSidebar({
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-3">
-            <Star className="h-6 w-6 text-orange-500 fill-orange-500" />
-            <CardTitle className="text-xl font-bold">
+            <span className="text-2xl">🏆</span>
+            <CardTitle className="text-2xl font-bold">
               {t("topRanked")}
             </CardTitle>
           </div>
