@@ -42,7 +42,7 @@ export function MangaGrid({
   isLoading = false,
   emptyMessage,
   columns = {
-    default: 2,
+    default: 3,
     sm: 3,
     md: 4,
     lg: 6,

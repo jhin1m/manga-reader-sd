@@ -13,7 +13,6 @@ import Link from "next/link";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaGrid } from "./manga-grid";
 import { Pagination } from "@/components/ui/pagination";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface RecentlyUpdatedSectionProps {
   perPage?: number;
@@ -88,13 +87,11 @@ export function RecentlyUpdatedSection({
   };
 
   return (
-    <Card ref={sectionRef} className={className}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
+    <div ref={sectionRef} className={className}>
+      <div className="flex flex-row items-center justify-between space-y-0 pb-6">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🌇</span>
-          <CardTitle className="text-2xl font-bold">
-            {t("recentlyUpdated")}
-          </CardTitle>
+          <h2 className="text-2xl font-bold">{t("recentlyUpdated")}</h2>
         </div>
         <Link
           href="/browse"
@@ -102,9 +99,9 @@ export function RecentlyUpdatedSection({
         >
           {t("viewAll")} →
         </Link>
-      </CardHeader>
+      </div>
 
-      <CardContent>
+      <div>
         {error && (
           <div className="text-center py-12">
             <p className="text-destructive mb-2">{tEmpty("loadError")}</p>
@@ -133,7 +130,7 @@ export function RecentlyUpdatedSection({
             )}
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -39,6 +39,7 @@
   --font-sans: var(--font-sans), sans-serif;
   --font-serif: "Lora", Georgia, serif;
   --font-mono: "Fira Code", "Courier New", monospace;
+  --font-road-rage: var(--font-road-rage), sans-serif;
   --radius: 0.5rem;
   --shadow-x: 1px;
   --shadow-y: 2px;
@@ -165,6 +166,7 @@
   --font-sans: Noto Sans, sans-serif;
   --font-mono: "Fira Code", "Courier New", monospace;
   --font-serif: "Lora", Georgia, serif;
+  --font-road-rage: Road Rage, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

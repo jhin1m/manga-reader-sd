@@ -16,8 +16,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MangaCard } from "./manga-card";
+import { MangaCarouselCard } from "./manga-carousel-card";
 import { cn } from "@/lib/utils";
 
 export interface MangaCarouselProps {
@@ -67,14 +66,14 @@ export function MangaCarousel({
       ]}
       className={cn("w-full", className)}
     >
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <div>
+        <div className="flex flex-row items-center justify-between space-y-0 pb-4">
           {(title || showNavigation) && (
             <>
               {title ? (
                 <div className="flex items-center gap-3">
                   {icon}
-                  <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+                  <h2 className="text-2xl font-bold">{title}</h2>
                 </div>
               ) : (
                 <div />
@@ -88,21 +87,21 @@ export function MangaCarousel({
               )}
             </>
           )}
-        </CardHeader>
+        </div>
 
-        <CardContent>
+        <div>
           <CarouselContent className="-ml-2 md:-ml-4">
             {mangas.map((manga) => (
               <CarouselItem
                 key={manga.id}
-                className="pl-2 md:pl-4 basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/8"
+                className="pl-2 md:pl-4 basis-1/2 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 2xl:basis-1/6"
               >
-                <MangaCard manga={manga} />
+                <MangaCarouselCard manga={manga} />
               </CarouselItem>
             ))}
           </CarouselContent>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </Carousel>
   );
 }

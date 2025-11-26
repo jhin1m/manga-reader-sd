@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Sans } from "next/font/google";
+import { Noto_Sans, Road_Rage } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { GoogleOAuthProvider } from "@/components/providers/google-oauth-provider";
@@ -15,6 +15,12 @@ import { generateWebsiteSchema } from "@/lib/seo/json-ld";
 const notoSans = Noto_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
+});
+
+const roadRage = Road_Rage({
+  variable: "--font-road-rage",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 /**
@@ -44,7 +50,7 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${notoSans.variable} antialiased`}>
+      <body className={`${notoSans.variable} ${roadRage.variable} antialiased`}>
         <NextIntlClientProvider
           messages={messages}
           locale="vi"
@@ -57,7 +63,7 @@ export default async function RootLayout({
                 <div className="relative min-h-screen flex flex-col">
                   {/* Global Background Layers */}
                   <div className="fixed inset-0 bg-gradient-to-b from-background to-background/90 z-[-1]" />
-                  <div className="fixed inset-0 bg-[url('/bg-pattern.svg')] opacity-50 z-[-1] pointer-events-none" />
+                  <div className="fixed inset-0 bg-[url('/bg-pattern.svg')] opacity-20 dark:opacity-50 z-[-1] pointer-events-none" />
 
                   <Navbar />
                   <main className="flex-1">{children}</main>

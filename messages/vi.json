@@ -263,7 +263,8 @@
       "hot": "Hot",
       "ongoing": "Đang ra",
       "completed": "Hoàn thành",
-      "chapter": "Chương"
+      "chapter": "Chương",
+      "noChapter": "Chưa có chương"
     },
     "emptyStates": {
       "noManga": "Không có manga nào",
@@ -279,7 +280,7 @@
     }
   },
   "browse": {
-    "title": "Duyệt Manga",
+    "title": "Danh sách truyện",
     "totalResults": "Tìm thấy {count} truyện",
     "applyFilters": "Lọc",
     "clearFilters": "Xóa bộ lọc",
@@ -303,6 +304,6 @@
       "page": "Trang {page}"
     },
     "noResults": "Thật đáng tiếc khi không tìm thấy gì 😭",
-    "noResultsDescription": "Thử thay đổi bộ lọc hoặc tìm kiếm khác"
+    "noResultsDescription": "Thử thay đổi bộ lọc hoặc tìm kiếm cái khác"
   }
 }

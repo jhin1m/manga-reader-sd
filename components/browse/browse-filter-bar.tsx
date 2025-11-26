@@ -93,7 +93,7 @@ export function BrowseFilterBar({
                   handleApply();
                 }
               }}
-              className="pl-9 h-10"
+              className="pl-9"
             />
           </div>
 
@@ -118,7 +118,7 @@ export function BrowseFilterBar({
             <div className="flex gap-2">
               <Button
                 onClick={handleApply}
-                className="flex-1 sm:flex-none sm:w-auto whitespace-nowrap h-10"
+                className="flex-1 sm:flex-none sm:w-auto whitespace-nowrap"
               >
                 <Search className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">{t("applyFilters")}</span>
@@ -129,7 +129,7 @@ export function BrowseFilterBar({
                 <Button
                   variant="outline"
                   onClick={handleClear}
-                  className="flex-1 sm:flex-none sm:w-auto whitespace-nowrap h-10"
+                  className="flex-1 sm:flex-none sm:w-auto whitespace-nowrap"
                 >
                   <X className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">{t("clearFilters")}</span>

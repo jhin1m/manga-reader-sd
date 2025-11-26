@@ -8,6 +8,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaCarousel } from "@/components/manga/manga-carousel";
@@ -57,7 +58,7 @@ function MangaCarouselSection() {
     queryKey: ["mangas", "manga-carousel"],
     queryFn: () =>
       mangaApi.getHot({
-        per_page: 16,
+        per_page: 8,
         include: "genres,artist,latest_chapter",
       }),
   });
@@ -74,7 +75,16 @@ function MangaCarouselSection() {
     <MangaCarousel
       mangas={data.data}
       title={t("hotManga")}
-      icon={<span className="text-2xl">🔥</span>}
+      icon={
+        <Image
+          src="/meow.gif"
+          alt="Hot manga icon"
+          width={36}
+          height={36}
+          className="w-8 h-8"
+          unoptimized
+        />
+      }
       autoplayDelay={5000}
     />
   );

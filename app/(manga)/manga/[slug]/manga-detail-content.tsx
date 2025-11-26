@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * Manga Detail Content Component
- * Fetches and displays manga detail page content
- */
-
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -13,19 +8,21 @@ import {
   ChevronRight,
   Star,
   Eye,
-  Calendar,
   Search,
-  BookOpen,
   ArrowUpDown,
+  BookOpenText,
+  Share2,
+  CalendarDays,
+  User,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ComponentType } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { MangaDetailSkeleton } from "@/components/layout/loading/detail-skeleton";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
-import { MangaDetailSkeleton } from "@/components/layout/loading";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { userFavoritesApi } from "@/lib/api/endpoints/user";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -33,35 +30,66 @@ import { cn, formatNumber } from "@/lib/utils";
 import type { Manga } from "@/types/manga";
 import type { ChapterListItem } from "@/types/chapter";
 
-interface MangaDetailContentProps {
-  slug: string;
+// --- Sub-components ---
+
+// Component hiển thị thông tin dạng dòng nhỏ gọn
+interface MetaItemProps {
+  icon: ComponentType<{ className?: string }>;
+  text: string;
+  className?: string;
 }
 
-interface BreadcrumbItem {
-  name: string;
-  url: string;
-}
+const MetaItem = ({ icon: Icon, text, className }: MetaItemProps) => (
+  <div
+    className={cn(
+      "flex items-center gap-1.5 text-xs text-muted-foreground",
+      className
+    )}
+  >
+    <Icon className="h-3.5 w-3.5" />
+    <span className="line-clamp-1">{text}</span>
+  </div>
+);
 
-function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
+const Breadcrumb = ({ name }: { name: string }) => (
+  <nav className="flex items-center text-xs sm:text-sm text-muted-foreground mb-4 overflow-hidden whitespace-nowrap mask-linear-fade">
+    <Link href="/" className="hover:text-primary transition-colors">
+      Trang chủ
+    </Link>
+    <ChevronRight className="h-3 w-3 mx-1 flex-shrink-0" />
+    <Link href="/manga" className="hover:text-primary transition-colors">
+      Truyện
+    </Link>
+    <ChevronRight className="h-3 w-3 mx-1 flex-shrink-0" />
+    <span className="font-medium text-foreground truncate">{name}</span>
+  </nav>
+);
+
+// Component mô tả có nút xem thêm
+const ExpandableDescription = ({ content }: { content: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  if (!content) return null;
+
   return (
-    <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
-      {items.map((item, index) => (
-        <div key={item.url} className="flex items-center space-x-2">
-          <Link
-            href={item.url}
-            className={cn(
-              "hover:text-primary",
-              index === items.length - 1 && "font-semibold text-primary"
-            )}
-          >
-            {item.name}
-          </Link>
-          {index < items.length - 1 && <ChevronRight className="h-4 w-4" />}
-        </div>
-      ))}
-    </nav>
+    <div className="group relative mt-3">
+      <div
+        className={cn(
+          "text-sm text-muted-foreground leading-relaxed transition-all duration-300 overflow-hidden",
+          !isExpanded ? "line-clamp-3 max-h-[4.5em]" : "h-auto"
+        )}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="mt-1 flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+      >
+        {isExpanded ? "Thu gọn" : "Đọc thêm"}
+      </button>
+    </div>
   );
-}
+};
+
+// --- Main Components ---
 
 interface MangaDetailProps {
   manga: Manga;
@@ -81,276 +109,273 @@ function MangaDetail({
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const statusText =
-    manga.status === 1 ? t("status.ongoing") : t("status.completed");
-
   const firstChapterSlug =
     manga.first_chapter?.slug || manga.latest_chapter?.slug;
 
-  const filteredAndSortedChapters = useMemo(() => {
-    const filtered = chapters.filter(
-      (chapter) =>
-        chapter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        chapter.chapter_number.toString().includes(searchTerm)
-    );
-
-    const sorted = [...filtered];
-    if (sortOrder === "newest") {
-      sorted.sort((a, b) => b.chapter_number - a.chapter_number);
-    } else {
-      sorted.sort((a, b) => a.chapter_number - b.chapter_number);
+  const filteredChapters = useMemo(() => {
+    let result = [...chapters];
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase();
+      result = result.filter(
+        (c) =>
+          c.name.toLowerCase().includes(lower) ||
+          c.chapter_number.toString().includes(lower)
+      );
     }
-    return sorted;
+    result.sort((a, b) =>
+      sortOrder === "newest"
+        ? b.chapter_number - a.chapter_number
+        : a.chapter_number - b.chapter_number
+    );
+    return result;
   }, [chapters, sortOrder, searchTerm]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  };
-
   return (
-    <>
-      <Card className="relative overflow-hidden">
-        {/* Background blur overlay */}
-        <div className="absolute inset-0 overflow-hidden">
-          <Image
-            src={manga.cover_full_url}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover blur-2xl opacity-40"
-            priority
-          />
-          <div className="absolute inset-0 bg-card/90" />
+    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* --- HEADER: SIDE-BY-SIDE LAYOUT (Mobile & Desktop) --- */}
+      <div className="flex flex-row gap-4 sm:gap-6 md:gap-8 items-start">
+        {/* Left: Cover Image (Fixed widths) */}
+        <div className="shrink-0 w-[110px] sm:w-[150px] md:w-[220px]">
+          <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden shadow-md bg-muted ring-1 ring-border/10">
+            <Image
+              src={manga.cover_full_url}
+              alt={manga.name}
+              fill
+              sizes="(max-width: 640px) 110px, (max-width: 768px) 150px, 220px"
+              className="object-cover"
+              priority
+            />
+            {manga.is_hot && (
+              <Badge
+                variant="destructive"
+                className="absolute top-1 left-1 px-1.5 py-0 text-[10px] uppercase"
+              >
+                Hot
+              </Badge>
+            )}
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 p-4 sm:p-6">
-          <div className="flex flex-col gap-6 md:flex-row md:gap-8">
-            <div className="flex-shrink-0 mx-auto md:mx-0">
-              <div className="relative aspect-[3/4] w-48 overflow-hidden rounded-lg sm:w-56 md:w-52 lg:w-56">
-                <Image
-                  src={manga.cover_full_url}
-                  alt={manga.name}
-                  fill
-                  sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, (max-width: 1024px) 208px, 224px"
-                  className="object-cover"
-                  priority
-                />
-                {manga.is_hot && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute right-2 top-2 text-xs font-semibold"
-                  >
-                    {t("hot")}
-                  </Badge>
-                )}
-              </div>
+        {/* Right: Info Content */}
+        <div className="flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
+          {/* Title & Status */}
+          <div>
+            <h1
+              className="text-lg sm:text-2xl md:text-4xl font-bold leading-tight text-foreground line-clamp-2 md:line-clamp-3"
+              title={manga.name}
+            >
+              {manga.name}
+            </h1>
+            {manga.name_alt && (
+              <p className="hidden sm:block text-sm text-muted-foreground mt-1 truncate">
+                {manga.name_alt}
+              </p>
+            )}
+          </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2 mt-4">
-                {firstChapterSlug ? (
-                  <Button asChild size="lg" className="flex-1">
-                    <Link href={`/manga/${manga.slug}/${firstChapterSlug}`}>
-                      {tCommon("readNow")}
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button size="lg" disabled className="flex-1">
-                    {tCommon("readNow")}
-                  </Button>
+          {/* Stats Grid (Simplified for Mobile) */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm">
+            <div className="flex items-center gap-1.5">
+              <span
+                className={cn(
+                  "relative flex h-2 w-2",
+                  manga.status === 1 ? "text-green-500" : "text-blue-500"
                 )}
-                <BookmarkButton
-                  manga={{ id: manga.id, name: manga.name }}
-                  initialBookmarked={isBookmarked}
-                  size="lg"
-                  showText={false}
-                  variant="default"
-                />
-              </div>
+              >
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-current"></span>
+              </span>
+              <span className="font-medium text-foreground">
+                {manga.status === 1
+                  ? t("status.ongoing")
+                  : t("status.completed")}
+              </span>
             </div>
-
-            <div className="flex flex-col gap-4 flex-1">
-              <div className="text-center md:text-left">
-                <h1 className="text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
-                  {manga.name}
-                </h1>
-                {manga.name_alt && (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {t("alternativeTitle")}: {manga.name_alt}
-                  </p>
-                )}
+            {manga.average_rating > 0 && (
+              <div className="flex items-center gap-1">
+                <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
+                <span className="font-bold text-foreground">
+                  {manga.average_rating.toFixed(1)}
+                </span>
               </div>
+            )}
 
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm md:justify-start">
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Eye className="h-3.5 w-3.5" />
+              <span>{formatNumber(manga.views)}</span>
+            </div>
+          </div>
+
+          {/* Author / Group / Updated (Hidden on very small screens if needed, or truncated) */}
+          <div className="flex flex-col gap-1 mt-1">
+            {manga.artist && <MetaItem icon={User} text={manga.artist.name} />}
+            <MetaItem
+              icon={CalendarDays}
+              text={`Cập nhật: ${new Date(manga.updated_at).toLocaleDateString("vi-VN")}`}
+            />
+          </div>
+
+          {/* Tags (Desktop only primarily, limit on mobile) */}
+          {manga.genres && (
+            <div className="hidden sm:flex flex-wrap gap-1.5 mt-2">
+              {manga.genres.slice(0, 5).map((g) => (
                 <Badge
-                  variant={manga.status === 1 ? "default" : "secondary"}
-                  className={cn(
-                    manga.status === 1 && "bg-green-500 hover:bg-green-600"
-                  )}
+                  key={g.id}
+                  variant="secondary"
+                  className="text-[10px] px-1.5 h-5 font-normal hover:bg-secondary-foreground/10 cursor-pointer"
                 >
-                  {statusText}
+                  {g.name}
                 </Badge>
-                {manga.average_rating > 0 && (
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-medium">
-                      {manga.average_rating.toFixed(1)}
-                    </span>
-                    <span className="text-muted-foreground">
-                      ({formatNumber(manga.total_ratings)})
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    {formatNumber(manga.views)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm md:justify-start">
-                {manga.artist && (
-                  <div>
-                    <span className="font-semibold text-muted-foreground">
-                      {t("artist")}:{" "}
-                    </span>
-                    <span>{manga.artist.name}</span>
-                  </div>
-                )}
-                {manga.group && (
-                  <div>
-                    <span className="font-semibold text-muted-foreground">
-                      {t("translationGroup")}:{" "}
-                    </span>
-                    <span>{manga.group.name}</span>
-                  </div>
-                )}
-              </div>
-
-              {manga.genres && manga.genres.length > 0 && (
-                <div className="text-center md:text-left">
-                  <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-                    {manga.genres.map((genre) => (
-                      <Badge key={genre.id} variant="secondary" asChild>
-                        <Link
-                          href={`/genres/${genre.slug}`}
-                          className="cursor-pointer px-4 py-2 text-sm font-semibold border-2 border-primary/20 hover:border-primary/40 hover:bg-secondary transition-all"
-                        >
-                          {genre.name}
-                        </Link>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+              ))}
+              {manga.genres.length > 5 && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 h-5 font-normal"
+                >
+                  + {manga.genres.length - 5}
+                </Badge>
               )}
             </div>
-          </div>
+          )}
 
-          {manga.pilot && (
-            <div className="mt-6">
-              <h2 className="mb-3 text-lg font-semibold">{t("description")}</h2>
-              <div
-                className="prose prose-sm prose-neutral max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: manga.pilot }}
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 mt-auto pt-2">
+            {/* Read Button */}
+            {firstChapterSlug ? (
+              <Button
+                asChild
+                size="sm"
+                className="flex-1 sm:flex-none sm:w-32 md:w-40 h-9 font-semibold rounded-full shadow-sm"
+              >
+                <Link href={`/manga/${manga.slug}/${firstChapterSlug}`}>
+                  <BookOpenText className="mr-2 h-4 w-4" />
+                  <span className="text-xs sm:text-sm">
+                    {tCommon("readNow")}
+                  </span>
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                disabled
+                className="flex-1 sm:flex-none h-9 rounded-full"
+              >
+                {tCommon("readNow")}
+              </Button>
+            )}
+
+            {/* Bookmark Button */}
+            <BookmarkButton
+              manga={{ id: manga.id, name: manga.name }}
+              initialBookmarked={isBookmarked}
+              size="sm"
+              showText={false}
+              variant="outline"
+              className="h-9 w-9 rounded-full border-muted-foreground/30"
+            />
+
+            {/* Share Button (Optional) */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground"
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Description Section (Full Width below header) */}
+      {manga.pilot && (
+        <div className="px-1">
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-1">
+            Giới thiệu
+          </h3>
+          <ExpandableDescription content={manga.pilot} />
+        </div>
+      )}
+
+      <Separator className="bg-border/60" />
+
+      {/* --- CHAPTER LIST --- */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            {tChapter("chapterList")}
+            <span className="text-xs font-normal text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+              {chapters.length}
+            </span>
+          </h2>
+          <div className="flex items-center gap-2">
+            <div className="relative w-32 sm:w-48 transition-all focus-within:w-40 sm:focus-within:w-60">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Tìm số chương..."
+                className="pl-8 h-8 text-xs rounded-full bg-secondary/30 border-transparent focus:bg-background focus:border-primary"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={() =>
+                setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
+              }
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1">
+          {filteredChapters.length > 0 ? (
+            filteredChapters.map((chapter) => (
+              <Link
+                key={chapter.id}
+                href={`/manga/${manga.slug}/${chapter.slug}`}
+                className="group flex items-center justify-between py-2.5 border-b border-border/40 hover:bg-secondary/20 hover:pl-2 transition-all duration-200 rounded-sm"
+              >
+                <div className="min-w-0 pr-2">
+                  <div className="text-sm font-medium text-foreground/90 group-hover:text-primary truncate">
+                    {tChapter("chapter")} {chapter.chapter_number}
+                  </div>
+                  {chapter.name &&
+                    chapter.name !== `Chapter ${chapter.chapter_number}` && (
+                      <div className="text-[11px] text-muted-foreground truncate">
+                        {chapter.name}
+                      </div>
+                    )}
+                </div>
+                <div className="text-[10px] text-muted-foreground whitespace-nowrap font-mono">
+                  {new Date(chapter.created_at).toLocaleDateString("vi-VN", {
+                    day: "2-digit",
+                    month: "2-digit",
+                  })}
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full py-10 text-center text-sm text-muted-foreground">
+              Không tìm thấy chương nào
             </div>
           )}
         </div>
-      </Card>
-
-      <Card className="mt-6">
-        <CardHeader>
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              {tChapter("chapterList")} ({chapters.length})
-            </CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1 sm:flex-initial sm:w-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t("detail.searchChapter")}
-                  className="pl-10 w-full sm:w-48"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() =>
-                  setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
-                }
-                className="transition-transform hover:scale-110 flex-shrink-0"
-                title={
-                  sortOrder === "newest"
-                    ? t("detail.sortOldest")
-                    : t("detail.sortNewest")
-                }
-              >
-                <ArrowUpDown className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent>
-          {chapters.length > 0 && (
-            <div className="max-h-[500px] overflow-y-auto pr-2">
-              <div className="space-y-2">
-                {filteredAndSortedChapters.map((chapter) => (
-                  <Link
-                    key={chapter.id}
-                    href={`/manga/${manga.slug}/${chapter.slug}`}
-                    className="flex items-center justify-between rounded-lg border bg-background/50 p-3 transition-colors hover:bg-accent"
-                  >
-                    <div className="flex-1">
-                      <div className="font-medium line-clamp-1">
-                        {tChapter("chapter")} {chapter.chapter_number}
-                        {chapter.name &&
-                          chapter.name !==
-                            `Chapter ${chapter.chapter_number}` && (
-                            <span className="ml-2 text-sm font-normal text-muted-foreground">
-                              - {chapter.name}
-                            </span>
-                          )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        <span>{formatNumber(chapter.views)}</span>
-                      </div>
-                      <div className="hidden items-center gap-1 sm:flex">
-                        <Calendar className="h-3 w-3" />
-                        <span>{formatDate(chapter.created_at)}</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-          {chapters.length === 0 && (
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground">{t("noResults")}</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </>
+      </div>
+    </div>
   );
 }
 
+// --- Container wrapper remains same but cleaner imports ---
+interface MangaDetailContentProps {
+  slug: string;
+}
+
 export function MangaDetailContent({ slug }: MangaDetailContentProps) {
-  const tErrors = useTranslations("errors");
   const { isAuthenticated } = useAuthStore();
+  const tErrors = useTranslations("errors");
 
   const {
     data: manga,
@@ -361,11 +386,7 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
     queryFn: () => mangaApi.getDetail(slug),
   });
 
-  const {
-    data: chapters,
-    isLoading: isChaptersLoading,
-    error: chaptersError,
-  } = useQuery({
+  const { data: chapters, isLoading: isChaptersLoading } = useQuery({
     queryKey: ["manga", slug, "chapters"],
     queryFn: () => mangaApi.getChapters(slug),
     enabled: !!manga,
@@ -377,64 +398,30 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
     enabled: isAuthenticated,
   });
 
-  const isBookmarked =
-    manga && favoritesData?.data
-      ? favoritesData.data.some((fav) => fav.id === manga.id)
-      : false;
+  const isBookmarked = useMemo(
+    () =>
+      manga && favoritesData?.data
+        ? favoritesData.data.some((fav) => fav.id === manga.id)
+        : false,
+    [manga, favoritesData]
+  );
 
   if (isMangaLoading || isChaptersLoading) {
-    return (
-      <div className="container mx-auto max-w-screen-xl px-4 py-8">
-        <MangaDetailSkeleton />
-      </div>
-    );
+    return <MangaDetailSkeleton />;
   }
 
   if (mangaError || !manga) {
-    return (
-      <div className="container mx-auto max-w-6xl px-4 py-8">
-        <Card>
-          <CardContent className="py-12 text-center">
-            <h2 className="text-2xl font-bold text-destructive">
-              {tErrors("notFound")}
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              {tErrors("pageNotFoundDescription")}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <div className="py-20 text-center">{tErrors("notFound")}</div>;
   }
-
-  if (chaptersError) {
-    return (
-      <div className="container mx-auto max-w-6xl px-4 py-8">
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground">{tErrors("general")}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const breadcrumbItems = [
-    { name: "Home", url: "/" },
-    { name: "Manga", url: "/manga" },
-    { name: manga.name, url: `/manga/${manga.slug}` },
-  ];
 
   return (
-    <div className="container mx-auto max-w-screen-xl px-4 py-8">
-      <Breadcrumb items={breadcrumbItems} />
-      <div className="mt-6">
-        <MangaDetail
-          manga={manga}
-          chapters={chapters?.data || []}
-          isBookmarked={isBookmarked}
-        />
-      </div>
+    <div className="container max-w-7xl mx-auto px-4 py-4 sm:py-8">
+      <Breadcrumb name={manga.name} />
+      <MangaDetail
+        manga={manga}
+        chapters={chapters?.data || []}
+        isBookmarked={isBookmarked}
+      />
     </div>
   );
 }

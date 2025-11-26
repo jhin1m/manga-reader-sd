@@ -23,6 +23,7 @@ interface BookmarkButtonProps {
   variant?: "default" | "outline" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
   showText?: boolean;
+  className?: string;
 }
 
 export function BookmarkButton({
@@ -31,6 +32,7 @@ export function BookmarkButton({
   variant = "outline",
   size = "default",
   showText = true,
+  className,
 }: BookmarkButtonProps) {
   const t = useTranslations("manga");
   const tCommon = useTranslations("common");
@@ -118,7 +120,8 @@ export function BookmarkButton({
         "border-2 transition-all",
         isBookmarked
           ? "border-primary/30 hover:border-primary/50 bg-primary/10"
-          : "border-muted-foreground/30 hover:border-primary/40"
+          : "border-muted-foreground/30 hover:border-primary/40",
+        className
       )}
     >
       <Icon className="h-4 w-4" />

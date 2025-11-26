@@ -44,7 +44,7 @@ export function MangaCard({
     >
       <Card
         className={cn(
-          "overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow duration-200", // Class cũ của Card
+          "overflow-hidden border-2 border-chart-2 shadow-sm hover:shadow-md transition-shadow duration-200", // Class cũ của Card
           "relative aspect-[3/4] bg-muted" // Class của div bên trong
         )}
       >
@@ -54,7 +54,7 @@ export function MangaCard({
           alt={manga.name}
           fill
           priority={priority}
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="object-cover"
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
         />
 
@@ -78,7 +78,7 @@ export function MangaCard({
       {/* Nội dung văn bản (Giữ nguyên) */}
       <div className="space-y-0.5 pt-1">
         {/* Title */}
-        <h3 className="font-bold text-sm line-clamp-1 group-hover:text-primary transition-colors">
+        <h3 className="font-semibold capitalize text-sm line-clamp-1 group-hover:text-primary transition-colors">
           {manga.name}
         </h3>
 

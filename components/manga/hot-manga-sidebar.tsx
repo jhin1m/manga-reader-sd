@@ -16,7 +16,6 @@ import { Star } from "lucide-react";
 import type { MangaListItem } from "@/types/manga";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HotMangaSidebarSkeleton } from "@/components/layout/loading";
 import { cn } from "@/lib/utils";
 
@@ -77,16 +76,14 @@ export function HotMangaSidebar({
 
   return (
     <div className={cn(sticky && "sticky top-4", className)}>
-      <Card>
-        <CardHeader className="pb-3">
+      <div>
+        <div className="pb-3">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🏆</span>
-            <CardTitle className="text-2xl font-bold">
-              {t("topRanked")}
-            </CardTitle>
+            <h2 className="text-2xl font-bold">{t("topRanked")}</h2>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div>
           <Tabs
             value={activeTab}
             onValueChange={(v) => setActiveTab(v as TabValue)}
@@ -113,8 +110,8 @@ export function HotMangaSidebar({
               </TabsContent>
             ))}
           </Tabs>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
