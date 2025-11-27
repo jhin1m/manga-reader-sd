@@ -37,7 +37,8 @@
     "contact": "Liên hệ",
     "search": "Tìm kiếm",
     "allGenres": "Tất cả thể loại",
-    "loadingGenres": "Đang tải thể loại..."
+    "loadingGenres": "Đang tải thể loại...",
+    "mangaList": "Truyện"
   },
   "manga": {
     "status": {
@@ -75,7 +76,12 @@
       "sortOldest": "Cũ nhất",
       "readingProgress": "Tiến độ đọc",
       "totalViews": "Tổng lượt xem",
-      "searchChapter": "Tìm chương..."
+      "searchChapter": "Tìm chương...",
+      "introduction": "Giới thiệu",
+      "showMore": "Đọc thêm",
+      "showLess": "Thu gọn",
+      "noChapters": "Không tìm thấy chương nào",
+      "searchChapterPlaceholder": "Tìm số chương..."
     }
   },
   "chapter": {
@@ -109,7 +115,7 @@
       "readingMode": {
         "label": "Chế độ đọc",
         "single": "Đọc từng trang",
-        "singleDesc": "Hiển thị từng trang một",
+        "singleDesc": "Hiển thị từng trang",
         "longStrip": "Đọc dọc",
         "longStripDesc": "Cuộn dọc liên tục"
       },
@@ -122,6 +128,14 @@
       },
       "zoom": {
         "label": "Độ phóng to"
+      },
+      "backgroundColor": {
+        "label": "Màu nền",
+        "description": "Chọn màu nền cho trình đọc truyện"
+      },
+      "imageSpacing": {
+        "label": "Khoảng cách ảnh",
+        "description": "Điều chỉnh khoảng cách giữa các ảnh"
       }
     }
   },
@@ -137,6 +151,7 @@
     "rememberMe": "Ghi nhớ đăng nhập",
     "loginWithGoogle": "Đăng nhập với Google",
     "registerWithGoogle": "Đăng ký với Google",
+    "continueWithGoogle": "Tiếp tục với Google",
     "alreadyHaveAccount": "Đã có tài khoản?",
     "dontHaveAccount": "Chưa có tài khoản?",
     "loginSuccess": "Đăng nhập thành công",
@@ -144,7 +159,37 @@
     "registerSuccess": "Đăng ký thành công",
     "welcomeBack": "Chào mừng trở lại!",
     "termsAndConditions": "Điều khoản và điều kiện",
-    "agreeToTerms": "Tôi đồng ý với điều khoản và điều kiện"
+    "agreeToTerms": "Tôi đồng ý với điều khoản và điều kiện",
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "createAccount": "Tạo tài khoản",
+    "signingIn": "Đang đăng nhập...",
+    "creatingAccount": "Đang tạo tài khoản...",
+    "orContinueWith": "Hoặc tiếp tục với",
+    "emailPlaceholder": "user@example.com",
+    "passwordPlaceholder": "Nhập mật khẩu của bạn",
+    "newPasswordPlaceholder": "Tạo mật khẩu",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu của bạn",
+    "namePlaceholder": "Nhập tên của bạn",
+    "enterEmailAndPassword": "Nhập email và mật khẩu để đăng nhập vào tài khoản của bạn",
+    "enterInfoToCreateAccount": "Nhập thông tin của bạn để tạo tài khoản",
+    "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "loginFailed": "Đăng nhập thất bại",
+    "registerFailed": "Đăng ký thất bại",
+    "invalidEmailOrPassword": "Email hoặc mật khẩu không hợp lệ",
+    "unableToCreateAccount": "Không thể tạo tài khoản. Vui lòng thử lại.",
+    "accountCreatedSuccess": "Tài khoản của bạn đã được tạo thành công.",
+    "signedInSuccess": "Bạn đã đăng nhập thành công.",
+    "welcomeToMangaReader": "Chào mừng đến với Manga Reader!",
+    "termsOfService": "Điều khoản dịch vụ",
+    "privacyPolicy": "Chính sách bảo mật",
+    "agreeToTermsFull": "Tôi đồng ý với",
+    "and": "và",
+    "googleAuthSuccess": "Đăng nhập với Google thành công!",
+    "googleAuthFailed": "Xác thực Google thất bại",
+    "failedToSignInWithGoogle": "Không thể đăng nhập với Google"
   },
   "user": {
     "profile": "Trang cá nhân",

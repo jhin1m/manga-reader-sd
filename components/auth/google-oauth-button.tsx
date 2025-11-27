@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface GoogleOAuthButtonProps {
   onSuccess?: () => void;
@@ -24,6 +25,7 @@ export function GoogleOAuthButton({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { googleAuth, isLoading } = useGoogleAuth();
+  const t = useTranslations();
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -34,7 +36,7 @@ export function GoogleOAuthButton({
         });
 
         if (result.success) {
-          toast.success("Successfully signed in with Google!");
+          toast.success(t("auth.googleAuthSuccess"));
 
           // Redirect to previous page or homepage
           const redirectTo = searchParams.get("redirect") || "/";
@@ -42,7 +44,7 @@ export function GoogleOAuthButton({
 
           onSuccess?.();
         } else {
-          toast.error(result.error || "Google authentication failed");
+          toast.error(result.error || t("auth.googleAuthFailed"));
         }
       } catch (err) {
         const errorMessage =
@@ -52,7 +54,7 @@ export function GoogleOAuthButton({
     },
     onError: (error) => {
       console.error("Google OAuth error:", error);
-      toast.error("Failed to sign in with Google");
+      toast.error(t("auth.failedToSignInWithGoogle"));
     },
   });
 
@@ -86,7 +88,7 @@ export function GoogleOAuthButton({
           />
         </svg>
       )}
-      Continue with Google
+      {t("auth.continueWithGoogle")}
     </Button>
   );
 }

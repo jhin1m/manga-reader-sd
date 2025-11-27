@@ -43,7 +43,7 @@ export function MangaCarouselCard({
       <div
         className={cn(
           "relative aspect-[3/4] overflow-hidden rounded-lg",
-          "border-2 border-chart-2",
+          "border border-chart-2",
           "transition-shadow duration-200",
           "hover:shadow-lg hover:border-primary"
         )}

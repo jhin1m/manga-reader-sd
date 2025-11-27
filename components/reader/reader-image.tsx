@@ -9,6 +9,7 @@ interface ReaderImageProps {
   alt: string;
   index: number;
   className?: string;
+  style?: React.CSSProperties;
   onLoad?: () => void;
 }
 
@@ -17,6 +18,7 @@ export function ReaderImage({
   alt,
   index,
   className,
+  style,
   onLoad,
 }: ReaderImageProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +35,10 @@ export function ReaderImage({
   };
 
   return (
-    <div className={cn("relative min-h-[50vh] w-full", className)}>
+    <div
+      className={cn("relative min-h-[50vh] w-full", className)}
+      style={style}
+    >
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
           <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />

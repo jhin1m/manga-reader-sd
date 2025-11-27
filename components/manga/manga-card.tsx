@@ -44,7 +44,7 @@ export function MangaCard({
     >
       <Card
         className={cn(
-          "overflow-hidden border-2 border-chart-2 shadow-sm hover:shadow-md transition-shadow duration-200", // Class cũ của Card
+          "overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200", // Class cũ của Card
           "relative aspect-[3/4] bg-muted" // Class của div bên trong
         )}
       >
@@ -61,8 +61,7 @@ export function MangaCard({
         {/* Hot Badge (Giữ nguyên, vẫn là con của Card) */}
         {manga.is_hot && (
           <div className="absolute top-2 right-2">
-            <Badge className="bg-orange-500 text-white border-0 text-xs px-1.5 py-0.5">
-              <Star className="h-2.5 w-2.5 mr-0.5 fill-white" />
+            <Badge className="bg-orange-500 text-white border-0 text-xs">
               {t("hot")}
             </Badge>
           </div>

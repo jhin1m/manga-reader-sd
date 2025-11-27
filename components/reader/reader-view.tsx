@@ -27,6 +27,8 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   const [zoom, setZoom] = useState(100);
   const [showControls, setShowControls] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
+  const [backgroundColor, setBackgroundColor] = useState("#000000");
+  const [imageSpacing, setImageSpacing] = useState(0);
 
   // Fetch Chapter Details
   const {
@@ -209,7 +211,7 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   const images = chapter.content || [];
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen" style={{ backgroundColor }}>
       <ReaderControls
         mangaSlug={mangaSlug}
         currentChapterSlug={chapterSlug}
@@ -219,6 +221,10 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
         onReadingModeChange={setReadingMode}
         zoom={zoom}
         onZoomChange={setZoom}
+        backgroundColor={backgroundColor}
+        onBackgroundColorChange={setBackgroundColor}
+        imageSpacing={imageSpacing}
+        onImageSpacingChange={setImageSpacing}
         showControls={showControls}
         onNavigateChapter={handleNavigateChapter}
       />
@@ -247,6 +253,7 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
         style={{
           width: "100%",
           maxWidth: "100%",
+          backgroundColor,
         }}
       >
         <div
@@ -275,7 +282,8 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
                 src={src}
                 alt={`Page ${index + 1}`}
                 index={index}
-                className="mb-2 w-full max-w-4xl"
+                className="w-full max-w-4xl"
+                style={{ marginBottom: `${imageSpacing}px` }}
               />
             ))
           )}

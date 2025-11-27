@@ -15,18 +15,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  ArrowLeft,
-  ArrowRight,
-  ChevronLeft,
-  Minus,
-  Plus,
-  Settings,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronLeft, Settings } from "lucide-react";
 import Link from "next/link";
 import { ChapterNavigation } from "@/types/chapter";
 import { cn } from "@/lib/utils";
-import { ReaderSettingsDialog } from "./reader-settings-dialog";
+import { ReaderSettingsPanel } from "./reader-settings-panel";
 
 interface ReaderControlsProps {
   mangaSlug: string;
@@ -37,6 +30,10 @@ interface ReaderControlsProps {
   onReadingModeChange: (mode: "single" | "long-strip") => void;
   zoom: number;
   onZoomChange: (zoom: number) => void;
+  backgroundColor: string;
+  onBackgroundColorChange: (color: string) => void;
+  imageSpacing: number;
+  onImageSpacingChange: (spacing: number) => void;
   showControls: boolean;
   onNavigateChapter: (slug: string) => void;
 }
@@ -50,6 +47,10 @@ export function ReaderControls({
   onReadingModeChange,
   zoom,
   onZoomChange,
+  backgroundColor,
+  onBackgroundColorChange,
+  imageSpacing,
+  onImageSpacingChange,
   showControls,
   onNavigateChapter,
 }: ReaderControlsProps) {
@@ -104,7 +105,7 @@ export function ReaderControls({
       {/* Bottom Bar */}
       <div
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-t bg-background/95 px-4 backdrop-blur transition-transform duration-300",
+          "fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-center border-t bg-background/95 px-4 backdrop-blur transition-transform duration-300",
           showControls ? "translate-y-0" : "translate-y-full"
         )}
       >
@@ -121,7 +122,7 @@ export function ReaderControls({
             <ArrowLeft className="h-4 w-4" />
           </Button>
 
-          {/* Chapter Selector - Placeholder for now if list is large */}
+          {/* Chapter Selector - Centered */}
           <Select value={currentChapterSlug} onValueChange={onNavigateChapter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Chapter" />
@@ -150,34 +151,20 @@ export function ReaderControls({
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onZoomChange(Math.max(50, zoom - 10))}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
-          <span className="w-12 text-center text-sm">{zoom}%</span>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onZoomChange(Math.min(200, zoom + 10))}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
 
-      {/* Settings Dialog */}
-      <ReaderSettingsDialog
+      {/* Settings Panel */}
+      <ReaderSettingsPanel
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         readingMode={readingMode}
         onReadingModeChange={onReadingModeChange}
         zoom={zoom}
         onZoomChange={onZoomChange}
+        backgroundColor={backgroundColor}
+        onBackgroundColorChange={onBackgroundColorChange}
+        imageSpacing={imageSpacing}
+        onImageSpacingChange={onImageSpacingChange}
       />
     </>
   );

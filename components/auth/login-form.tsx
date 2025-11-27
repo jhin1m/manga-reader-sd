@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -42,6 +43,7 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const { login, isLoading } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
+  const t = useTranslations();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -55,8 +57,8 @@ export function LoginForm() {
     const result = await login(data);
 
     if (result.success) {
-      toast.success("Welcome back!", {
-        description: "You have successfully signed in.",
+      toast.success(t("auth.welcomeBack"), {
+        description: t("auth.signedInSuccess"),
       });
 
       // Redirect to previous page or homepage
@@ -64,8 +66,8 @@ export function LoginForm() {
       router.push(redirectTo);
     } else {
       // Error toast is shown automatically from the hook
-      toast.error("Login failed", {
-        description: result.error || "Invalid email or password",
+      toast.error(t("auth.loginFailed"), {
+        description: result.error || t("auth.invalidEmailOrPassword"),
       });
     }
   }
@@ -73,10 +75,8 @@ export function LoginForm() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
-        <CardDescription>
-          Enter your email and password to sign in to your account
-        </CardDescription>
+        <CardTitle className="text-2xl font-bold">{t("auth.signIn")}</CardTitle>
+        <CardDescription>{t("auth.enterEmailAndPassword")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
@@ -86,11 +86,11 @@ export function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("auth.email")}</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="user@example.com"
+                      placeholder={t("auth.emailPlaceholder")}
                       autoComplete="email"
                       disabled={isLoading}
                       {...field}
@@ -106,12 +106,12 @@ export function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t("auth.password")}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
+                        placeholder={t("auth.passwordPlaceholder")}
                         autoComplete="current-password"
                         disabled={isLoading}
                         {...field}
@@ -161,7 +161,9 @@ export function LoginForm() {
                           </svg>
                         )}
                         <span className="sr-only">
-                          {showPassword ? "Hide password" : "Show password"}
+                          {showPassword
+                            ? t("auth.hidePassword")
+                            : t("auth.showPassword")}
                         </span>
                       </Button>
                     </div>
@@ -175,10 +177,10 @@ export function LoginForm() {
               {isLoading ? (
                 <>
                   <Spinner className="mr-2 h-4 w-4" />
-                  Signing in...
+                  {t("auth.signingIn")}
                 </>
               ) : (
-                "Sign in"
+                t("auth.signIn")
               )}
             </Button>
           </form>
@@ -190,7 +192,7 @@ export function LoginForm() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
+              {t("auth.orContinueWith")}
             </span>
           </div>
         </div>
@@ -199,12 +201,12 @@ export function LoginForm() {
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
         <div className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          {t("auth.dontHaveAccount")}{" "}
           <Link
             href="/register"
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
-            Sign up
+            {t("auth.signUp")}
           </Link>
         </div>
       </CardFooter>

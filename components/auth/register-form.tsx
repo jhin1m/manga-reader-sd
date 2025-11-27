@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -45,6 +46,7 @@ export function RegisterForm() {
   const { register, isLoading } = useRegister();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const t = useTranslations();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -65,17 +67,16 @@ export function RegisterForm() {
     const result = await register(registerData);
 
     if (result.success) {
-      toast.success("Welcome to Manga Reader!", {
-        description: "Your account has been created successfully.",
+      toast.success(t("auth.welcomeToMangaReader"), {
+        description: t("auth.accountCreatedSuccess"),
       });
 
       // Redirect to previous page or homepage
       const redirectTo = searchParams.get("redirect") || "/";
       router.push(redirectTo);
     } else {
-      toast.error("Registration failed", {
-        description:
-          result.error || "Unable to create account. Please try again.",
+      toast.error(t("auth.registerFailed"), {
+        description: result.error || t("auth.unableToCreateAccount"),
       });
     }
   }
@@ -83,10 +84,10 @@ export function RegisterForm() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-        <CardDescription>
-          Enter your information to create your account
-        </CardDescription>
+        <CardTitle className="text-2xl font-bold">
+          {t("auth.createAccount")}
+        </CardTitle>
+        <CardDescription>{t("auth.enterInfoToCreateAccount")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
@@ -96,11 +97,11 @@ export function RegisterForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("auth.name")}</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder="Enter your name"
+                      placeholder={t("auth.namePlaceholder")}
                       autoComplete="name"
                       disabled={isLoading}
                       {...field}
@@ -116,11 +117,11 @@ export function RegisterForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("auth.email")}</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="user@example.com"
+                      placeholder={t("auth.emailPlaceholder")}
                       autoComplete="email"
                       disabled={isLoading}
                       {...field}
@@ -136,12 +137,12 @@ export function RegisterForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t("auth.password")}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Create a password"
+                        placeholder={t("auth.newPasswordPlaceholder")}
                         autoComplete="new-password"
                         disabled={isLoading}
                         {...field}
@@ -191,13 +192,15 @@ export function RegisterForm() {
                           </svg>
                         )}
                         <span className="sr-only">
-                          {showPassword ? "Hide password" : "Show password"}
+                          {showPassword
+                            ? t("auth.hidePassword")
+                            : t("auth.showPassword")}
                         </span>
                       </Button>
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Password must be at least 6 characters
+                    {t("auth.passwordMinLength")}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -209,12 +212,12 @@ export function RegisterForm() {
               name="password_confirmation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>{t("auth.confirmPassword")}</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
                         type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm your password"
+                        placeholder={t("auth.confirmPasswordPlaceholder")}
                         autoComplete="new-password"
                         disabled={isLoading}
                         {...field}
@@ -267,8 +270,8 @@ export function RegisterForm() {
                         )}
                         <span className="sr-only">
                           {showConfirmPassword
-                            ? "Hide password"
-                            : "Show password"}
+                            ? t("auth.hidePassword")
+                            : t("auth.showPassword")}
                         </span>
                       </Button>
                     </div>
@@ -292,21 +295,21 @@ export function RegisterForm() {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>
-                      I agree to the{" "}
+                      {t("auth.agreeToTermsFull")}{" "}
                       <Link
                         href="/terms"
                         className="font-medium text-primary underline-offset-4 hover:underline"
                         target="_blank"
                       >
-                        Terms of Service
+                        {t("auth.termsOfService")}
                       </Link>{" "}
-                      and{" "}
+                      {t("auth.and")}{" "}
                       <Link
                         href="/privacy"
                         className="font-medium text-primary underline-offset-4 hover:underline"
                         target="_blank"
                       >
-                        Privacy Policy
+                        {t("auth.privacyPolicy")}
                       </Link>
                     </FormLabel>
                     <FormMessage />
@@ -319,10 +322,10 @@ export function RegisterForm() {
               {isLoading ? (
                 <>
                   <Spinner className="mr-2 h-4 w-4" />
-                  Creating account...
+                  {t("auth.creatingAccount")}
                 </>
               ) : (
-                "Create account"
+                t("auth.createAccount")
               )}
             </Button>
           </form>
@@ -334,7 +337,7 @@ export function RegisterForm() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
+              {t("auth.orContinueWith")}
             </span>
           </div>
         </div>
@@ -343,12 +346,12 @@ export function RegisterForm() {
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
         <div className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {t("auth.alreadyHaveAccount")}{" "}
           <Link
             href="/login"
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
-            Sign in
+            {t("auth.signIn")}
           </Link>
         </div>
       </CardFooter>

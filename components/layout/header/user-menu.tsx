@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,19 +13,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/lib/hooks/use-auth";
+import { useAuth, useLogout } from "@/lib/hooks/use-auth";
 import { User, Library, Settings, LogOut, LogIn } from "lucide-react";
+import { toast } from "sonner";
 
 export function UserMenu() {
   const { user, isAuthenticated } = useAuth();
+  const { logout } = useLogout();
   const router = useRouter();
+  const t = useTranslations();
 
-  const handleLogout = () => {
-    // TODO: Implement actual logout in Phase 2
-    localStorage.removeItem("auth-token");
-    localStorage.removeItem("auth-user");
-    router.push("/");
-    router.refresh();
+  const handleLogout = async () => {
+    const result = await logout();
+    if (result.success) {
+      toast.success(t("auth.logoutSuccess"));
+      router.push("/");
+    }
   };
 
   if (!isAuthenticated || !user) {
@@ -32,7 +36,7 @@ export function UserMenu() {
       <Button asChild variant="default" size="sm">
         <Link href="/login">
           <LogIn className="mr-2 h-4 w-4" />
-          Login
+          {t("common.login")}
         </Link>
       </Button>
     );
@@ -64,7 +68,7 @@ export function UserMenu() {
               {user.email}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user.available_points} points
+              {t("user.availablePoints", { points: user.available_points })}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -72,25 +76,25 @@ export function UserMenu() {
         <DropdownMenuItem asChild>
           <Link href="/profile" className="cursor-pointer">
             <User className="mr-2 h-4 w-4" />
-            Profile
+            {t("navigation.profile")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/library" className="cursor-pointer">
             <Library className="mr-2 h-4 w-4" />
-            Library
+            {t("navigation.library")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/settings" className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
-            Settings
+            {t("navigation.settings")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
-          Logout
+          {t("common.logout")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
