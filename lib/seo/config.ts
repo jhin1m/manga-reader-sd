@@ -1,138 +1,113 @@
 import type { Metadata } from "next";
 
 /**
- * Centralized SEO Configuration
- *
- * ⭐ EDIT THIS FILE TO UPDATE SEO FOR THE ENTIRE SITE ⭐
- *
- * This file contains all SEO-related configuration for the application.
- * Any changes made here will automatically apply across all pages.
- *
- * Usage:
- * 1. Update site information below (name, description, etc.)
- * 2. Import and use in pages: import { defaultMetadata } from '@/lib/seo/config'
- * 3. All pages will automatically inherit these settings
+ * SEO Config cho Động Hentai – Web đọc truyện hentai tiếng Việt lớn nhất
  */
 
-/**
- * Site Configuration
- *
- * Core site information used throughout the application.
- * Update these values to change site-wide SEO.
- */
 export const siteConfig = {
   // Site identity
-  name: "Manga Reader CMS",
-  shortName: "Manga Reader",
+  name: "Động Hentai",
+  shortName: "Động H",
   description:
-    "Nền tảng đọc manga trực tuyến với hàng ngàn đầu truyện. Đọc manga miễn phí, cập nhật nhanh nhất, chất lượng cao.",
+    "Động Hentai - Web đọc truyện hentai, doujinshi tiếng Việt miễn phí nhanh nhất. Hàng ngàn bộ hentai full color, không che, uncensored, cập nhật liên tục 24/7.",
 
   // URLs
-  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000", // thay bằng domain thật của bạn
 
   // Images
-  ogImage: "/og-image.jpg", // Default Open Graph image
+  ogImage: "/og-donghentai.jpg", // chuẩn bị 1 ảnh OG 1200x630 sexy nhưng không lộ hàng quá
   favicon: "/favicon.ico",
 
-  // Keywords for better SEO
+  // Keywords chính (tập trung từ khóa dài + từ khóa nóng của dân hentai VN)
   keywords: [
-    "manga",
-    "truyện tranh",
-    "đọc manga online",
-    "manga tiếng việt",
-    "đọc truyện tranh",
-    "manga free",
-    "manga reader",
-    "truyện tranh online",
+    "hentai",
+    "đọc hentai",
+    "truyện hentai",
+    "hentai vn",
+    "hentaivn",
+    "động hentai",
+    "doujinshi tiếng việt",
+    "hentai không che",
+    "hentai uncensored",
+    "truyện sex hentai",
+    "hentai full color",
+    "hentai online",
+    "netorare",
+    "milf hentai",
+    "loli hentai",
+    "ahegao",
+    "hentai mới nhất",
+    "hentai hay",
   ],
 
-  // Social media links
+  // Social (nếu có fanpage 18+ hoặc twitter 18+ thì điền vào)
   links: {
-    twitter: "https://twitter.com/yourhandle",
-    github: "https://github.com/yourrepo",
-    facebook: "https://facebook.com/yourpage",
+    twitter: "https://twitter.com/donghentaivn",
+    telegram: "https://t.me/donghentai", // thường dân 18+ dùng Telegram nhiều hơn FB
   },
 
-  // Author information
+  // Author & publisher
   authors: [
     {
-      name: "Manga Reader Team",
-      url: "https://yourwebsite.com",
+      name: "Team Động Hentai",
+      url: "https://donghentai.xxx",
     },
   ],
-
-  // Organization info (for JSON-LD)
-  creator: "Manga Reader Team",
-  publisher: "Manga Reader CMS",
+  creator: "Team Động Hentai",
+  publisher: "Động Hentai",
 } as const;
 
 /**
- * Default Metadata Template
- *
- * This is the base metadata used across all pages.
- * Pages can extend or override these settings as needed.
- *
- * Usage in pages:
- * ```typescript
- * import { defaultMetadata } from '@/lib/seo/config';
- * export const metadata = defaultMetadata;
- * ```
+ * Default Metadata – áp dụng toàn site
  */
 export const defaultMetadata: Metadata = {
-  // Title configuration
   title: {
     default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`, // e.g., "One Piece | Manga Reader CMS"
+    template: `%s | Động Hentai`, // ví dụ: "Netorare no Gakuen | Động Hentai"
   },
 
-  // Basic metadata
   description: siteConfig.description,
   keywords: Array.from(siteConfig.keywords),
   authors: [...siteConfig.authors],
   creator: siteConfig.creator,
 
-  // Application name
   applicationName: siteConfig.name,
 
-  // Icons
   icons: {
     icon: siteConfig.favicon,
     apple: "/apple-touch-icon.png",
   },
 
-  // Manifest for PWA (if needed in future)
   manifest: "/manifest.json",
 
-  // Open Graph (Facebook, LinkedIn, etc.)
   openGraph: {
     type: "website",
     locale: "vi_VN",
     url: siteConfig.url,
     siteName: siteConfig.name,
-    title: siteConfig.name,
+    title: siteConfig.name + " - Đọc Hentai Tiếng Việt Miễn Phí, Không Che",
     description: siteConfig.description,
     images: [
       {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: "Động Hentai - HentaiVN lớn nhất Việt Nam",
         type: "image/jpeg",
       },
     ],
   },
 
-  // Twitter Card
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
+    title: "Động Hentai - HentaiVN #1 Việt Nam",
+    description:
+      "Đọc hentai tiếng Việt, doujinshi không che, full color, cập nhật hàng giờ!",
     images: [siteConfig.ogImage],
-    creator: "@yourhandle", // Update with actual Twitter handle
-    site: "@yourhandle", // Update with actual Twitter handle
+    creator: "@donghentaivn",
+    site: "@donghentaivn",
   },
 
-  // Robots configuration
   robots: {
     index: true,
     follow: true,
@@ -147,74 +122,31 @@ export const defaultMetadata: Metadata = {
     },
   },
 
-  // Verification (add when you have these)
-  // verification: {
-  //   google: 'your-google-verification-code',
-  //   yandex: 'your-yandex-verification-code',
-  // },
-
-  // Other metadata
-  category: "Entertainment",
+  category: "adult",
+  classification: "adult",
   metadataBase: new URL(siteConfig.url),
 };
 
 /**
- * Page-specific metadata helpers
- *
- * Use these constants for specific page types
+ * Page types (dùng cho schema JSON-LD nếu cần sau này)
  */
 export const pageTypes = {
   home: "website",
-  manga: "article",
+  comic: "article",
   chapter: "article",
-  profile: "profile",
+  tag: "collection",
+  artist: "profile",
+  search: "website",
 } as const;
 
-/**
- * Robots directives for specific page types
- *
- * Use these for pages that need different robot rules
- */
-export const robotsConfig = {
-  // Allow indexing and following
-  allow: {
-    index: true,
-    follow: true,
-  },
-  // Prevent indexing but allow following links
-  noindex: {
-    index: false,
-    follow: true,
-  },
-  // Prevent both indexing and following
-  none: {
-    index: false,
-    follow: false,
-  },
-} as const;
-
-/**
- * Helper function to build absolute URLs
- *
- * @param path - Relative path (e.g., '/manga/one-piece')
- * @returns Absolute URL (e.g., 'https://yourdomain.com/manga/one-piece')
- */
+// Các hàm helper giữ nguyên
 export function buildUrl(path: string): string {
-  return `${siteConfig.url}${path}`;
+  return `${siteConfig.url}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
-/**
- * Helper function to build image URLs
- *
- * @param imagePath - Image path (relative or absolute)
- * @returns Absolute image URL
- */
 export function buildImageUrl(imagePath: string): string {
-  // If already absolute URL, return as is
   if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
     return imagePath;
   }
-
-  // Otherwise, build absolute URL
   return buildUrl(imagePath);
 }

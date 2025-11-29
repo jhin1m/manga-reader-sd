@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -57,8 +57,8 @@ export function MobileNav() {
   const navLinks = [
     { href: "/", label: t("navigation.home"), icon: Home },
     { href: "/genres", label: t("navigation.genres"), icon: Layers },
-    { href: "/hot", label: t("navigation.hot"), icon: Flame },
-    { href: "/recent", label: t("navigation.recent"), icon: Clock },
+    { href: "/browse?sort=-views", label: t("navigation.hot"), icon: Flame },
+    { href: "/browse", label: t("navigation.recent"), icon: Clock },
   ];
 
   return (
@@ -69,29 +69,43 @@ export function MobileNav() {
           <span className="sr-only">{t("navigation.mangaList")}</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-        <SheetHeader>
-          <SheetTitle>{t("navigation.mangaList")}</SheetTitle>
-        </SheetHeader>
+      <SheetContent side="left" className="w-[300px] p-0 sm:w-[400px]">
+        <SheetTitle className="sr-only">{t("navigation.mangaList")}</SheetTitle>
 
-        <div className="mt-6 flex flex-col space-y-4">
+        <div className="relative h-40 w-full overflow-hidden">
+          <Image
+            src="/mobile-nav.jpg"
+            alt="Navigation Header"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90" />
+          <div className="absolute bottom-4 left-6">
+            <h2 className="text-xl font-bold text-white drop-shadow-md">
+              Manga Reader
+            </h2>
+          </div>
+        </div>
+
+        <div className="flex flex-col space-y-4 p-6">
           {/* User Info Section */}
           {isAuthenticated && user ? (
-            <div className="flex items-center space-x-3 rounded-lg border p-3">
-              <Avatar className="h-12 w-12">
+            <div className="flex items-center space-x-3 rounded-lg border p-3 shadow-sm">
+              <Avatar className="h-12 w-12 border-2 border-primary/10">
                 <AvatarImage src={user.avatar_full_url} alt={user.name} />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <p className="text-sm font-medium">{user.name}</p>
                 <p className="text-xs text-muted-foreground">{user.email}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs font-medium text-primary">
                   {t("user.availablePoints", { points: user.available_points })}
                 </p>
               </div>
             </div>
           ) : (
-            <Button asChild className="w-full">
+            <Button asChild className="w-full shadow-sm">
               <Link href="/login" onClick={() => setOpen(false)}>
                 <LogIn className="mr-2 h-4 w-4" />
                 {t("common.login")}
@@ -102,15 +116,15 @@ export function MobileNav() {
           <Separator />
 
           {/* Navigation Links */}
-          <nav className="flex flex-col space-y-2">
+          <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
               >
-                <link.icon className="h-4 w-4" />
+                <link.icon className="h-4 w-4 text-muted-foreground" />
                 <span>{link.label}</span>
               </Link>
             ))}
@@ -120,34 +134,34 @@ export function MobileNav() {
           {isAuthenticated && (
             <>
               <Separator />
-              <nav className="flex flex-col space-y-2">
+              <nav className="flex flex-col space-y-1">
                 <Link
                   href="/library"
                   onClick={() => setOpen(false)}
-                  className="flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
-                  <Library className="h-4 w-4" />
+                  <Library className="h-4 w-4 text-muted-foreground" />
                   <span>{t("navigation.library")}</span>
                 </Link>
                 <Link
                   href="/profile"
                   onClick={() => setOpen(false)}
-                  className="flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
-                  <User className="h-4 w-4" />
+                  <User className="h-4 w-4 text-muted-foreground" />
                   <span>{t("navigation.profile")}</span>
                 </Link>
                 <Link
                   href="/settings"
                   onClick={() => setOpen(false)}
-                  className="flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
-                  <Settings className="h-4 w-4" />
+                  <Settings className="h-4 w-4 text-muted-foreground" />
                   <span>{t("navigation.settings")}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+                  className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>{t("common.logout")}</span>

@@ -31,17 +31,14 @@ export function Navbar() {
           {/* Left: Mobile Nav + Logo + Desktop Nav Links */}
           <div className="flex items-center gap-2">
             <MobileNav />
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center">
               <Image
-                src="/logo.png"
+                src="/logo-vip.png"
                 alt="Logo"
-                width={32}
-                height={32}
+                width={180}
+                height={50}
                 className="rounded-md"
               />
-              <span className="hidden font-bold sm:inline-block">
-                Manga Reader
-              </span>
             </Link>
 
             {/* Desktop Navigation Links - Left side */}
@@ -51,7 +48,7 @@ export function Navbar() {
               </Button>
               <GenresDropdown />
               <Button asChild variant="ghost" size="sm">
-                <Link href="/hot">{t("hot")}</Link>
+                <Link href="/browse?sort=-views">{t("hot")}</Link>
               </Button>
               <Button asChild variant="ghost" size="sm">
                 <Link href="/browse">{t("recent")}</Link>

@@ -82,7 +82,7 @@ export function GenresDropdown({ className }: GenresDropdownProps) {
             {genres.map((genre) => (
               <DropdownMenuItem key={genre.id} asChild>
                 <Link
-                  href={`/genres/${genre.slug}`}
+                  href={`/browse?genre=${genre.id}`}
                   className="flex items-center justify-between cursor-pointer"
                 >
                   <span>{genre.name}</span>
