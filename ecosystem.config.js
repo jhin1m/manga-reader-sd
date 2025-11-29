@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "manga-reader-sd",
-      script: "node_modules/.bin/next",
+      script: "pnpm",
       args: "start",
       instances: 2,
       exec_mode: "cluster",
