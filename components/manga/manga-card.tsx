@@ -11,7 +11,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 import type { MangaListItem } from "@/types/manga";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Star } from "lucide-react";
 import { formatNumber, cn } from "@/lib/utils";
@@ -42,10 +41,10 @@ export function MangaCard({
       href={`/manga/${manga.slug}`}
       className={cn("group flex flex-col space-y-1.5", className)}
     >
-      <Card
+      <div
         className={cn(
-          "overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200", // Class cũ của Card
-          "relative aspect-[3/4] bg-muted" // Class của div bên trong
+          "relative aspect-[3/4] overflow-hidden rounded-lg bg-muted",
+          "shadow-sm hover:shadow-md transition-shadow duration-200"
         )}
       >
         {/* Cover Image */}
@@ -55,24 +54,24 @@ export function MangaCard({
           fill
           priority={priority}
           className="object-cover"
-          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+          sizes="(max-width: 768px) 50vw, 25vw"
         />
 
-        {/* Hot Badge (Giữ nguyên, vẫn là con của Card) */}
-        {manga.is_hot && (
-          <div className="absolute top-2 right-2">
+        {/* Hot Badge */}
+        {manga.is_hot ? (
+          <div className="absolute top-2 right-2 z-10">
             <Badge className="bg-orange-500 text-white border-0 text-xs">
               {t("hot")}
             </Badge>
           </div>
-        )}
+        ) : null}
 
-        {/* Views (mắt xem) (Giữ nguyên, vẫn là con của Card) */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-0.5 rounded-sm bg-black/60 px-1.5 py-0.5 text-xs text-white">
+        {/* Views Counter */}
+        <div className="absolute bottom-2 left-2 z-10 flex items-center gap-0.5 rounded-sm bg-black/60 px-1.5 py-0.5 text-xs text-white">
           <Eye className="h-3 w-3" />
           <span>{formatNumber(manga.views)}</span>
         </div>
-      </Card>
+      </div>
 
       {/* Nội dung văn bản (Giữ nguyên) */}
       <div className="space-y-0.5 pt-1">
@@ -93,11 +92,13 @@ export function MangaCard({
           )}
 
           {/* Rating */}
-          {manga.average_rating > 0 && (
+          {Boolean(manga.average_rating) && manga.average_rating > 0 ? (
             <div className="flex flex-shrink-0 items-center gap-0.5">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
               <span>{Number(manga.average_rating).toFixed(1)}</span>
             </div>
+          ) : (
+            <span />
           )}
         </div>
       </div>

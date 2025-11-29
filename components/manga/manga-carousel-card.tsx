@@ -55,7 +55,7 @@ export function MangaCarouselCard({
           fill
           priority={priority}
           className="object-cover"
-          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+          sizes="(max-width: 768px) 50vw, 25vw"
         />
 
         {/* Gradient Overlay at Bottom */}
@@ -89,13 +89,15 @@ export function MangaCarouselCard({
             )}
 
             {/* Rating */}
-            {manga.average_rating > 0 && (
+            {manga.average_rating > 0 ? (
               <div className="flex flex-shrink-0 items-center gap-0.5 bg-yellow-500 rounded-full px-1.5 py-0.5">
                 <Star className="h-2.5 w-2.5 fill-white text-white" />
                 <span className="font-semibold text-white text-xs">
                   {Number(manga.average_rating).toFixed(1)}
                 </span>
               </div>
+            ) : (
+              <span />
             )}
           </div>
         </div>
