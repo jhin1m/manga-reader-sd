@@ -220,6 +220,12 @@
     "sortBy": "Sắp xếp theo",
     "toggleSearch": "Bật/tắt tìm kiếm",
     "closeSearch": "Đóng tìm kiếm",
+    "searching": "Đang tìm kiếm...",
+    "resultsFound": "Tìm thấy {count} kết quả",
+    "viewAllResults": "Xem tất cả {count} kết quả",
+    "noResultsTitle": "Không tìm thấy kết quả",
+    "noResultsMessage": "Thử tìm kiếm với từ khóa khác",
+    "minCharacters": "Nhập ít nhất 2 ký tự để tìm kiếm",
     "sort": {
       "latest": "Mới nhất",
       "views": "Lượt xem",

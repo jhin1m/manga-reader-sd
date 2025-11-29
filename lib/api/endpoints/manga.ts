@@ -80,11 +80,15 @@ export const mangaApi = {
    * Search mangas by name
    * GET /mangas/search
    */
-  search: async (params: MangaSearchParams): Promise<MangaListItem[]> => {
+  search: async (
+    params: MangaSearchParams
+  ): Promise<PaginatedResponse<MangaListItem>> => {
     const query = buildQueryString(
       params as unknown as Record<string, unknown>
     );
-    return apiClient.get<MangaListItem[]>(`/mangas/search${query}`);
+    return apiClient.get<PaginatedResponse<MangaListItem>>(
+      `/mangas/search${query}`
+    );
   },
 
   /**

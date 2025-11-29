@@ -10,7 +10,8 @@ import { UserMenu } from "./user-menu";
 import { MobileNav } from "./mobile-nav";
 import { GenresDropdown } from "./genres-dropdown";
 import { ResponsiveSearch } from "./responsive-search";
-import { BookOpen, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
+import Image from "next/image";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -31,7 +32,13 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <MobileNav />
             <Link href="/" className="flex items-center space-x-2">
-              <BookOpen className="h-6 w-6" />
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={32}
+                height={32}
+                className="rounded-md"
+              />
               <span className="hidden font-bold sm:inline-block">
                 Manga Reader
               </span>

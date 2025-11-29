@@ -328,7 +328,7 @@ function MangaDetail({
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <Image
-                  src="/rat-read.gif"
+                  src="/chibi.svg"
                   alt="Reading"
                   width={30}
                   height={30}
@@ -369,7 +369,7 @@ function MangaDetail({
                   <Link
                     key={chapter.id}
                     href={`/manga/${manga.slug}/${chapter.slug}`}
-                    className="group flex items-center justify-between py-2.5 border-b border-border/40 hover:bg-secondary/20 hover:pl-2 transition-all duration-200 rounded-sm"
+                    className="flex justify-between py-2.5 border-b border-border/40 hover:bg-secondary/20 hover:pl-2 transition-all duration-200 rounded-sm"
                   >
                     <div className="min-w-0 pr-2">
                       <div className="text-sm font-medium text-foreground/90 group-hover:text-primary truncate">

@@ -67,7 +67,7 @@ export function PopularGenresSection() {
           >
             <Card
               className={cn(
-                "relative h-32 overflow-visible transition-all duration-300 hover:-translate-y-1 border-2",
+                "relative h-32 overflow-visible transition-all duration-300 hover:-translate-y-1",
                 genre.bgClass,
                 genre.borderClass,
                 genre.glowClass
@@ -101,7 +101,7 @@ export function PopularGenresSection() {
                   src={genre.image}
                   alt={t(genre.key)}
                   fill
-                  className="object-contain object-bottom drop-shadow-xl transition-transform duration-300 group-hover:scale-110 z-50"
+                  className="object-contain object-bottom drop-shadow-xl transition-transform duration-300 group-hover:scale-110 z-10"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </div>
