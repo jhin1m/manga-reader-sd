@@ -93,7 +93,7 @@ export function MangaCarouselCard({
               <div className="flex flex-shrink-0 items-center gap-0.5 bg-yellow-500 rounded-full px-1.5 py-0.5">
                 <Star className="h-2.5 w-2.5 fill-white text-white" />
                 <span className="font-semibold text-white text-xs">
-                  {manga.average_rating.toFixed(1)}
+                  {Number(manga.average_rating).toFixed(1)}
                 </span>
               </div>
             )}

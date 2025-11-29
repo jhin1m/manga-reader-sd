@@ -96,7 +96,7 @@ export function MangaCard({
           {manga.average_rating > 0 && (
             <div className="flex flex-shrink-0 items-center gap-0.5">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span>{manga.average_rating.toFixed(1)}</span>
+              <span>{Number(manga.average_rating).toFixed(1)}</span>
             </div>
           )}
         </div>

@@ -215,7 +215,7 @@ function MangaDetail({
                   <div className="flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
                     <span className="font-bold text-foreground">
-                      {manga.average_rating.toFixed(1)}
+                      {Number(manga.average_rating).toFixed(1)}
                     </span>
                   </div>
                 )}
