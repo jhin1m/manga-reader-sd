@@ -76,11 +76,9 @@ export function generateOrganizationSchema() {
     name: siteConfig.name,
     url: siteConfig.url,
     logo: buildImageUrl(siteConfig.ogImage),
-    sameAs: [
-      siteConfig.links.twitter,
-      siteConfig.links.facebook,
-      siteConfig.links.github,
-    ].filter(Boolean), // Remove empty values
+    sameAs: [siteConfig.links.twitter, siteConfig.links.telegram].filter(
+      Boolean
+    ), // Remove empty values
   };
 }
 
