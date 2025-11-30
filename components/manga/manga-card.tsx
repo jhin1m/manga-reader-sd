@@ -8,7 +8,6 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
 
 import type { MangaListItem } from "@/types/manga";
 import { Badge } from "@/components/ui/badge";
@@ -48,13 +47,10 @@ export function MangaCard({
         )}
       >
         {/* Cover Image */}
-        <Image
+        <img
           src={manga.cover_full_url}
           alt={manga.name}
-          fill
-          priority={priority}
-          className="object-cover"
-          sizes="(max-width: 768px) 50vw, 25vw"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         {/* Hot Badge */}
@@ -65,12 +61,6 @@ export function MangaCard({
             </Badge>
           </div>
         ) : null}
-
-        {/* Views Counter */}
-        <div className="absolute bottom-2 left-2 z-10 flex items-center gap-0.5 rounded-sm bg-black/60 px-1.5 py-0.5 text-xs text-white">
-          <Eye className="h-3 w-3" />
-          <span>{formatNumber(manga.views)}</span>
-        </div>
       </div>
 
       {/* Nội dung văn bản (Giữ nguyên) */}
@@ -87,16 +77,6 @@ export function MangaCard({
             <p className="truncate" title={manga.latest_chapter.name}>
               {manga.latest_chapter.name}
             </p>
-          ) : (
-            <span />
-          )}
-
-          {/* Rating */}
-          {Boolean(manga.average_rating) && manga.average_rating > 0 ? (
-            <div className="flex flex-shrink-0 items-center gap-0.5">
-              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span>{Number(manga.average_rating).toFixed(1)}</span>
-            </div>
           ) : (
             <span />
           )}

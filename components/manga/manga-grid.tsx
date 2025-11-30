@@ -45,7 +45,7 @@ export function MangaGrid({
     default: 3,
     sm: 3,
     md: 4,
-    lg: 6,
+    lg: 5,
   },
 }: MangaGridProps) {
   const t = useTranslations("homepage.emptyStates");

@@ -8,7 +8,6 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
 
 import type { MangaListItem } from "@/types/manga";
 import { Eye, Star } from "lucide-react";
@@ -43,29 +42,19 @@ export function MangaCarouselCard({
       <div
         className={cn(
           "relative aspect-[3/4] overflow-hidden rounded-lg",
-          "border border-chart-2",
           "transition-shadow duration-200",
           "hover:shadow-lg hover:border-primary"
         )}
       >
         {/* Cover Image */}
-        <Image
+        <img
           src={manga.cover_full_url}
           alt={manga.name}
-          fill
-          priority={priority}
-          className="object-cover"
-          sizes="(max-width: 768px) 50vw, 25vw"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         {/* Gradient Overlay at Bottom */}
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/60 to-transparent" />
-
-        {/* Views Counter */}
-        <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-xs text-white">
-          <Eye className="h-3 w-3" />
-          <span>{formatNumber(manga.views)}</span>
-        </div>
 
         {/* Text Content - Inside Image with Gradient Overlay */}
         <div className="absolute inset-x-0 bottom-0 z-10 p-3 space-y-1">
@@ -86,18 +75,6 @@ export function MangaCarouselCard({
               </p>
             ) : (
               <span className="text-gray-400 text-xs">{t("noChapter")}</span>
-            )}
-
-            {/* Rating */}
-            {manga.average_rating > 0 ? (
-              <div className="flex flex-shrink-0 items-center gap-0.5 bg-yellow-500 rounded-full px-1.5 py-0.5">
-                <Star className="h-2.5 w-2.5 fill-white text-white" />
-                <span className="font-semibold text-white text-xs">
-                  {Number(manga.average_rating).toFixed(1)}
-                </span>
-              </div>
-            ) : (
-              <span />
             )}
           </div>
         </div>

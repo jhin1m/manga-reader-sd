@@ -10,7 +10,6 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
 import { Star } from "lucide-react";
 
 import type { MangaListItem } from "@/types/manga";
@@ -145,12 +144,10 @@ function RankedMangaCard({ manga, rank }: RankedMangaCardProps) {
 
       {/* Thumbnail */}
       <div className="relative h-16 w-12 flex-shrink-0 rounded overflow-hidden bg-muted">
-        <Image
+        <img
           src={manga.cover_full_url}
           alt={manga.name}
-          fill
-          sizes="48px"
-          className="object-cover group-hover:scale-105 transition-transform"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform"
         />
       </div>
 

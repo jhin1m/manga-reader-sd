@@ -27,7 +27,7 @@ export interface RecentlyUpdatedSectionProps {
  * @param className - Optional additional CSS classes
  */
 export function RecentlyUpdatedSection({
-  perPage = 24,
+  perPage = 30,
   className,
 }: RecentlyUpdatedSectionProps) {
   const t = useTranslations("homepage.sections");

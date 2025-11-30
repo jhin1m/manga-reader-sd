@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import Image from "next/image";
 import {
   ChevronRight,
   Star,
@@ -157,13 +156,10 @@ function MangaDetail({
             {/* Left: Cover Image (Fixed widths) */}
             <div className="shrink-0 w-[110px] sm:w-[150px] md:w-[220px]">
               <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden shadow-md">
-                <Image
+                <img
                   src={manga.cover_full_url}
                   alt={manga.name}
-                  fill
-                  sizes="(max-width: 640px) 110px, (max-width: 768px) 150px, 220px"
-                  className="object-cover"
-                  priority
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 {manga.is_hot && (
                   <Badge
@@ -327,13 +323,12 @@ function MangaDetail({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold flex items-center gap-2">
-                <Image
+                <img
                   src="/chibi.svg"
                   alt="Reading"
                   width={30}
                   height={30}
                   className="inline-block"
-                  unoptimized
                 />
                 {tChapter("chapterList")}
                 <span className="text-xs font-normal text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
