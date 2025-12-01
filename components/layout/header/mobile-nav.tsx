@@ -81,11 +81,6 @@ export function MobileNav() {
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90" />
-          <div className="absolute bottom-4 left-6">
-            <h2 className="text-xl font-bold text-white drop-shadow-md">
-              Manga Reader
-            </h2>
-          </div>
         </div>
 
         <div className="flex flex-col space-y-4 p-6">
