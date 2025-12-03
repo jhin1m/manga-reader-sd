@@ -10,13 +10,11 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 import type { MangaListItem } from "@/types/manga";
-import { Eye, Star } from "lucide-react";
-import { formatNumber, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export interface MangaCarouselCardProps {
   manga: MangaListItem;
   className?: string;
-  priority?: boolean;
 }
 
 /**
@@ -25,12 +23,10 @@ export interface MangaCarouselCardProps {
  *
  * @param manga - Manga data to display
  * @param className - Optional additional CSS classes
- * @param priority - Whether to prioritize loading this image (for above-the-fold content)
  */
 export function MangaCarouselCard({
   manga,
   className,
-  priority = false,
 }: MangaCarouselCardProps) {
   const t = useTranslations("homepage.mangaCard");
 

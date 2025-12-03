@@ -11,13 +11,11 @@ import Link from "next/link";
 
 import type { MangaListItem } from "@/types/manga";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Star } from "lucide-react";
-import { formatNumber, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export interface MangaCardProps {
   manga: MangaListItem;
   className?: string;
-  priority?: boolean;
 }
 
 /**
@@ -26,13 +24,8 @@ export interface MangaCardProps {
  *
  * @param manga - Manga data to display
  * @param className - Optional additional CSS classes
- * @param priority - Whether to prioritize loading this image (for above-the-fold content)
  */
-export function MangaCard({
-  manga,
-  className,
-  priority = false,
-}: MangaCardProps) {
+export function MangaCard({ manga, className }: MangaCardProps) {
   const t = useTranslations("homepage.mangaCard");
 
   return (

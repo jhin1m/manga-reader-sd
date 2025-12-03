@@ -30,10 +30,41 @@ GET http://localhost:8000/sanctum/csrf-cookie
 {
   "success": true,
   "message": "Success message",
-  "data": {...},
+  "data": {...}
+}
+```
+
+**Note:** The API uses a smart response system that automatically handles pagination metadata and links when returning Resource Collections. The response structure adapts based on the data type:
+
+- **Single Resource**: `data` contains the resource object
+- **Resource Collection**: `data` contains an array of resources, with optional `meta` and `links` objects for pagination
+- **Raw Data**: `data` contains the raw response data
+
+### Success Response with Pagination
+
+```json
+{
+  "success": true,
+  "message": "Resources retrieved successfully",
+  "data": [
+    {...},
+    {...}
+  ],
   "meta": {
-    "pagination": {...},
-    "timestamp": "2024-01-01T00:00:00.000000Z"
+    "pagination": {
+      "current_page": 1,
+      "last_page": 10,
+      "per_page": 20,
+      "total": 200,
+      "from": 1,
+      "to": 20
+    }
+  },
+  "links": {
+    "first": "http://localhost:8000/api/v1/mangas?page=1",
+    "last": "http://localhost:8000/api/v1/mangas?page=10",
+    "prev": null,
+    "next": "http://localhost:8000/api/v1/mangas?page=2"
   }
 }
 ```
@@ -353,6 +384,345 @@ Logout and revoke current access token.
   "data": null
 }
 ```
+
+---
+
+## User Action Endpoints
+
+**Note:** These endpoints are part of the web application routes (`/action/*`), not the API routes (`/api/v1/*`). They support both traditional web forms and AJAX requests.
+
+### POST /action/views
+
+Track chapter views and award experience points (User Level System Phase 02).
+
+**Endpoint:** `POST /action/views` (Web route, not API v1)
+**Authentication:** Optional (Guest views tracked without user data)
+**Rate Limiting:** Standard limits apply
+**Request Headers:**
+
+```
+Content-Type: application/x-www-form-urlencoded
+X-CSRF-TOKEN: [required for web form submissions]
+```
+
+**Request Body (form-data):**
+
+```
+chapter_id: 12345 (required) - UUID of the chapter being viewed
+```
+
+**Success Response (200) - Guest User:**
+
+```json
+{
+  "success": true,
+  "message": "View recorded successfully",
+  "data": {
+    "s": 1
+  }
+}
+```
+
+**Success Response (200) - Authenticated User (No EXP Awarded):**
+
+```json
+{
+  "success": true,
+  "message": "View recorded successfully",
+  "data": {
+    "s": 2,
+    "p": 1,
+    "a": 1
+  }
+}
+```
+
+**Success Response (200) - Authenticated User (EXP Awarded):**
+
+```json
+{
+  "success": true,
+  "message": "View recorded successfully",
+  "data": {
+    "s": 2,
+    "p": 1,
+    "a": 1,
+    "exp_awarded": 10,
+    "current_level": 2
+  }
+}
+```
+
+**Response Field Descriptions:**
+
+- `s`: Status indicator (1 = basic success, 2 = success with points/exp awarded)
+- `p`: Pet points awarded (from existing points system)
+- `a`: Achievement points awarded (from existing points system)
+- `exp_awarded`: Experience points awarded (new in Phase 02)
+- `current_level`: User's current level after exp award (new in Phase 02)
+
+**User Level System Details:**
+
+- **Experience Award**: 10 EXP per eligible view (configurable via `LEVEL_EXP_PER_INTERVAL`)
+- **Cooldown Period**: 10 minutes between EXP awards (configurable via `LEVEL_INTERVAL_MINUTES`)
+- **Level Formula**: `level = floor(sqrt(exp / LEVEL_EXP_DIVISOR))`
+- **Race Condition Protection**: Atomic database operations prevent concurrent exploitation
+- **Backward Compatibility**: Existing points system (`p`, `a`) remains unchanged
+
+**Error Responses:**
+
+**404 Not Found - Chapter Not Found:**
+
+```json
+{
+  "success": false,
+  "message": "Chapter not found"
+}
+```
+
+**422 Validation Error - Invalid Chapter ID:**
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "chapter_id": [
+      "The chapter id field is required.",
+      "The chapter id must be a valid UUID."
+    ]
+  }
+}
+```
+
+**Technical Implementation Notes:**
+
+- View count updates for both chapter and manga are wrapped in database transactions
+- Experience point awarding uses atomic database operations to prevent race conditions
+- The endpoint processes requests in sub-millisecond time for optimal performance
+- Level calculations use O(1) complexity with square root progression formula
+- All operations maintain backward compatibility with existing functionality
+
+**Integration Examples:**
+
+**JavaScript/Frontend Integration:**
+
+```javascript
+// Track chapter view with experience point tracking
+async function trackChapterView(chapterId) {
+  try {
+    const formData = new FormData();
+    formData.append("chapter_id", chapterId);
+
+    const response = await fetch("/action/views", {
+      method: "POST",
+      headers: {
+        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]')
+          .content,
+      },
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (result.data.exp_awarded) {
+      console.log(`Experience awarded: ${result.data.exp_awarded} EXP`);
+      console.log(`Current level: ${result.data.current_level}`);
+      // Update UI to show level progression
+      updateUserLevelDisplay(
+        result.data.current_level,
+        result.data.exp_awarded
+      );
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Failed to track view:", error);
+  }
+}
+```
+
+**Laravel/Backend Integration:**
+
+```php
+// Direct service call for custom implementations
+use App\Services\ActionService;
+
+class CustomReadingController extends Controller
+{
+    protected $actionService;
+
+    public function __construct(ActionService $actionService)
+    {
+        $this->actionService = $actionService;
+    }
+
+    public function trackCustomReading(Request $request)
+    {
+        $result = $this->actionService->updateViews($request->chapter_id);
+
+        // Handle response including exp tracking data
+        if ($result->getData(true)['data']['exp_awarded'] ?? false) {
+            // Custom handling for experience awards
+        }
+
+        return $result;
+    }
+}
+```
+
+### POST /action/unfollow
+
+Unfollow a manga (Authentication Required).
+
+**Request Body (form-data):**
+
+```
+manga_id: 12345 (required) - UUID of manga to unfollow
+```
+
+**Success Response (200):**
+Redirects back to previous page with success message.
+
+### POST /action/delete-history
+
+Remove manga from reading history (Authentication Required).
+
+**Request Body (form-data):**
+
+```
+manga_id: 12345 (required) - UUID of manga to remove from history
+```
+
+**Success Response (200):**
+Redirects back to previous page with success message.
+
+### GET /action/doujinshis
+
+Get list of doujinshis (Authentication Required).
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid-string",
+      "name": "Doujinshi Title",
+      "slug": "doujinshi-slug"
+    }
+  ]
+}
+```
+
+### POST /action/doujinshis
+
+Create new doujinshi (Authentication Required).
+
+**Request Body (form-data):**
+
+```
+name: "Doujinshi Title" (required)
+slug: "doujinshi-slug" (optional, auto-generated if not provided)
+```
+
+### GET /action/artists
+
+Get list of artists (Authentication Required).
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid-string",
+      "name": "Artist Name",
+      "slug": "artist-slug"
+    }
+  ]
+}
+```
+
+### POST /action/artists
+
+Create new artist (Authentication Required).
+
+**Request Body (form-data):**
+
+```
+name: "Artist Name" (required)
+slug: "artist-slug" (optional, auto-generated if not provided)
+```
+
+### GET /action/groups
+
+Get list of groups (Authentication Required).
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid-string",
+      "name": "Group Name",
+      "slug": "group-slug"
+    }
+  ]
+}
+```
+
+### POST /action/groups
+
+Create new group (Authentication Required).
+
+**Request Body (form-data):**
+
+```
+name: "Group Name" (required)
+slug: "group-slug" (optional, auto-generated if not provided)
+```
+
+### POST /action/ads
+
+Track advertisement clicks and award bonus points (Authentication Required).
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "s": 2,
+    "p": 5,
+    "a": 3
+  }
+}
+```
+
+### POST /action/upload
+
+Upload temporary images (Authentication Required).
+
+**Request Body (multipart/form-data):**
+
+```
+images: [file] (required) - Image file to upload
+```
+
+**Success Response (200):**
+Returns the filename for the uploaded image.
+
+### DELETE /action/upload/{file}
+
+Delete temporary uploaded images (Authentication Required).
+
+**Success Response (204):**
+No content, successful deletion.
 
 ---
 
@@ -2893,13 +3263,17 @@ Complete resource structures used throughout the API.
   "limit_achievement_points": 1000,
   "created_at": "2024-01-15T10:30:00.000000Z",
   "updated_at": "2024-03-20T14:25:00.000000Z",
+
+  // Single active relationships (conditional inclusion)
   "pet": {
     "id": 5,
     "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
     "name": "Rồng Vàng",
     "description": "Pet huyền thoại với sức mạnh khổng lồ",
     "image": "/storage/images/pets/golden-dragon.png",
-    "points": 500
+    "points": 500,
+    "created_at": "2023-06-15T00:00:00.000000Z",
+    "updated_at": "2023-06-15T00:00:00.000000Z"
   },
   "achievement": {
     "id": 8,
@@ -2907,8 +3281,76 @@ Complete resource structures used throughout the API.
     "name": "Veteran Reader",
     "description": "Đọc hơn 1000 chương",
     "icon": "🏆",
-    "points": 200
-  }
+    "points": 200,
+    "created_at": "2023-01-01T00:00:00.000000Z",
+    "updated_at": "2023-01-01T00:00:00.000000Z"
+  },
+
+  // Collection relationships (conditional inclusion)
+  "pets": [
+    {
+      "id": 1,
+      "uuid": "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
+      "name": "Mèo Xanh",
+      "description": "Pet dễ thương cho người mới",
+      "image": "/storage/images/pets/blue-cat.png",
+      "points": 100,
+      "created_at": "2023-01-01T00:00:00.000000Z",
+      "updated_at": "2023-01-01T00:00:00.000000Z"
+    },
+    {
+      "id": 3,
+      "uuid": "3d4e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a",
+      "name": "Chó Vàng",
+      "description": "Pet trung thành",
+      "image": "/storage/images/pets/golden-dog.png",
+      "points": 250,
+      "created_at": "2023-02-01T00:00:00.000000Z",
+      "updated_at": "2023-02-01T00:00:00.000000Z"
+    },
+    {
+      "id": 5,
+      "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
+      "name": "Rồng Vàng",
+      "description": "Pet huyền thoại với sức mạnh khổng lồ",
+      "image": "/storage/images/pets/golden-dragon.png",
+      "points": 500,
+      "created_at": "2023-06-15T00:00:00.000000Z",
+      "updated_at": "2023-06-15T00:00:00.000000Z"
+    }
+  ],
+  "achievements": [
+    {
+      "id": 1,
+      "uuid": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+      "name": "Beginner",
+      "description": "Đọc chapter đầu tiên",
+      "icon": "🌟",
+      "points": 10,
+      "created_at": "2023-01-01T00:00:00.000000Z",
+      "updated_at": "2023-01-01T00:00:00.000000Z"
+    },
+    {
+      "id": 5,
+      "uuid": "5b6c7d8e-9f0a-1b2c-3d4e-5f6a7b8c9d0e",
+      "name": "Active Reader",
+      "description": "Đọc 100 chương",
+      "icon": "📚",
+      "points": 50,
+      "created_at": "2023-02-01T00:00:00.000000Z",
+      "updated_at": "2023-02-01T00:00:00.000000Z"
+    },
+    {
+      "id": 8,
+      "uuid": "7f8a9b0c-1d2e-3f4a-5b6c-7d8e9f0a1b2c",
+      "name": "Veteran Reader",
+      "description": "Đọc hơn 1000 chương",
+      "icon": "🏆",
+      "points": 200,
+      "created_at": "2023-01-01T00:00:00.000000Z",
+      "updated_at": "2023-01-01T00:00:00.000000Z"
+    }
+  ]
 }
 ```
 
@@ -2917,7 +3359,14 @@ Complete resource structures used throughout the API.
 - `id`: Unique numeric identifier
 - `uuid`: Universal unique identifier (string)
 - `available_points`: Computed field (total_points - used_points)
-- `pet`, `achievement`: Only included when relationships are loaded
+- `limit_pet_points`, `limit_achievement_points`: Maximum points that can be earned for pets/achievements
+
+**Conditional Fields:**
+
+- `pet`: Current active pet (only when `pet` relationship is loaded)
+- `achievement`: Current achievement (only when `achievement` relationship is loaded)
+- `pets`: All owned pets (only when `pets` relationship is loaded)
+- `achievements`: All unlocked achievements (only when `achievements` relationship is loaded)
 
 ---
 
@@ -2940,17 +3389,21 @@ Complete resource structures used throughout the API.
   "is_hot": true,
   "is_reviewed": 1,
   "cover_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/covers/manga-42.jpg",
+  "finished_by": 1250,
+  "hot_at": "2024-03-15T09:00:00.000000Z",
   "created_at": "2023-01-10T08:15:00.000000Z",
   "updated_at": "2024-03-28T16:30:00.000000Z",
-  "genres": [
-    {
-      "id": 7,
-      "uuid": "8f0e5f9c-2e3b-4d1a-9c7f-3e4b5c6d7e8f",
-      "name": "Action",
-      "slug": "action",
-      "color": "#FF5733"
-    }
-  ],
+
+  // Foreign keys (included in detailed responses)
+  "artist_id": 12,
+  "group_id": 5,
+  "doujinshi_id": null,
+
+  // Relationships (conditional inclusion)
+  "user": {
+    "id": 1,
+    "name": "Admin User"
+  },
   "artist": {
     "id": 12,
     "uuid": "9d1e2f3a-4b5c-6d7e-8f9a-0b1c2d3e4f5a",
@@ -2963,6 +3416,7 @@ Complete resource structures used throughout the API.
     "name": "Team Việt Hóa",
     "slug": "team-viet-hoa"
   },
+  "doujinshi": null,
   "latest_chapter": {
     "id": 1523,
     "uuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -2973,19 +3427,48 @@ Complete resource structures used throughout the API.
   },
   "first_chapter": {
     "id": 428,
+    "uuid": "4a5b6c7d-8e9f-0a1b-2c3d-4e5f6a7b8c9d",
     "name": "Chapter 1",
     "slug": "chapter-1",
     "order": 1
-  }
+  },
+  "chapters": [...],
+  "genres": [
+    {
+      "id": 7,
+      "uuid": "8f0e5f9c-2e3b-4d1a-9c7f-3e4b5c6d7e8f",
+      "name": "Action",
+      "slug": "action",
+      "color": "#FF5733"
+    }
+  ],
+  "ratings": [...],
+
+  // Computed attributes
+  "user_rating": {
+    "id": 456,
+    "rating": 5.0,
+    "user_id": 15,
+    "manga_id": 42
+  },
+  "trim_pilot": "Câu chuyện kể về Monkey D. Luffy, một cậu bé có ước mơ trở thành Vua Hải Tặc..."
 }
 ```
 
 **Fields:**
 
 - `status`: 1 = ongoing, 2 = completed
-- `pilot`: HTML content (description)
+- `pilot`: HTML content (full description)
 - `is_reviewed`: Only reviewed mangas (is_reviewed=1) appear in API
-- `genres`, `artist`, `group`, `latest_chapter`, `first_chapter`: Only included when relationships are loaded
+- `finished_by`: Number of users who marked this manga as finished
+- `hot_at`: Timestamp when manga became hot/trending
+- `trim_pilot`: Shortened description (30 characters by default)
+- `user_rating`: Only included for authenticated users, contains their rating for this manga
+
+**Conditional Fields:**
+
+- `user`, `artist`, `group`, `doujinshi`, `latest_chapter`, `first_chapter`, `chapters`, `genres`, `ratings`: Only included when relationships are loaded
+- `user_rating`: Only included for authenticated users (via auth('sanctum')->check())
 
 ---
 
@@ -3114,13 +3597,76 @@ Complete resource structures used throughout the API.
   "parent_id": null,
   "created_at": "2024-03-28T10:15:00.000000Z",
   "updated_at": "2024-03-28T10:15:00.000000Z",
+
+  // Relationships (conditional inclusion)
   "user": {
     "id": 15,
     "uuid": "550e8400-e29b-41d4-a716-446655440000",
     "name": "Nguyễn Văn A",
-    "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg"
+    "email": "user@example.com",
+    "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-15.jpg",
+    "total_points": 1500,
+    "used_points": 300,
+    "available_points": 1200,
+    "achievements_points": 250,
+    "limit_pet_points": 1000,
+    "limit_achievement_points": 1000,
+    "created_at": "2024-01-15T10:30:00.000000Z",
+    "updated_at": "2024-03-20T14:25:00.000000Z",
+    "pet": {
+      "id": 5,
+      "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
+      "name": "Rồng Vàng",
+      "description": "Pet huyền thoại",
+      "image": "/storage/images/pets/golden-dragon.png",
+      "points": 500
+    },
+    "achievement": {
+      "id": 8,
+      "uuid": "7f8a9b0c-1d2e-3f4a-5b6c-7d8e9f0a1b2c",
+      "name": "Veteran Reader",
+      "description": "Đọc hơn 1000 chương",
+      "icon": "🏆",
+      "points": 200
+    }
   },
-  "replies": [],
+  "parent": {
+    "id": 785,
+    "uuid": "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+    "content": "Parent comment content",
+    "user": {
+      "id": 12,
+      "name": "Another User"
+    }
+  },
+  "replies": [
+    {
+      "id": 792,
+      "uuid": "5d6e7f8a-9b0c-1d2e-3f4a-5b6c7d8e9f0a",
+      "content": "Mình cũng thấy vậy, plot twist cuối chương quá bất ngờ!",
+      "parent_id": 789,
+      "created_at": "2024-03-28T10:20:00.000000Z",
+      "user": {
+        "id": 22,
+        "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
+        "name": "Trần Thị B",
+        "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-22.jpg"
+      },
+      "replies_count": 0,
+      "can_edit": false,
+      "can_delete": false
+    }
+  ],
+
+  // Chapter info (when comment is on a chapter)
+  "chapter_info": {
+    "id": 1523,
+    "name": "Chapter 1095",
+    "number": null,
+    "slug": "chapter-1095"
+  },
+
+  // Computed attributes
   "replies_count": 5,
   "can_edit": true,
   "can_delete": true
@@ -3130,9 +3676,17 @@ Complete resource structures used throughout the API.
 **Fields:**
 
 - `parent_id`: null for top-level comments, numeric ID for replies
-- `can_edit`, `can_delete`: Only included for authenticated users
-- `replies`: Only included when relationship is loaded
+- `chapter_info`: Only included for comments on chapters, contains chapter details (id, name, number, slug)
 - `replies_count`: Count of nested replies
+- `can_edit`, `can_delete`: Permission fields (only included for authenticated users)
+
+**Conditional Fields:**
+
+- `user`: Always included with full UserResource when relationship is loaded
+- `parent`: Parent comment (only when `parent` relationship is loaded)
+- `replies`: Nested replies (only when `replies` relationship is loaded)
+- `chapter_info`: Only included when comment is on a chapter (`commentable_type` is Chapter)
+- `can_edit`, `can_delete`: Only included for authenticated users (via auth('sanctum')->check())
 
 ---
 

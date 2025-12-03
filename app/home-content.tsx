@@ -77,7 +77,7 @@ function MangaCarouselSection() {
       title={t("hotManga")}
       icon={
         <Image
-          src="/meow.gif"
+          src="/carousel-title.png"
           alt="Hot manga icon"
           width={36}
           height={36}

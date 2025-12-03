@@ -14,7 +14,6 @@ const GENRES = [
     bgImage: "/slide-0.png", // Background pattern for drama
     // Using primary color from theme
     bgClass: "bg-primary/60 hover:bg-primary/40",
-    borderClass: "border-primary hover:border-primary-foreground",
     textClass: "text-primary-foreground dark:text-white/60",
     glowClass: "shadow-lg hover:shadow-xl",
   },
@@ -25,7 +24,6 @@ const GENRES = [
     bgImage: "/slide-action.png", // Background pattern for action
     // Using accent color from theme
     bgClass: "bg-chart-2/30 hover:bg-chart-2/20",
-    borderClass: "border-chart-2 hover:border-foreground",
     textClass: "text-background dark:text-white/60",
     glowClass: "shadow-lg hover:shadow-xl",
   },
@@ -36,7 +34,6 @@ const GENRES = [
     bgImage: "/slide-2-2.png", // Background pattern for romance
     // Using chart-2 color from theme
     bgClass: "bg-chart-2/30 hover:bg-chart-2/20",
-    borderClass: "border-chart-2 hover:border-foreground",
     textClass: "text-chart-1/80 dark:text-white/60",
     glowClass: "shadow-lg hover:shadow-xl",
   },
@@ -47,7 +44,6 @@ const GENRES = [
     bgImage: "/slide-3-3.png", // Background pattern for fantasy
     // Using chart-5 color from theme
     bgClass: "bg-chart-5/30 hover:bg-chart-5/20",
-    borderClass: "border-chart-5 hover:border-foreground",
     textClass: "text-chart-1/80 dark:text-chart-5/60",
     glowClass: "shadow-lg hover:shadow-xl",
   },
@@ -69,7 +65,6 @@ export function PopularGenresSection() {
               className={cn(
                 "relative h-32 overflow-visible transition-all duration-300 hover:-translate-y-1",
                 genre.bgClass,
-                genre.borderClass,
                 genre.glowClass
               )}
               style={{
