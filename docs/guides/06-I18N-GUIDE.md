@@ -492,6 +492,80 @@ export function Component() {
 }
 ```
 
+### Password Change Translations
+
+**When implementing password change functionality, use these translation keys:**
+
+```json
+// messages/vi.json - Add to auth namespace
+{
+  "auth": {
+    "changePassword": {
+      "title": "Đổi mật khẩu",
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "submit": "Đổi mật khẩu",
+      "success": "Đổi mật khẩu thành công",
+      "error": "Đổi mật khẩu thất bại",
+      "invalidCurrent": "Mật khẩu hiện tại không chính xác",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp",
+      "minLength": "Mật khẩu phải có ít nhất 6 ký tự"
+    }
+  }
+}
+```
+
+**Usage in password change component:**
+
+```tsx
+// ✅ CORRECT - Password change with i18n
+"use client";
+import { useTranslations } from "next-intl";
+
+export function ChangePasswordForm() {
+  const t = useTranslations("auth.changePassword");
+
+  return (
+    <div>
+      <h1>{t("title")}</h1>
+
+      <input
+        type="password"
+        placeholder={t("currentPassword")}
+        name="current_password"
+        required
+      />
+
+      <input
+        type="password"
+        placeholder={t("newPassword")}
+        name="password"
+        required
+        minLength={6}
+      />
+
+      <input
+        type="password"
+        placeholder={t("confirmPassword")}
+        name="password_confirmation"
+        required
+      />
+
+      <button type="submit">{t("submit")}</button>
+    </div>
+  );
+}
+```
+
+**Important notes for password change:**
+
+- Always include `currentPassword` field for UX security
+- Use descriptive error messages via translations
+- Show success feedback after password change
+- Update auth state after successful change
+- Consider logging user out and requiring re-login for security
+
 ### ✅ CORRECT - Using Translations
 
 ```tsx

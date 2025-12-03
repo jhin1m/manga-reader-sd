@@ -411,6 +411,30 @@ Before ANY commit, verify:
 
 ---
 
+### "I need to add a password change form"
+
+**Read:**
+
+- [Forms & Validation](./guides/05-FORMS-VALIDATION.md) - Form pattern
+- [API Integration](./guides/04-API-INTEGRATION.md) - Password change mutation
+- [i18n Guide](./guides/06-I18N-GUIDE.md) - Password change translations
+- [API Documentation](./API_DOCUMENTATION.md) - Password change endpoint
+
+**Reference:**
+
+- `types/user.ts` - `ChangePasswordData` interface
+- `lib/api/endpoints/auth.ts` - `updateProfile` method
+- `messages/vi.json` - Add `auth.changePassword` translations
+
+**Key requirements:**
+
+- Use `ChangePasswordData` type (requires `current_password` for security)
+- All labels/messages must use i18n (`useTranslations("auth.changePassword")`)
+- Handle success/error states properly
+- Update auth store after successful change
+
+---
+
 ### "I need to create a manga detail page"
 
 **Read:**
@@ -473,20 +497,21 @@ pnpm dlx shadcn@latest add [component-name]
 
 ## 🔄 Quick Links
 
-| I need to...             | Read this                                                      |
-| ------------------------ | -------------------------------------------------------------- |
-| Set up the project       | [Getting Started](./guides/00-GETTING-STARTED.md)              |
-| Understand the structure | [Project Architecture](./guides/01-PROJECT-ARCHITECTURE.md)    |
-| Create a component       | [Component Patterns](./guides/02-COMPONENT-PATTERNS.md)        |
-| Create a form            | [Forms & Validation](./guides/05-FORMS-VALIDATION.md)          |
-| Add translations         | [i18n Guide](./guides/06-I18N-GUIDE.md)                        |
-| Work with APIs           | [API Integration](./guides/04-API-INTEGRATION.md)              |
-| Add SEO metadata         | [SEO & Metadata](./guides/07-SEO-METADATA.md)                  |
-| Use UI components        | [UI Components](./guides/08-UI-COMPONENTS.md)                  |
-| Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md) |
-| Check before commit      | [Checklist](./references/CHECKLIST.md)                         |
-| See good examples        | [Examples](./references/EXAMPLES.md)                           |
-| Avoid mistakes           | [Anti-Patterns](./references/ANTI-PATTERNS.md)                 |
+| I need to...             | Read this                                                                 |
+| ------------------------ | ------------------------------------------------------------------------- |
+| Set up the project       | [Getting Started](./guides/00-GETTING-STARTED.md)                         |
+| Understand the structure | [Project Architecture](./guides/01-PROJECT-ARCHITECTURE.md)               |
+| Create a component       | [Component Patterns](./guides/02-COMPONENT-PATTERNS.md)                   |
+| Create a form            | [Forms & Validation](./guides/05-FORMS-VALIDATION.md)                     |
+| Add translations         | [i18n Guide](./guides/06-I18N-GUIDE.md)                                   |
+| Work with APIs           | [API Integration](./guides/04-API-INTEGRATION.md)                         |
+| Add SEO metadata         | [SEO & Metadata](./guides/07-SEO-METADATA.md)                             |
+| Use UI components        | [UI Components](./guides/08-UI-COMPONENTS.md)                             |
+| Add password change      | [API Integration](./guides/04-API-INTEGRATION.md#password-change-pattern) |
+| Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)            |
+| Check before commit      | [Checklist](./references/CHECKLIST.md)                                    |
+| See good examples        | [Examples](./references/EXAMPLES.md)                                      |
+| Avoid mistakes           | [Anti-Patterns](./references/ANTI-PATTERNS.md)                            |
 
 ---
 

@@ -58,6 +58,17 @@ export const authApi = {
   /**
    * Update authenticated user profile
    * PUT /auth/profile
+   *
+   * Supports updating:
+   * - name: Display name (optional)
+   * - email: Email address (optional, must be unique)
+   * - password: New password (optional, requires confirmation)
+   * - avatar: Profile image file (optional, max 2MB)
+   *
+   * Content-Type: multipart/form-data (if avatar), else application/json
+   *
+   * Returns updated User object
+   * Auth store should be synced after successful update
    */
   updateProfile: async (data: UpdateProfileData): Promise<User> => {
     // Check if avatar file is included

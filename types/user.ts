@@ -108,6 +108,16 @@ export interface UpdateProfileData {
 }
 
 /**
+ * Change password data (client-side form)
+ * Note: Backend uses same endpoint as profile update
+ */
+export interface ChangePasswordData {
+  current_password: string; // UX security: verify before change
+  password: string; // New password (min 6 chars)
+  password_confirmation: string; // Must match password
+}
+
+/**
  * User achievements response
  */
 export interface UserAchievements {

@@ -329,6 +329,23 @@ password_confirmation=newpassword123
 avatar=<file>
 ```
 
+**Request Body (Password Change - JSON):**
+
+```json
+{
+  "current_password": "oldpassword123",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123"
+}
+```
+
+**Password Change Requirements:**
+
+- `current_password`: Required for password changes (UX security)
+- `password`: New password (minimum 6 characters)
+- `password_confirmation`: Must match new password
+- Endpoint automatically detects password change requests by presence of `current_password` field
+
 **Success Response (200):**
 
 ```json

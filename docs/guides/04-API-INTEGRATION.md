@@ -260,6 +260,7 @@ import type {
   User,
   LoginCredentials,
   RegisterData,
+  UpdateProfileData,
   AuthResponse,
 } from "@/types/user";
 
@@ -307,6 +308,39 @@ export const authApi = {
   },
 
   /**
+   * Update authenticated user profile
+   * PUT /auth/profile
+   *
+   * Supports updating:
+   * - name: Display name (optional)
+   * - email: Email address (optional, must be unique)
+   * - password: New password (optional, requires confirmation)
+   * - avatar: Profile image file (optional, max 2MB)
+   *
+   * Content-Type: multipart/form-data (if avatar), else application/json
+   *
+   * Returns updated User object
+   * Auth store should be synced after successful update
+   */
+  updateProfile: async (data: UpdateProfileData): Promise<User> => {
+    // Check if avatar file is included
+    if (data.avatar) {
+      const formData = new FormData();
+      if (data.name) formData.append("name", data.name);
+      if (data.email) formData.append("email", data.email);
+      if (data.password) formData.append("password", data.password);
+      if (data.password_confirmation)
+        formData.append("password_confirmation", data.password_confirmation);
+      formData.append("avatar", data.avatar);
+
+      return apiClient.putFormData<User>("/auth/profile", formData);
+    }
+
+    // No file upload, use JSON
+    return apiClient.put<User>("/auth/profile", data);
+  },
+
+  /**
    * Logout
    * POST /auth/logout
    */
@@ -314,6 +348,77 @@ export const authApi = {
     return apiClient.post("/auth/logout");
   },
 };
+```
+
+### Password Change Pattern
+
+**Change Password Component:**
+
+```tsx
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { authApi } from "@/lib/api/endpoints/auth";
+import { useAuthStore } from "@/lib/store/authStore";
+import { toast } from "sonner";
+import type { ChangePasswordData } from "@/types/user";
+
+export function ChangePasswordForm() {
+  const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
+
+  const mutation = useMutation({
+    mutationFn: (data: ChangePasswordData) => authApi.updateProfile(data),
+
+    onSuccess: (updatedUser) => {
+      setUser(updatedUser);
+      toast.success("Password changed successfully");
+      queryClient.invalidateQueries({ queryKey: ["user", "profile"] });
+    },
+
+    onError: (error) => {
+      toast.error("Failed to change password", {
+        description:
+          error.response?.data?.message || "Invalid current password",
+      });
+    },
+  });
+
+  const handleSubmit = (data: ChangePasswordData) => {
+    mutation.mutate(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* Current password field */}
+      <input
+        type="password"
+        name="current_password"
+        placeholder="Current password"
+        required
+      />
+
+      {/* New password field */}
+      <input
+        type="password"
+        name="password"
+        placeholder="New password"
+        required
+        minLength={6}
+      />
+
+      {/* Confirm password field */}
+      <input
+        type="password"
+        name="password_confirmation"
+        placeholder="Confirm new password"
+        required
+      />
+
+      <button type="submit" disabled={mutation.isPending}>
+        {mutation.isPending ? "Changing..." : "Change Password"}
+      </button>
+    </form>
+  );
+}
 ```
 
 ---
