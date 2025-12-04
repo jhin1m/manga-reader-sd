@@ -26,7 +26,7 @@ export function EditProfileForm({
   onSuccess,
   onCancel,
 }: EditProfileFormProps) {
-  const t = useTranslations("profile.editForm");
+  const t = useTranslations("user.profile.editForm");
   const tCommon = useTranslations("common");
 
   const { updateProfile, isLoading } = useUpdateProfile();

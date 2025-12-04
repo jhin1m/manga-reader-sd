@@ -23,7 +23,7 @@ export function ChangePasswordForm({
   onSuccess,
   onCancel,
 }: ChangePasswordFormProps) {
-  const t = useTranslations("profile.passwordForm");
+  const t = useTranslations("user.profile.passwordForm");
   const tCommon = useTranslations("common");
 
   const { updatePassword, isLoading } = useUpdatePassword();

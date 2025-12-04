@@ -22,7 +22,7 @@ export function AvatarUpload({
   isLoading,
   error,
 }: AvatarUploadProps) {
-  const t = useTranslations("profile.editForm");
+  const t = useTranslations("user.profile.editForm");
   const tCommon = useTranslations("common");
 
   const [preview, setPreview] = useState<string | null>(null);

@@ -9,7 +9,7 @@ interface ProfileStatsProps {
 }
 
 export function ProfileStats({ user }: ProfileStatsProps) {
-  const t = useTranslations("profile.fields");
+  const t = useTranslations("user.profile.fields");
 
   const stats = [
     { label: t("totalPoints"), value: user.total_points },
