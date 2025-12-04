@@ -27,14 +27,13 @@ const passwordValidation = z
  * Update Profile Schema
  * Validates name, email, and avatar changes (password has separate schema)
  */
-export const updateProfileSchema: z.ZodType<Partial<UpdateProfileData>> =
-  z.object({
-    name: nameValidation.optional().transform((val) => val || undefined),
-    email: emailValidation.optional().transform((val) => val || undefined),
-    avatar: z
-      .instanceof(File, { message: "user.profile.avatarRequired" })
-      .optional(),
-  });
+export const updateProfileSchema = z.object({
+  name: nameValidation,
+  email: emailValidation,
+  avatar: z
+    .instanceof(File, { message: "user.profile.avatarRequired" })
+    .optional(),
+});
 
 /**
  * Change Password Schema
