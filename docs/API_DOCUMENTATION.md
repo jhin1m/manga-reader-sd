@@ -106,6 +106,10 @@ Configured for Next.js domains:
 - `PUT /auth/profile` - Update profile (name, email, password, avatar)
 - `POST /auth/logout` - Revoke current access token
 
+**Frontend Profile Route:**
+
+- `GET /profile` - Profile display page (Frontend route, not API)
+
 **User Settings Management:**
 The `PUT /auth/profile` endpoint provides comprehensive user settings management including:
 

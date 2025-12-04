@@ -209,6 +209,23 @@
     "favoriteGenres": "Thể loại yêu thích",
     "readingStreak": "Chuỗi đọc liên tục",
     "profile": {
+      "title": "Hồ sơ cá nhân",
+      "subtitle": "Quản lý thông tin cá nhân và theo dõi thành tựu của bạn",
+      "editProfile": "Chỉnh sửa hồ sơ",
+      "sections": {
+        "statistics": "Thống kê",
+        "achievements": "Thành tựu"
+      },
+      "fields": {
+        "totalPoints": "Tổng điểm",
+        "usedPoints": "Điểm đã dùng",
+        "availablePoints": "Điểm khả dụng",
+        "achievementsPoints": "Điểm thành tựu"
+      },
+      "emptyStates": {
+        "noAchievements": "Chưa có thành tựu nào",
+        "noPet": "Chưa có thú cưng nào"
+      },
       "nameMinChars": "Tên tối thiểu 2 ký tự",
       "nameMaxChars": "Tên tối đa 50 ký tự",
       "emailInvalid": "Email không hợp lệ",

@@ -96,17 +96,39 @@ manga-reader-sd/
 - `messages/vi.json` - Added error message keys
 - `lib/hooks/index.ts` - Export barrel updated
 
-### Phase 4: UI Components (In Progress)
+### Phase 4: UI Components ✅
 
-User profile forms that will consume the Phase 3 hooks:
+User profile UI components implemented:
+
+- ProfileHeader - User avatar, name, email display
+- ProfileStats - Points and reading statistics
+- ProfileAchievements - User achievements and pets display
+
+### Phase 5: Profile Display Page ✅
+
+**Completed Implementation:**
+
+- Profile page component at `/app/(user)/profile/page.tsx`
+- Protected route with authentication check
+- Comprehensive Vietnamese translations for profile section
+- Loading skeleton states for better UX
+- Responsive design with Tailwind CSS
+
+**Key Features:**
+
+- Displays user information from GET /auth/profile API
+- Shows user statistics (points, achievements)
+- Current pet and achievement display
+- Internationalized all text content
+- Clean, modern UI with shadcn/ui components
+
+### Phase 6: Profile Editing (Planned)
+
+Interactive profile editing features:
 
 - Update profile form
 - Avatar upload component
 - Password change form
-
-### Phase 5: Polish & Optimization (Planned)
-
-Performance optimization, SEO enhancement, testing, deployment
 
 ## Key Patterns
 
@@ -161,9 +183,13 @@ export function UpdateProfileForm() {
 - `POST /auth/login` - User login
 - `POST /auth/register` - User registration
 - `POST /auth/google` - Google OAuth
-- `GET /auth/profile` - Get current user
+- `GET /auth/profile` - Get current user with relationships
 - `PUT /auth/profile` - Update user profile
 - `POST /auth/logout` - User logout
+
+### Frontend Routes
+
+- `GET /profile` - User profile display page (protected route)
 
 ### API Client Features
 
@@ -212,14 +238,17 @@ pnpm lint             # ESLint
 - Phase 1: Core infrastructure
 - Phase 2: Authentication system
 - Phase 3: Profile management hooks
+- Phase 4: User profile UI components
+- Phase 5: Profile display page implementation
 
 **In Progress:**
 
-- Phase 4: User profile UI components
+- None
 
 **Planned:**
 
-- Phase 5: Optimization and deployment
+- Phase 6: Profile editing functionality
+- Phase 7: Polish & Optimization
 
 ## Documentation
 
@@ -228,9 +257,10 @@ pnpm lint             # ESLint
 - **Forms Guide**: `/docs/guides/05-FORMS-VALIDATION.md`
 - **API Docs**: `/docs/API_DOCUMENTATION.md`
 - **Task Mapping**: `/docs/TASK-TO-DOCS-MAPPING.md`
+- **Phase 5 Documentation**: `/docs/phase-5-profile-display-documentation.md`
 
 ---
 
 **Last Updated**: 2025-12-04
 **Version**: 0.1.0
-**Phase**: 3 (Profile Hooks Implementation Complete)
+**Phase**: 5 (Profile Display Page Complete)

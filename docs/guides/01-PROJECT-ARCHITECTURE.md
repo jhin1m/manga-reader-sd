@@ -45,7 +45,8 @@ manga-reader-sd/
 │   │   └── genres/             # /genres
 │   │
 │   ├── (user)/                  # Route group: User features
-│   │   ├── profile/            # /profile
+│   │   ├── profile/            # /profile - User profile display page
+│   │   │   └── page.tsx        # Profile page component
 │   │   └── library/            # /library
 │   │
 │   ├── layout.tsx               # Root layout (providers, fonts)
@@ -72,6 +73,11 @@ manga-reader-sd/
 │   │   ├── login-form.tsx
 │   │   ├── register-form.tsx
 │   │   └── protected-route.tsx
+│   │
+│   ├── user/                    # User profile components
+│   │   ├── profile-header.tsx   # Profile header with avatar
+│   │   ├── profile-stats.tsx    # User statistics display
+│   │   └── profile-achievements.tsx  # User achievements & pets
 │   │
 │   ├── layout/                  # Layout components
 │   │   ├── header/

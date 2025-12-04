@@ -469,7 +469,41 @@ Before ANY commit, verify:
 
 - **Phase 2**: ✅ Schemas created in `lib/validators/user-schemas.ts`
 - **Phase 3**: ✅ Hooks created in `lib/hooks/use-profile.ts` (`useUpdateProfile`, `useChangePassword`, `useAvatarUpload`)
-- **Phase 4**: ⏳ Create UI components (`UpdateProfileForm`, `ChangePasswordForm`, `AvatarUpload`)
+- **Phase 4**: ✅ UI components created (`ProfileHeader`, `ProfileStats`, `ProfileAchievements`)
+- **Phase 5**: ✅ Profile display page implemented
+
+---
+
+### "I need to work on the profile display page"
+
+**Read:**
+
+- [Phase 5 Documentation](./phase-5-profile-display-documentation.md) - Complete implementation details
+- [Component Patterns](./guides/02-COMPONENT-PATTERNS.md) - Page structure and patterns
+- [Project Architecture](./guides/01-PROJECT-ARCHITECTURE.md) - Route structure
+- [i18n Guide](./guides/06-I18N-GUIDE.md) - All text must be internationalized
+
+**Reference:**
+
+- `app/(user)/profile/page.tsx` - Main profile page component (Phase 5) - NEW
+- `components/user/profile-header.tsx` - Profile header with avatar (Phase 4)
+- `components/user/profile-stats.tsx` - User statistics display (Phase 4)
+- `components/user/profile-achievements.tsx` - Achievement & pet display (Phase 4)
+- `components/auth/protected-route.tsx` - Authentication wrapper
+- `messages/vi.json` - Profile translations in `profile.*` namespace (Phase 5)
+
+**Key features implemented:**
+
+- Protected route requiring authentication
+- Displays user info from GET /auth/profile API
+- Shows statistics, achievements, and current pet
+- Fully responsive design
+- Loading skeleton states
+- Complete Vietnamese translations
+
+**API endpoint used:**
+
+- `GET /auth/profile` - Fetches complete user profile with relationships
 
 ---
 
@@ -588,6 +622,7 @@ pnpm dlx shadcn@latest add [component-name]
 | Add SEO metadata         | [SEO & Metadata](./guides/07-SEO-METADATA.md)                             |
 | Use UI components        | [UI Components](./guides/08-UI-COMPONENTS.md)                             |
 | Add password change      | [API Integration](./guides/04-API-INTEGRATION.md#password-change-pattern) |
+| Work on profile page     | [Phase 5 Documentation](./phase-5-profile-display-documentation.md)       |
 | Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)            |
 | Check before commit      | [Checklist](./references/CHECKLIST.md)                                    |
 | See good examples        | [Examples](./references/EXAMPLES.md)                                      |
@@ -601,4 +636,4 @@ pnpm dlx shadcn@latest add [component-name]
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-04
