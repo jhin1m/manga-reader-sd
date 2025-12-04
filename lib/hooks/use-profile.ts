@@ -13,7 +13,7 @@ import {
   avatarFileSchema,
   changePasswordSchema,
 } from "@/lib/validators/user-schemas";
-import type { User, ChangePasswordData } from "@/types/user";
+import type { ChangePasswordData } from "@/types/user";
 
 /**
  * Hook to update user profile (name, email)
@@ -40,7 +40,7 @@ export function useUpdateProfile() {
         updateUser(updatedUser);
 
         return { success: true, data: updatedUser };
-      } catch (err) {
+      } catch {
         // Sanitize error messages - don't expose raw API errors
         const errorMessage = "user.profile.updateFailed";
         setError(errorMessage);
@@ -84,7 +84,7 @@ export function useUploadAvatar() {
         updateUser(updatedUser);
 
         return { success: true, data: updatedUser };
-      } catch (err) {
+      } catch {
         // Sanitize error messages - don't expose raw API errors
         const errorMessage = "user.profile.avatarUploadFailed";
         setError(errorMessage);
@@ -112,35 +112,32 @@ export function useUpdatePassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const updatePassword = useCallback(
-    async (data: ChangePasswordData) => {
-      setIsLoading(true);
-      setError(null);
+  const updatePassword = useCallback(async (data: ChangePasswordData) => {
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        // Validate input (including current_password check client-side)
-        const validated = changePasswordSchema.parse(data);
+    try {
+      // Validate input (including current_password check client-side)
+      const validated = changePasswordSchema.parse(data);
 
-        // Call API (only send new password fields)
-        // Backend doesn't use current_password, but we validated it for UX
-        await authApi.updateProfile({
-          password: validated.password,
-          password_confirmation: validated.password_confirmation,
-        });
+      // Call API (only send new password fields)
+      // Backend doesn't use current_password, but we validated it for UX
+      await authApi.updateProfile({
+        password: validated.password,
+        password_confirmation: validated.password_confirmation,
+      });
 
-        // No user data changes (only password hash on backend)
-        return { success: true };
-      } catch (err) {
-        // Sanitize error messages - don't expose raw API errors
-        const errorMessage = "user.profile.passwordUpdateFailed";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [authApi]
-  );
+      // No user data changes (only password hash on backend)
+      return { success: true };
+    } catch {
+      // Sanitize error messages - don't expose raw API errors
+      const errorMessage = "user.profile.passwordUpdateFailed";
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   return {
     updatePassword,

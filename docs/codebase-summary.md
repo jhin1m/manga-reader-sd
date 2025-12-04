@@ -28,6 +28,7 @@ manga-reader-sd/
 │   ├── ui/                 # shadcn/ui base components
 │   ├── manga/              # Manga-specific components
 │   ├── auth/               # Authentication components
+│   ├── library/            # User library components
 │   └── layout/             # Layout components
 ├── lib/
 │   ├── api/                # API client & endpoints
@@ -98,37 +99,91 @@ manga-reader-sd/
 
 ### Phase 4: UI Components ✅
 
+- Profile display and edit components
+- Avatar upload with preview
+- Password change form
+- Responsive design patterns
+
+### Phase 5: User Library Implementation ✅
+
+**Phase 5.1: Library Hooks (Phase 1) ✅**
+
+Created comprehensive React Query hooks for user library data management:
+
+- `useFavorites()` - Fetch user's favorite manga with pagination
+- `useHistory()` - Fetch user's reading history with pagination
+- `useContinueReading()` - Get first 5 items from history
+- `useCompletedManga()` - Filter favorites for completed manga
+- `useRemoveFromHistory()` - Remove items from reading history
+- `useRemoveBookmark()` - Remove items from favorites
+- `useLibraryPrefetch()` - Prefetch data for smooth UX
+
+**Key Features:**
+
+- Hierarchical query keys for efficient cache management
+- 5-minute stale time for optimal performance
+- Automatic cache invalidation on mutations
+- Proper error handling and loading states
+
+**Phase 5.2: Library Page Structure (Phase 2) ✅**
+
+Implemented responsive tab-based library page with:
+
+- Protected route pattern (Server Wrapper → Client Content)
+- URL state management for tab persistence
+- Responsive tab navigation (2x2 mobile, 1x4 desktop)
+- Prefetching strategy for smooth UX
+- Loading skeletons and error states
+
+**Phase 5.3: Library Tab Content (Phase 3) ✅**
+
+Completed implementation of all library components:
+
+- `LibraryMangaCard` - Reusable card with progress tracking & remove actions
+- `LibraryPagination` - Custom pagination for library grids
+- `EmptyState` - Contextual empty states for each tab
+- `ContinueReadingSection` - Progress tracking with "View All" link
+- `BookmarksTab` - Paginated favorites with remove functionality
+- `HistoryTab` - Chronological reading list with remove actions
+- `CompletedTab` - Filtered view of completed manga
+
+**Key Features:**
+
+- Progress bars showing reading percentage
+- Time ago display for history items
+- Internationalized text throughout
+- Mobile-responsive design
+- Accessibility compliance (WCAG 2.1 AA)
+
+**Phase 5.4: Empty States & Skeletons (Phase 4) ✅**
+
+Enhanced user experience with contextual empty states and loading skeletons:
+
+- `EmptyState` component with color-coded icons (blue for continue, amber for bookmarks, etc.)
+- `TabContentSkeleton` with configurable grid counts
+- `ContinueReadingSkeleton` matching exact layout
+- `MangaCardSkeleton` with 3:4 aspect ratio
+- Zero layout shift implementation
+- Performance-optimized CSS animations
+
+**Phase 5.5: i18n Translations (Phase 5) ✅**
+
+Complete Vietnamese translations for all library UI elements:
+
+- 51 translation keys in `messages/vi.json`
+- Responsive labels (full for desktop, short for mobile)
+- Contextual empty state messages
+- Dynamic interpolation for counts and chapters
+- Error and success message translations
+- 100% i18n compliance - no hardcoded strings
+
+### Phase 4: UI Components ✅
+
 User profile UI components implemented:
 
 - ProfileHeader - User avatar, name, email display
 - ProfileStats - Points and reading statistics
 - ProfileAchievements - User achievements and pets display
-
-### Phase 5: Library Implementation ✅
-
-**Phase 1: Library Hooks**
-
-- Complete React Query hooks for user library functionality
-- `useFavorites()`, `useHistory()`, `useContinueReading()`, `useCompletedManga()`
-- Prefetching support for smooth tab switching
-- Proper caching and invalidation strategies
-
-**Phase 2: Library Page Structure**
-
-- Responsive tab navigation (2x2 mobile, 1x4 desktop)
-- URL-based tab state management for shareable links
-- Protected route with authentication
-- Hover prefetching for instant tab switching
-- Loading skeletons matching actual layout
-- Vietnamese translations for all library UI text
-
-**Files Created/Updated:**
-
-- `app/(user)/library/page.tsx` - Main library page with protected route
-- `components/library/library-tabs.tsx` - Responsive tab navigation
-- `components/library/library-skeleton.tsx` - Loading skeleton
-- `components/library/*-tab.tsx` - Tab placeholders (Phase 3)
-- `messages/vi.json` - Library translations
 
 ### Phase 6: Profile Display Page ✅
 

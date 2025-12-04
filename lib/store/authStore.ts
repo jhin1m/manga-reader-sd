@@ -14,9 +14,9 @@ const customStorage = () => {
   if (typeof window === "undefined") {
     // Server-side - return noop storage
     return {
-      getItem: (_name: string) => null,
-      setItem: (_name: string, _value: string) => {},
-      removeItem: (_name: string) => {},
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
     };
   }
 

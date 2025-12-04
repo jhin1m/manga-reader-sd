@@ -321,6 +321,51 @@ import { Skeleton } from '@/components/ui/skeleton'
 </Card>
 ```
 
+### Library Skeleton Patterns
+
+The User Library implements specialized skeleton components that match the exact layout of loaded content to prevent layout shifts.
+
+**Tab Content Skeleton:**
+
+```tsx
+import { TabContentSkeleton } from "@/components/library/library-skeleton";
+
+// With stats line (for tab counts)
+<TabContentSkeleton showStats gridCount={20} />
+
+// Without stats
+<TabContentSkeleton showStats={false} gridCount={15} />
+```
+
+**Continue Reading Skeleton:**
+
+```tsx
+import { ContinueReadingSkeleton } from "@/components/library/library-skeleton";
+
+<ContinueReadingSkeleton />;
+```
+
+**Manga Card Skeleton:**
+
+```tsx
+// Matches exact LibraryMangaCard layout
+<div className="space-y-2">
+  <Skeleton className="aspect-[3/4] rounded-lg" />
+  <Skeleton className="h-4 w-3/4" />
+  <Skeleton className="h-3 w-1/2" />
+</div>
+```
+
+**Full Page Skeleton:**
+
+```tsx
+import { LibrarySkeleton } from "@/components/library/library-skeleton";
+
+<LibrarySkeleton />;
+```
+
+For complete documentation, see: [Phase 4: Empty States and Loading Skeletons](../phase-4-library-empty-states-skeletons-documentation.md)
+
 ---
 
 ## Styling with Tailwind
@@ -674,11 +719,166 @@ const t = useTranslations('common')
 
 ---
 
+---
+
+## Library Components
+
+### Overview
+
+The User Library feature includes specialized components designed for displaying and managing user's manga collections. These components are located in `components/library/` and are fully responsive, accessible, and internationalized.
+
+### LibraryMangaCard
+
+A versatile card component that adapts to different library contexts.
+
+```tsx
+import { LibraryMangaCard } from "@/components/library/library-manga-card";
+
+// Basic usage
+<LibraryMangaCard manga={manga} />
+
+// With progress tracking
+<LibraryMangaCard
+  manga={manga}
+  lastReadChapter={chapter}
+  lastReadAt="2024-12-04T10:00:00Z"
+/>
+
+// With remove button
+<LibraryMangaCard
+  manga={manga}
+  showRemove={true}
+  onRemove={() => handleRemove(manga.id)}
+  isRemoving={isPending}
+/>
+```
+
+**Features:**
+
+- Progress bar for reading progress
+- Hover overlay with action text
+- Remove button with confirmation
+- Time ago display for history items
+- Responsive image optimization
+
+### LibraryPagination
+
+Custom pagination for library grids.
+
+```tsx
+import { LibraryPagination } from "@/components/library/library-pagination";
+
+<LibraryPagination
+  currentPage={1}
+  totalPages={10}
+  onPageChange={(page) => setCurrentPage(page)}
+  isLoading={isLoading}
+/>;
+```
+
+**Features:**
+
+- Mobile-friendly button layout
+- Disabled state handling
+- Smooth page transitions
+- First/Last page navigation
+
+### EmptyState
+
+Contextual empty states with color-coded icons for different library tabs.
+
+```tsx
+import { EmptyState } from "@/components/library/empty-state";
+
+<EmptyState
+  variant="continue"
+  title="No continue reading items"
+  description="Start reading some manga!"
+  actionLabel="Browse manga"
+  actionHref="/manga"
+/>;
+```
+
+**Variants:**
+
+- `continue` - Blue icon (BookOpen) - For continue reading tab
+- `bookmarks` - Amber icon (Bookmark) - For bookmarks tab
+- `history` - Purple icon (History) - For history tab
+- `completed` - Green icon (CheckCircle2) - For completed tab
+
+Each variant uses semantic colors to convey meaning and maintain visual consistency throughout the library interface.
+
+### Tab Content Components
+
+```tsx
+import {
+  ContinueReadingSection,
+  BookmarksTab,
+  HistoryTab,
+  CompletedTab,
+} from "@/components/library";
+
+// Use within TabsContent
+<TabsContent value="continue">
+  <ContinueReadingSection />
+</TabsContent>
+
+<TabsContent value="bookmarks">
+  <BookmarksTab />
+</TabsContent>
+```
+
+Each tab component includes:
+
+- Data fetching with proper loading states
+- Error handling
+- Empty states
+- Pagination where applicable
+- Internationalized text
+
+### LibrarySkeleton
+
+Advanced loading skeleton system that matches actual card layout to prevent layout shifts.
+
+```tsx
+import {
+  LibrarySkeleton,
+  LibraryGridSkeleton,
+  TabContentSkeleton,
+  ContinueReadingSkeleton
+} from "@/components/library/library-skeleton";
+
+// Full page skeleton (header + tabs + grid)
+<LibrarySkeleton />
+
+// Grid with specific count
+<LibraryGridSkeleton count={20} />
+
+// Tab content with optional stats
+<TabContentSkeleton showStats gridCount={20} />
+
+// Continue reading specific (5 items + button)
+<ContinueReadingSkeleton />
+```
+
+**Key Features:**
+
+- Exact 3:4 aspect ratio for manga covers
+- Responsive grid matching
+- No layout shift
+- Configurable counts
+- Specialized variants for different contexts
+
+---
+
 ## Related Guides
 
 - **[Component Patterns](./02-COMPONENT-PATTERNS.md)** - Component structure
 - **[Forms & Validation](./05-FORMS-VALIDATION.md)** - Using Form components
 - **[i18n Guide](./06-I18N-GUIDE.md)** - Translating component text
+- **[Phase 1 Library Hooks](../phase-1-library-hooks-documentation.md)** - Library data management
+- **[Phase 3 Library Content](../phase-3-library-content-documentation.md)** - Complete library implementation
+- **[Phase 4 Empty States & Skeletons](../phase-4-library-empty-states-skeletons-documentation.md)** - Advanced loading states and empty states
 
 ---
 
@@ -691,4 +891,4 @@ const t = useTranslations('common')
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-04

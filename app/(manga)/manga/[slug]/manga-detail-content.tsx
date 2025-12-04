@@ -156,6 +156,7 @@ function MangaDetail({
             {/* Left: Cover Image (Fixed widths) */}
             <div className="shrink-0 w-[110px] sm:w-[150px] md:w-[220px]">
               <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden shadow-md">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={manga.cover_full_url}
                   alt={manga.name}
@@ -323,6 +324,7 @@ function MangaDetail({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold flex items-center gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/chibi.svg"
                   alt="Reading"

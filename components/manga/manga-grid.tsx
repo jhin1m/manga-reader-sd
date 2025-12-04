@@ -75,7 +75,7 @@ export function MangaGrid({
 
   return (
     <div className={gridClasses}>
-      {mangas.map((manga, index) => (
+      {mangas.map((manga) => (
         <MangaCard key={manga.id} manga={manga} />
       ))}
     </div>

@@ -160,7 +160,37 @@ const handleRemove = (mangaId: number) => {
 - Error handling with console logging
 - Loading state via `isPending`
 
-### 6. useLibraryPrefetch
+### 6. useRemoveBookmark
+
+Mutation hook to remove manga from favorites/bookmarks.
+
+```typescript
+import { useRemoveBookmark } from "@/lib/hooks/use-library";
+import { toast } from "sonner";
+
+const { mutate, isPending } = useRemoveBookmark();
+
+const handleRemoveBookmark = (mangaId: number) => {
+  mutate(mangaId, {
+    onSuccess: () => {
+      toast.success("Removed from bookmarks");
+      // Favorites queries are automatically invalidated
+    },
+    onError: () => {
+      toast.error("Failed to remove bookmark");
+    },
+  });
+};
+```
+
+**Features**:
+
+- Automatically invalidates favorites queries on success
+- Error handling with console logging
+- Loading state via `isPending`
+- Optimized for single and batch removal operations
+
+### 7. useLibraryPrefetch
 
 Provides prefetching functions for smooth tab switching experience.
 

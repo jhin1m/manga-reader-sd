@@ -159,7 +159,7 @@ export function useRemoveFromHistory() {
 
   return useMutation({
     mutationFn: (mangaId: number) => userHistoryApi.remove(mangaId),
-    onSuccess: (_, mangaId) => {
+    onSuccess: () => {
       // Invalidate history queries
       queryClient.invalidateQueries({ queryKey: libraryKeys.history() });
       queryClient.invalidateQueries({
@@ -169,6 +169,25 @@ export function useRemoveFromHistory() {
     onError: (error) => {
       // Error toast handled by component
       console.error("Failed to remove from history:", error);
+    },
+  });
+}
+
+/**
+ * Hook for removing manga from favorites/bookmarks
+ */
+export function useRemoveBookmark() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (mangaId: number) => userFavoritesApi.remove(mangaId),
+    onSuccess: () => {
+      // Invalidate favorites queries
+      queryClient.invalidateQueries({ queryKey: libraryKeys.favorites() });
+    },
+    onError: (error) => {
+      // Error toast handled by component
+      console.error("Failed to remove bookmark:", error);
     },
   });
 }

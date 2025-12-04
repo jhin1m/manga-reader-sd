@@ -40,6 +40,7 @@ export function MangaCard({ manga, className }: MangaCardProps) {
         )}
       >
         {/* Cover Image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={manga.cover_full_url}
           alt={manga.name}

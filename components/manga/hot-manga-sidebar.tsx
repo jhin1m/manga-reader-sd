@@ -144,6 +144,7 @@ function RankedMangaCard({ manga, rank }: RankedMangaCardProps) {
 
       {/* Thumbnail */}
       <div className="relative h-16 w-12 flex-shrink-0 rounded overflow-hidden bg-muted">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={manga.cover_full_url}
           alt={manga.name}

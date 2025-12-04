@@ -208,6 +208,59 @@
     "timeSpent": "Thời gian đọc",
     "favoriteGenres": "Thể loại yêu thích",
     "readingStreak": "Chuỗi đọc liên tục",
+    "library": {
+      "title": "Thư viện của tôi",
+      "subtitle": "Quản lý truyện đã lưu và lịch sử đọc",
+      "tabs": {
+        "continue": "Tiếp tục đọc",
+        "continueShort": "Tiếp tục",
+        "bookmarks": "Truyện đã lưu",
+        "bookmarksShort": "Đã lưu",
+        "history": "Lịch sử đọc",
+        "historyShort": "Lịch sử",
+        "completed": "Đã hoàn thành",
+        "completedShort": "Hoàn thành"
+      },
+      "stats": {
+        "totalBookmarks": "{count} truyện đã lưu",
+        "totalHistory": "{count} truyện trong lịch sử",
+        "totalCompleted": "{count} truyện đã hoàn thành"
+      },
+      "emptyStates": {
+        "continue": {
+          "title": "Chưa có lịch sử đọc",
+          "description": "Bắt đầu đọc truyện để xem tiến độ của bạn ở đây",
+          "action": "Khám phá truyện"
+        },
+        "bookmarks": {
+          "title": "Chưa lưu truyện nào",
+          "description": "Lưu những bộ truyện yêu thích để dễ dàng theo dõi",
+          "action": "Tìm truyện hay"
+        },
+        "history": {
+          "title": "Lịch sử trống",
+          "description": "Các truyện bạn đã đọc sẽ xuất hiện ở đây",
+          "action": "Bắt đầu đọc"
+        },
+        "completed": {
+          "title": "Chưa có truyện hoàn thành",
+          "description": "Truyện đã lưu với trạng thái hoàn thành sẽ hiển thị ở đây",
+          "action": "Xem truyện đã lưu"
+        }
+      },
+      "card": {
+        "progress": "Chương {current}",
+        "continue": "Tiếp tục",
+        "start": "Bắt đầu đọc",
+        "remove": "Xóa"
+      },
+      "viewAllHistory": "Xem tất cả lịch sử",
+      "historyRemoved": "Đã xóa khỏi lịch sử",
+      "errors": {
+        "loadFailed": "Không thể tải dữ liệu. Vui lòng thử lại.",
+        "removeFailed": "Không thể xóa. Vui lòng thử lại."
+      }
+    },
     "profile": {
       "title": "Hồ sơ cá nhân",
       "subtitle": "Quản lý thông tin cá nhân và theo dõi thành tựu của bạn",
@@ -244,20 +297,6 @@
         "confirmPassword": "Xác nhận mật khẩu",
         "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
         "changePassword": "Đổi mật khẩu"
-      },
-      "library": {
-        "title": "Thư viện của tôi",
-        "subtitle": "Quản lý bookmark, lịch sử đọc và theo dõi tiến trình của bạn",
-        "tabs": {
-          "continue": "Tiếp tục đọc",
-          "continueShort": "Tiếp tục",
-          "bookmarks": "Bookmark",
-          "bookmarksShort": "Bookmark",
-          "history": "Lịch sử",
-          "historyShort": "Lịch sử",
-          "completed": "Đã hoàn thành",
-          "completedShort": "Hoàn thành"
-        }
       },
       "sections": {
         "statistics": "Thống kê",
