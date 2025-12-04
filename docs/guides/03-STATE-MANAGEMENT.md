@@ -582,6 +582,7 @@ const mutation = useMutation({
 
 - `lib/store/authStore.ts` - Zustand store with persist
 - `lib/hooks/use-auth.ts` - Custom hook using Zustand
+- `lib/hooks/use-profile.ts` - Custom hooks with store sync (Phase 3) - NEW
 - `app/home-content.tsx` - React Query usage
 - `components/providers/react-query-provider.tsx` - React Query setup
 

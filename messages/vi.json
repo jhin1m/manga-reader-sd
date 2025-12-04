@@ -220,7 +220,10 @@
       "fileRequired": "Vui lòng chọn một file",
       "fileSizeExceeded": "Kích thước file tối đa 5MB",
       "fileTypeInvalid": "Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WebP)",
-      "avatarRequired": "Vui lòng chọn avatar"
+      "avatarRequired": "Vui lòng chọn avatar",
+      "updateFailed": "Không thể cập nhật hồ sơ",
+      "avatarUploadFailed": "Không thể tải lên ảnh đại diện",
+      "passwordUpdateFailed": "Không thể đổi mật khẩu"
     }
   },
   "search": {

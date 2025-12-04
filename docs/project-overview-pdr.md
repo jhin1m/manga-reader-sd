@@ -6,7 +6,7 @@
 
 **Version**: 0.1.0 (Development)
 
-**Status**: Active Development (Phase 2 Complete, Phase 3 In Progress)
+**Status**: Active Development (Phase 2 Complete, Phase 3 Complete)
 
 **Repository**: manga-reader-sd
 
@@ -434,26 +434,42 @@ To create a comprehensive manga reading platform that offers:
 - **Status**: 100% complete (10/10 tasks)
 - **Duration**: Days 5-9
 
-### Phase 3: Manga Features (Core) (🟡 In Progress)
+### Phase 3: Custom Hooks for User Profile (✅ Completed)
+
+- Profile management hooks (`lib/hooks/use-profile.ts`)
+  - `useUpdateProfile()` - Update user name and email
+  - `useUploadAvatar()` - Handle avatar file uploads
+  - `useUpdatePassword()` - Change user password
+- Features:
+  - All hooks validate with Phase 2 Zod schemas
+  - Return standardized `{ success, data?, error? }` pattern
+  - Profile/avatar hooks sync with Zustand auth store
+  - Error messages use i18n keys, not raw API errors
+  - Built-in loading states
+- Updated translation keys (`messages/vi.json`)
+- **Status**: 100% complete
+- **Duration**: Day 10
+
+### Phase 4: Manga Features (Core) (🟡 In Progress)
 
 - Homepage (✅ Completed)
 - Manga detail page (⏳ Next)
-- Chapter reader (⏳ Planned)
+- Chapter reader (✅ Completed)
 - Search & filter (⏳ Planned)
 - Genre pages (⏳ Planned)
-- **Status**: ~30% complete (9/34 tasks)
-- **Target**: Days 10-18
+- **Status**: ~50% complete (17/34 tasks)
+- **Target**: Days 11-18
 
-### Phase 4: User Features & Interactions (🔴 Planned)
+### Phase 5: User Features & Interactions (🔴 Planned)
 
-- User profile management
+- User profile management UI (Phase 4 hooks ready)
 - Library (bookmarks, history)
 - Comments system
 - Rating system
 - Notifications
 - **Target**: Days 19-25
 
-### Phase 5: Polish & Optimization (🔴 Planned)
+### Phase 6: Polish & Optimization (🔴 Planned)
 
 - Performance optimization
 - SEO completion

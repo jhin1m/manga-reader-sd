@@ -425,6 +425,7 @@ Before ANY commit, verify:
 
 - `types/user.ts` - `ChangePasswordData` interface
 - `lib/validators/user-schemas.ts` - `changePasswordSchema` (Phase 2)
+- `lib/hooks/use-profile.ts` - `useUpdatePassword` hook (Phase 3) - NEW
 - `lib/api/endpoints/auth.ts` - `updateProfile` method
 - `messages/vi.json` - Add `user.profile.*` translations
 
@@ -451,6 +452,7 @@ Before ANY commit, verify:
 
 - `types/user.ts` - `UpdateProfileData` interface
 - `lib/validators/user-schemas.ts` - `updateProfileSchema` and `avatarFileSchema`
+- `lib/hooks/use-profile.ts` - `useUpdateProfile` and `useUploadAvatar` hooks (Phase 3) - NEW
 - `lib/api/endpoints/auth.ts` - `updateProfile` method
 - `messages/vi.json` - Add `user.profile.*` translations (already exists)
 
@@ -465,9 +467,51 @@ Before ANY commit, verify:
 
 **Phase breakdown:**
 
-- **Phase 2**: Schemas already created in `lib/validators/user-schemas.ts`
-- **Phase 3**: Create hooks (`useUpdateProfile`, `useChangePassword`, `useAvatarUpload`)
-- **Phase 4**: Create UI components (`UpdateProfileForm`, `ChangePasswordForm`, `AvatarUpload`)
+- **Phase 2**: ✅ Schemas created in `lib/validators/user-schemas.ts`
+- **Phase 3**: ✅ Hooks created in `lib/hooks/use-profile.ts` (`useUpdateProfile`, `useChangePassword`, `useAvatarUpload`)
+- **Phase 4**: ⏳ Create UI components (`UpdateProfileForm`, `ChangePasswordForm`, `AvatarUpload`)
+
+---
+
+### "I need to use custom hooks for profile operations"
+
+**Read:**
+
+- [Forms & Validation](./guides/05-FORMS-VALIDATION.md#custom-hooks-for-form-operations-phase-3) - Phase 3 hooks documentation
+- [Phase 3 Documentation](./phase-3-custom-hooks-documentation.md) - Complete hooks implementation guide
+- [State Management](./guides/03-STATE-MANAGEMENT.md) - Store sync patterns
+
+**Reference:**
+
+- `lib/hooks/use-profile.ts` - All profile hooks (Phase 3) - NEW
+  - `useUpdateProfile()` - Update name and email
+  - `useUploadAvatar()` - Handle avatar uploads
+  - `useUpdatePassword()` - Change password
+- `lib/validators/user-schemas.ts` - Phase 2 validation schemas
+- `lib/store/authStore.ts` - Auth store for sync
+
+**Usage pattern:**
+
+```typescript
+const { updateProfile, isLoading, error } = useUpdateProfile();
+
+const result = await updateProfile({ name: "New Name" });
+
+if (result.success) {
+  toast.success("Profile updated");
+  // Store already synced
+} else {
+  toast.error(t(result.error));
+}
+```
+
+**Key features:**
+
+- All hooks validate with Phase 2 Zod schemas
+- Return standardized `{ success, data?, error? }` pattern
+- Profile/avatar hooks sync with Zustand auth store
+- Error messages use i18n keys, not raw API errors
+- Built-in loading states
 
 ---
 

@@ -1100,67 +1100,232 @@ export function useChangePassword() {
 }
 ```
 
-### Avatar Upload Hook (Phase 3)
+## Custom Hooks for Form Operations (Phase 3)
 
-**`lib/hooks/use-avatar-upload.ts`**
+### Architecture Overview
+
+Phase 3 introduces custom hooks that bridge Phase 2 validation schemas with Phase 4 UI components. Each hook:
+
+1. **Validates data** using Phase 2 Zod schemas
+2. **Calls API** through the endpoint layer
+3. **Manages state** (loading, error, success)
+4. **Syncs with auth store** when user data changes
+5. **Returns standardized response** `{ success, data?, error? }`
+
+### Location
+
+`lib/hooks/use-profile.ts` - Contains all profile-related hooks
+
+```
+lib/hooks/
+├── index.ts           # Export barrel
+├── use-auth.ts        # Auth hooks (login, register, logout)
+├── use-profile.ts     # Profile hooks (Phase 3) - NEW
+└── use-token-refresh.ts # Token refresh logic
+```
+
+### Profile Update Hook
+
+**`lib/hooks/use-profile.ts` - useUpdateProfile**
 
 ```typescript
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import {
-  avatarFileSchema,
-  type AvatarFileInput,
-} from "@/lib/validators/user-schemas";
-import { userApi } from "@/lib/api/endpoints/user";
-import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+/**
+ * Hook to update user profile (name, email)
+ * Syncs with auth store on success
+ */
+export function useUpdateProfile() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const updateUser = useAuthStore((state) => state.updateUser);
 
-export function useAvatarUpload() {
-  const t = useTranslations("user.profile");
-  const [preview, setPreview] = useState<string | null>(null);
+  const updateProfile = useCallback(
+    async (data: { name?: string; email?: string }) => {
+      setIsLoading(true);
+      setError(null);
 
-  const mutation = useMutation({
-    mutationFn: userApi.uploadAvatar,
-    onSuccess: (response) => {
-      toast.success(t("avatarUpdated"));
-      setPreview(response.data.url);
+      try {
+        // 1. Validate input (Phase 2 schema)
+        const validated = updateProfileSchema.parse(data);
+
+        // 2. Call API
+        const updatedUser = await authApi.updateProfile(validated);
+
+        // 3. Sync auth store
+        updateUser(updatedUser);
+
+        return { success: true, data: updatedUser };
+      } catch (err) {
+        // 4. Sanitize error messages
+        const errorMessage = "user.profile.updateFailed";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setIsLoading(false);
+      }
     },
-    onError: (error) => {
-      toast.error(t("avatarUploadError"), {
-        description: error.response?.data?.message,
+    [updateUser]
+  );
+
+  return { updateProfile, isLoading, error };
+}
+```
+
+### Avatar Upload Hook
+
+**`lib/hooks/use-profile.ts` - useUploadAvatar**
+
+```typescript
+/**
+ * Hook to upload user avatar
+ * Syncs with auth store on success
+ */
+export function useUploadAvatar() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const updateUser = useAuthStore((state) => state.updateUser);
+
+  const uploadAvatar = useCallback(
+    async (file: File) => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // 1. Validate file (Phase 2 schema)
+        avatarFileSchema.parse(file);
+
+        // 2. Call API with multipart/form-data
+        const updatedUser = await authApi.updateProfile({ avatar: file });
+
+        // 3. Sync auth store (new avatar_full_url)
+        updateUser(updatedUser);
+
+        return { success: true, data: updatedUser };
+      } catch (err) {
+        // 4. Sanitize error messages
+        const errorMessage = "user.profile.avatarUploadFailed";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [updateUser]
+  );
+
+  return { uploadAvatar, isLoading, error };
+}
+```
+
+### Password Update Hook
+
+**`lib/hooks/use-profile.ts` - useUpdatePassword**
+
+```typescript
+/**
+ * Hook to update user password
+ * Note: Backend doesn't verify current_password, but we validate client-side
+ */
+export function useUpdatePassword() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updatePassword = useCallback(async (data: ChangePasswordData) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // 1. Validate input (Phase 2 schema)
+      const validated = changePasswordSchema.parse(data);
+
+      // 2. Call API (only send new password fields)
+      await authApi.updateProfile({
+        password: validated.password,
+        password_confirmation: validated.password_confirmation,
       });
+
+      // 3. No user data changes (only password hash on backend)
+      return { success: true };
+    } catch (err) {
+      // 4. Sanitize error messages
+      const errorMessage = "user.profile.passwordUpdateFailed";
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { updatePassword, isLoading, error };
+}
+```
+
+### Using Hooks in Components (Phase 4)
+
+**Profile Update Form Example:**
+
+```typescript
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useUpdateProfile } from "@/lib/hooks/use-profile";
+import { updateProfileSchema } from "@/lib/validators/user-schemas";
+import { toast } from "sonner";
+
+export function UpdateProfileForm() {
+  const t = useTranslations();
+  const { updateProfile, isLoading, error } = useUpdateProfile();
+
+  const form = useForm({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: {
+      name: user?.name || "",
+      email: user?.email || "",
     },
   });
 
-  const handleFileSelect = (file: File) => {
-    // Validate file with schema
-    const result = avatarFileSchema.safeParse(file);
+  const onSubmit = async (data) => {
+    const result = await updateProfile(data);
 
-    if (!result.success) {
-      // Handle validation errors
-      const firstError = result.error.issues[0];
-      toast.error(t(firstError.message));
-      return;
+    if (result.success) {
+      toast.success(t("notifications.profileUpdated"));
+    } else {
+      toast.error(t(result.error));
     }
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Upload file
-    mutation.mutate(file);
   };
 
-  return {
-    handleFileSelect,
-    preview,
-    isUploading: mutation.isPending,
-  };
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* Form fields with shadcn/ui components */}
+      {/* Error display with translated messages */}
+    </form>
+  );
 }
 ```
+
+### Error Handling Pattern
+
+All hooks follow a consistent error handling pattern:
+
+```typescript
+try {
+  // API call
+  return { success: true, data };
+} catch (err) {
+  // Don't expose raw API errors
+  // Return i18n keys instead
+  setError("user.profile.someError");
+  return { success: false, error: "user.profile.someError" };
+}
+```
+
+This ensures:
+
+- Consistent error messages across the app
+- Easy translation of errors
+- No implementation details leaked to UI
+- Better UX with sanitized messages
 
 ---
 
@@ -1191,6 +1356,7 @@ export function useAvatarUpload() {
 
 - `lib/validators/auth.ts` - Auth validation schemas
 - `lib/validators/user-schemas.ts` - User profile & password validation schemas (Phase 2)
+- `lib/hooks/use-profile.ts` - Custom hooks for profile operations (Phase 3) - NEW
 - `components/auth/login-form.tsx` - Login form example (needs i18n fixes)
 - `components/auth/register-form.tsx` - Register form example (needs i18n fixes)
 
