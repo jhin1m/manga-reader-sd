@@ -624,7 +624,9 @@ if (error) {
 
 - `app/page.tsx` - Server/Client split pattern
 - `app/home-content.tsx` - Client component with i18n & React Query
+- `app/(user)/library/page.tsx` - Protected route with URL state management
 - `components/auth/protected-route.tsx` - Route protection pattern
+- `components/library/library-tabs.tsx` - Responsive tabs with prefetching
 - `lib/hooks/use-auth.ts` - Custom hook pattern
 
 See [Examples Reference](../references/EXAMPLES.md#components) for complete list.

@@ -47,7 +47,8 @@ manga-reader-sd/
 │   ├── (user)/                  # Route group: User features
 │   │   ├── profile/            # /profile - User profile display page
 │   │   │   └── page.tsx        # Profile page component
-│   │   └── library/            # /library
+│   │   └── library/            # /library - User's manga library
+│   │       └── page.tsx        # Library page with tabs
 │   │
 │   ├── layout.tsx               # Root layout (providers, fonts)
 │   ├── globals.css              # Global styles
@@ -78,6 +79,14 @@ manga-reader-sd/
 │   │   ├── profile-header.tsx   # Profile header with avatar
 │   │   ├── profile-stats.tsx    # User statistics display
 │   │   └── profile-achievements.tsx  # User achievements & pets
+│   │
+│   ├── library/                 # Library page components
+│   │   ├── library-tabs.tsx     # Responsive tab navigation
+│   │   ├── library-skeleton.tsx # Loading skeleton
+│   │   ├── continue-reading-section.tsx  # Continue reading placeholder
+│   │   ├── bookmarks-tab.tsx    # Bookmarks tab placeholder
+│   │   ├── history-tab.tsx      # History tab placeholder
+│   │   └── completed-tab.tsx    # Completed tab placeholder
 │   │
 │   ├── layout/                  # Layout components
 │   │   ├── header/

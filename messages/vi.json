@@ -245,6 +245,20 @@
         "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
         "changePassword": "Đổi mật khẩu"
       },
+      "library": {
+        "title": "Thư viện của tôi",
+        "subtitle": "Quản lý bookmark, lịch sử đọc và theo dõi tiến trình của bạn",
+        "tabs": {
+          "continue": "Tiếp tục đọc",
+          "continueShort": "Tiếp tục",
+          "bookmarks": "Bookmark",
+          "bookmarksShort": "Bookmark",
+          "history": "Lịch sử",
+          "historyShort": "Lịch sử",
+          "completed": "Đã hoàn thành",
+          "completedShort": "Hoàn thành"
+        }
+      },
       "sections": {
         "statistics": "Thống kê",
         "achievements": "Thành tựu"

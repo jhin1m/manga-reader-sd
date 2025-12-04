@@ -128,6 +128,64 @@
 
 ---
 
+### "I need to create responsive tab navigation"
+
+**Read:**
+
+1. [Phase 2 Library Page Structure Documentation](./phase-2-library-page-structure-documentation.md) - Complete tab pattern with prefetching
+2. [Component Patterns](./guides/02-COMPONENT-PATTERNS.md) - Component structure and TypeScript patterns
+3. [UI Components](./guides/08-UI-COMPONENTS.md) - shadcn/ui Tabs component usage
+
+**Reference examples:**
+
+- `components/library/library-tabs.tsx` - Responsive tabs with hover prefetching
+  - Grid layout: 2x2 on mobile, 1x4 on desktop
+  - Icon + full/short text labels
+  - Type-safe tab values with validation
+  - Prefetching on mount and hover
+
+**Key implementation steps:**
+
+1. **Define tab values with TypeScript:**
+
+   ```tsx
+   const TAB_VALUES = ["tab1", "tab2", "tab3"] as const;
+   type TabValue = (typeof TAB_VALUES)[number];
+   ```
+
+2. **Use responsive grid layout:**
+
+   ```tsx
+   <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+   ```
+
+3. **Show conditional text:**
+
+   ```tsx
+   <span className="hidden sm:inline">Full Label</span>
+   <span className="sm:hidden">Short</span>
+   ```
+
+4. **Add hover prefetching:**
+
+   ```tsx
+   onMouseEnter={() => prefetchTabData()}
+   ```
+
+5. **Validate and fallback:**
+   ```tsx
+   const validTab = TAB_VALUES.includes(activeTab) ? activeTab : "default";
+   ```
+
+**Common mistakes to avoid:**
+
+- ❌ Hardcoding tab values (use TypeScript const assertion)
+- ❌ Not handling invalid tab values
+- ❌ Forgetting mobile labels
+- ❌ Not prefetching data for better UX
+
+---
+
 ### Adding Translations
 
 **Read (CRITICAL):**
@@ -526,19 +584,34 @@ Before ANY commit, verify:
 **Read:**
 
 - [Phase 1 Library Hooks Documentation](./phase-1-library-hooks-documentation.md) - Complete hooks guide
+- [Phase 2 Library Page Structure Documentation](./phase-2-library-page-structure-documentation.md) - Page structure and responsive tabs
 - [State Management](./guides/03-STATE-MANAGEMENT.md) - React Query patterns and library hooks examples
 - [API Integration](./guides/04-API-INTEGRATION.md) - Using hooks with API endpoints
 - [API Documentation](./API_DOCUMENTATION.md#library-hooks-integration-phase-1) - Backend endpoint specs
 
 **Reference:**
 
-- `lib/hooks/use-library.ts` - All library React Query hooks (Phase 1) - NEW
+- `lib/hooks/use-library.ts` - All library React Query hooks (Phase 1)
   - `useFavorites()` - Fetch user's favorite manga with pagination
   - `useHistory()` - Fetch user's reading history with pagination
   - `useContinueReading()` - Fetch first 5 items for "Continue Reading" section
   - `useCompletedManga()` - Client-side filter for completed manga
   - `useRemoveFromHistory()` - Mutation to remove manga from history
   - `useLibraryPrefetch()` - Prefetch data for smooth UX
+
+- `app/(user)/library/page.tsx` - Main library page with protected route (Phase 2) - NEW
+  - Server/Client split pattern
+  - URL-based tab state management
+  - Protected route wrapper
+
+- `components/library/library-tabs.tsx` - Responsive tab navigation (Phase 2) - NEW
+  - Prefetching on hover
+  - Responsive design (2x2 mobile, 1x4 desktop)
+  - Type-safe tab values
+
+- `components/library/library-skeleton.tsx` - Loading skeleton (Phase 2) - NEW
+  - Matches actual layout structure
+  - Responsive grid matching manga grid
 
 **Key features:**
 
