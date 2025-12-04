@@ -290,6 +290,106 @@ export function CommentForm({ mangaId }: { mangaId: number }) {
 }
 ```
 
+### Custom Hooks Pattern
+
+Encapsulate React Query logic in custom hooks for reusability:
+
+```tsx
+// lib/hooks/use-manga.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { mangaApi } from "@/lib/api/endpoints/manga";
+
+export function useMangaDetail(slug: string) {
+  return useQuery({
+    queryKey: ["manga", slug],
+    queryFn: () => mangaApi.getDetail(slug),
+    enabled: !!slug,
+  });
+}
+
+export function useBookmarkManga() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (mangaId: number) => bookmarkApi.add(mangaId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+      toast.success("Bookmarked!");
+    },
+  });
+}
+```
+
+**Library Hooks Example (Phase 1)**:
+
+For user library functionality, custom hooks provide a clean abstraction:
+
+```tsx
+// lib/hooks/use-library.ts
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { userFavoritesApi, userHistoryApi } from "@/lib/api/endpoints/user";
+
+export const libraryKeys = {
+  all: ["library"] as const,
+  favorites: (params?: { page?: number; per_page?: number }) =>
+    [...libraryKeys.all, "favorites", params] as const,
+  history: (params?: { page?: number; per_page?: number }) =>
+    [...libraryKeys.all, "history", params] as const,
+};
+
+export function useFavorites({ page = 1, per_page = 20 } = {}) {
+  return useQuery({
+    queryKey: libraryKeys.favorites({ page, per_page }),
+    queryFn: () => userFavoritesApi.getList({ page, per_page }),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
+
+export function useContinueReading() {
+  return useQuery({
+    queryKey: [...libraryKeys.all, "continue-reading"],
+    queryFn: () => userHistoryApi.getList({ per_page: 5 }),
+    select: (data) => ({
+      items: data.data,
+      hasMore: data.meta.pagination.last_page > 1,
+    }),
+  });
+}
+
+export function useRemoveFromHistory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (mangaId: number) => userHistoryApi.remove(mangaId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: libraryKeys.history() });
+      queryClient.invalidateQueries({
+        queryKey: ["library", "continue-reading"],
+      });
+    },
+  });
+}
+```
+
+**Usage in components**:
+
+```tsx
+import { useFavorites, useRemoveFromHistory } from "@/lib/hooks/use-library";
+
+export function LibraryPage() {
+  const { data: favorites, isLoading } = useFavorites();
+  const { mutate: removeFromHistory } = useRemoveFromHistory();
+
+  return (
+    <div>
+      {favorites?.items.map((manga) => (
+        <MangaCard key={manga.id} manga={manga} />
+      ))}
+    </div>
+  );
+}
+```
+
 ### Query Keys Best Practices
 
 Use consistent, hierarchical query keys:
@@ -300,7 +400,7 @@ Use consistent, hierarchical query keys:
   ("manga", slug, "chapters")
 ][("manga", slug, "chapters", page)][("user", "bookmarks")][ // Manga chapters // Paginated chapters // User bookmarks
   ("user", "history")
-][ // User history
+][("library", "favorites")][("library", "history")][ // User history // Library categories - Phase 1
   // ❌ WRONG - Inconsistent structure
   "getRecentMangas"
 ]["mangaDetail-" + slug]["chapters_" + slug + "_" + page];
@@ -582,10 +682,11 @@ const mutation = useMutation({
 
 - `lib/store/authStore.ts` - Zustand store with persist
 - `lib/hooks/use-auth.ts` - Custom hook using Zustand
-- `lib/hooks/use-profile.ts` - Custom hooks with store sync (Phase 3) - NEW
+- `lib/hooks/use-profile.ts` - Custom hooks with store sync (Phase 3)
+- `lib/hooks/use-library.ts` - Library React Query hooks with pagination (Phase 1) - NEW
 - `app/home-content.tsx` - React Query usage
 - `components/providers/react-query-provider.tsx` - React Query setup
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-04 (Phase 1 library hooks)

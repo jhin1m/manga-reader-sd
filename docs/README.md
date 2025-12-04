@@ -146,6 +146,7 @@ function handleSubmit(data: any) {}
 
 Documentation for major feature implementations:
 
+- **[Phase 1 - Library Hooks](./phase-1-library-hooks-documentation.md)** - User library React Query hooks
 - **[Phase 2 - Validation Schemas](./phase-2-validation-schemas-documentation.md)** - User profile and password validation
 - **[Phase 3 - Custom Hooks](./phase-3-custom-hooks-documentation.md)** - Profile management hooks
 - **[Phase 5 - Profile Display](./phase-5-profile-display-documentation.md)** - User profile page

@@ -521,6 +521,61 @@ Before ANY commit, verify:
 
 ---
 
+### "I need to work on the user library functionality"
+
+**Read:**
+
+- [Phase 1 Library Hooks Documentation](./phase-1-library-hooks-documentation.md) - Complete hooks guide
+- [State Management](./guides/03-STATE-MANAGEMENT.md) - React Query patterns and library hooks examples
+- [API Integration](./guides/04-API-INTEGRATION.md) - Using hooks with API endpoints
+- [API Documentation](./API_DOCUMENTATION.md#library-hooks-integration-phase-1) - Backend endpoint specs
+
+**Reference:**
+
+- `lib/hooks/use-library.ts` - All library React Query hooks (Phase 1) - NEW
+  - `useFavorites()` - Fetch user's favorite manga with pagination
+  - `useHistory()` - Fetch user's reading history with pagination
+  - `useContinueReading()` - Fetch first 5 items for "Continue Reading" section
+  - `useCompletedManga()` - Client-side filter for completed manga
+  - `useRemoveFromHistory()` - Mutation to remove manga from history
+  - `useLibraryPrefetch()` - Prefetch data for smooth UX
+
+**Key features:**
+
+- Automatic caching with 5-minute stale time
+- Hierarchical query keys for efficient cache management
+- Optimistic updates with automatic cache invalidation
+- Pagination support for large datasets
+- Prefetching for smooth tab switching
+- Type-safe with TypeScript
+
+**Usage example:**
+
+```typescript
+// In library page component
+import {
+  useFavorites,
+  useHistory,
+  useContinueReading,
+} from "@/lib/hooks/use-library";
+
+const { data: favorites, isLoading: favoritesLoading } = useFavorites({
+  page: 1,
+  per_page: 20,
+});
+
+const { data: history } = useHistory();
+const { data: continueReading } = useContinueReading();
+```
+
+**API endpoints used:**
+
+- `GET /user/favorites` - Fetch user's favorite manga
+- `GET /user/histories` - Fetch user's reading history
+- `DELETE /user/histories/{manga_id}` - Remove manga from history
+
+---
+
 ### "I need to work on the profile display page"
 
 **Read:**
@@ -671,6 +726,7 @@ pnpm dlx shadcn@latest add [component-name]
 | Add password change      | [API Integration](./guides/04-API-INTEGRATION.md#password-change-pattern) |
 | Work on profile page     | [Phase 5 Documentation](./phase-5-profile-display-documentation.md)       |
 | Edit profile page        | [Phase 6 Documentation](./phase-6-profile-edit-documentation.md)          |
+| Work on user library     | [Phase 1 Library Hooks](./phase-1-library-hooks-documentation.md)         |
 | Fix i18n translations    | [Phase 7 Documentation](./phase-7-i18n-completion-documentation.md)       |
 | Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)            |
 | Check before commit      | [Checklist](./references/CHECKLIST.md)                                    |
@@ -685,4 +741,4 @@ pnpm dlx shadcn@latest add [component-name]
 
 ---
 
-**Last updated**: 2025-12-04 (Phase 7 completion)
+**Last updated**: 2025-12-04 (Phase 1 library hooks)

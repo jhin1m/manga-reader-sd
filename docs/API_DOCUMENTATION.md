@@ -95,6 +95,53 @@ Configured for Next.js domains:
 
 ---
 
+## Library Hooks Integration (Phase 1)
+
+**React Query hooks that map to library endpoints**
+
+The frontend uses custom React Query hooks in `lib/hooks/use-library.ts` to interact with the library endpoints. These hooks provide caching, pagination, and optimistic updates.
+
+### Hook to Endpoint Mapping
+
+| Hook                     | Endpoint                            | Description                                             |
+| ------------------------ | ----------------------------------- | ------------------------------------------------------- |
+| `useFavorites()`         | `GET /user/favorites`               | Fetch user's favorite manga with pagination             |
+| `useHistory()`           | `GET /user/histories`               | Fetch user's reading history with pagination            |
+| `useContinueReading()`   | `GET /user/histories`               | Fetch first 5 items from history for "Continue Reading" |
+| `useRemoveFromHistory()` | `DELETE /user/histories/{manga_id}` | Remove manga from reading history                       |
+| `useCompletedManga()`    | `GET /user/favorites`               | Client-side filter for completed manga from favorites   |
+| `useLibraryPrefetch()`   | Various                             | Prefetch data for smooth UX                             |
+
+### Usage Examples
+
+```typescript
+// Fetch favorites with pagination
+import { useFavorites } from "@/lib/hooks/use-library";
+
+const { data, isLoading, error } = useFavorites({
+  page: 1,
+  per_page: 20,
+});
+
+// Remove from history with automatic cache update
+import { useRemoveFromHistory } from "@/lib/hooks/use-library";
+
+const { mutate } = useRemoveFromHistory();
+
+const handleRemove = (mangaId: number) => {
+  mutate(mangaId, {
+    onSuccess: () => {
+      // Automatically invalidates cache
+      toast.success("Removed from history");
+    },
+  });
+};
+```
+
+**Note**: For complete documentation of all library hooks, see [Phase 1 Library Hooks Documentation](./phase-1-library-hooks-documentation.md).
+
+---
+
 ## Authentication Endpoints
 
 **Available Authentication & User Management Operations:**

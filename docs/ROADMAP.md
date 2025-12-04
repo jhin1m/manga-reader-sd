@@ -6,7 +6,7 @@
 
 **Timeline dự kiến**: 4-5 tuần
 **Ngày bắt đầu**: 2025-10-31
-**Trạng thái hiện tại**: 🟡 Đang triển khai (40% hoàn thành)
+**Trạng thái hiện tại**: 🟡 Đang triển khai (42% hoàn thành)
 
 ---
 
@@ -17,7 +17,7 @@
 | **Phase 1** | Core Setup & Infrastructure      | Week 1   | 🟢 Completed   | 100%     |
 | **Phase 2** | Authentication & User Management | Week 1-2 | 🟢 Completed   | 100%     |
 | **Phase 3** | Manga Features (Core)            | Week 2-3 | 🔴 Not Started | 0%       |
-| **Phase 4** | User Features & Interactions     | Week 3-4 | 🟡 In Progress | 25%      |
+| **Phase 4** | User Features & Interactions     | Week 3-4 | 🟡 In Progress | 47%      |
 | **Phase 5** | Polish & Optimization            | Week 4-5 | 🔴 Not Started | 0%       |
 
 **Status Legend:**
@@ -232,22 +232,22 @@
 
 ### 3.2 Manga Detail Page
 
-- [ ] 🔴 Create `/app/manga/[slug]/page.tsx`
-- [ ] 🔴 Fetch manga detail (API: `GET /mangas/{slug}`)
-- [ ] 🔴 Display components
-  - [ ] Cover image (optimized)
-  - [ ] Title, Alt title, Pilot/Description
-  - [ ] Genres badges
-  - [ ] Artist/Author info
-  - [ ] Translation group
-  - [ ] Stats (views, rating, status)
-- [ ] 🔴 Chapter list
-  - [ ] Fetch chapters (API: `GET /mangas/{slug}/chapters`)
-  - [ ] Sorting (asc/desc)
-  - [ ] Chapter card with date, views
-- [ ] 🔴 Actions
-  - [ ] Bookmark button (add to library)
-  - [ ] Read First Chapter button
+- [x] 🟢 Create `/app/manga/[slug]/page.tsx`
+- [x] 🟢 Fetch manga detail (API: `GET /mangas/{slug}`)
+- [x] 🟢 Display components
+  - [x] Cover image (optimized)
+  - [x] Title, Alt title, Pilot/Description
+  - [x] Genres badges
+  - [x] Artist/Author info
+  - [x] Translation group
+  - [x] Stats (views, rating, status)
+- [x] 🟢 Chapter list
+  - [x] Fetch chapters (API: `GET /mangas/{slug}/chapters`)
+  - [x] Sorting (asc/desc)
+  - [x] Chapter card with date, views
+- [x] 🟢 Actions
+  - [x] Bookmark button (add to library)
+  - [x] Read First Chapter button
   - [ ] Continue Reading button (if history exists)
 - [ ] 🔴 Rating & Comments
   - [ ] Display average rating
@@ -293,32 +293,6 @@
   - [x] Pinch to zoom
   - [x] Tap zones for navigation
 
-### 3.4 Search & Filter Pages
-
-- [ ] 🔴 Create `/app/search/page.tsx`
-- [ ] 🔴 Search functionality
-  - [ ] Search input with debounce
-  - [ ] API: `GET /mangas/search?q={query}`
-  - [ ] Search suggestions
-  - [ ] Recent searches
-- [ ] 🔴 Advanced filters
-  - [ ] Genre multi-select
-  - [ ] Status filter (ongoing/completed)
-  - [ ] Sort options (views, rating, updated, name)
-  - [ ] Filter UI (sidebar or drawer)
-- [ ] 🔴 Results display
-  - [ ] Grid/List view toggle
-  - [ ] Pagination
-  - [ ] Empty state
-  - [ ] Loading skeleton
-
-### 3.5 Genre Pages
-
-- [ ] 🔴 Create `/app/genres/page.tsx` - All genres
-- [ ] 🔴 Create `/app/genres/[slug]/page.tsx` - Genre detail
-- [ ] 🔴 Fetch genre mangas
-- [ ] 🔴 Genre color theming
-
 **Deliverables Phase 3:**
 
 - ✅ Homepage với recent & hot mangas
@@ -356,8 +330,15 @@
 **Completed**: 2025-12-04 16:30 ICT
 **All Tasks**: ✅ 28/28 (100%) - Full i18n compliance, type-safe, mobile responsive
 
-### 4.2 User Library
+### 4.2 User Library 🟡 IN PROGRESS
 
+- [x] 🟢 Phase 1: React Query hooks (completed 2025-12-04)
+  - [x] useFavorites hook with pagination
+  - [x] useHistory hook with pagination
+  - [x] useContinueReading hook
+  - [x] useCompletedManga hook
+  - [x] useLibraryPrefetch hook
+  - [x] useRemoveFromHistory mutation
 - [ ] 🔴 Create `/app/library/page.tsx`
 - [ ] 🔴 Tabs/Sections
   - [ ] Continue Reading (from history)
@@ -373,6 +354,9 @@
   - [ ] Total time spent
   - [ ] Favorite genres
   - [ ] Reading streak
+
+**Implementation Details**: See [implementation plan](../plans/20251204-1700-user-library-implementation/plan.md)
+**Phase 1 Completed**: 2025-12-04 17:00 ICT
 
 ### 4.3 Comments System
 
@@ -420,8 +404,9 @@
 - [ ] Notifications system
 
 **Timeline**: Days 19-25
-**Progress**: 8/24 tasks (33%)
+**Progress**: 14/30 tasks (47%)
 **Phase 4.1 Status**: ✅ COMPLETE (User Profile - 28/28 tasks, 100%)
+**Phase 4.2 Status**: 🟡 IN PROGRESS (Phase 1 of 5 completed - 6/6 hooks implemented)
 
 ---
 
