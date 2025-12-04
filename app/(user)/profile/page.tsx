@@ -19,7 +19,7 @@ function ProfilePageContent() {
   }
 
   return (
-    <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
+    <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8">
       <div>
         <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="text-muted-foreground">{t("subtitle")}</p>
@@ -46,7 +46,7 @@ function ProfilePageContent() {
 
 function ProfileSkeleton() {
   return (
-    <div className="container mx-auto max-w-5xl space-y-6 px-4 py-8">
+    <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8">
       <Skeleton className="h-8 w-48" />
       <Card className="p-6">
         <div className="flex items-center gap-4">

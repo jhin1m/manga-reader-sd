@@ -83,7 +83,7 @@ export default function EditProfilePageClient() {
   };
 
   return (
-    <div className="container mx-auto max-w-3xl space-y-6 px-4 py-8">
+    <div className="container mx-auto max-w-7xl space-y-6 px-4 py-8">
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <Link href="/profile">
