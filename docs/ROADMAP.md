@@ -337,17 +337,19 @@
 
 ### 4.1 User Profile
 
-- [ ] 🔴 Create `/app/profile/page.tsx`
-- [ ] 🔴 Display user info
-  - [ ] Avatar, Name, Email
-- [ ] 🔴 Edit profile
-  - [ ] Edit name
-  - [ ] Change avatar (upload)
-  - [ ] API: `PUT /user/profile`, `POST /user/avatar`
-- [ ] 🔴 Account settings
+- [x] 🟢 Create `/app/profile/page.tsx`
+- [x] 🟢 Display user info
+  - [x] Avatar, Name, Email
+  - [x] Points display
+  - [x] Pet & Achievement display
+- [x] 🟢 Edit profile
+  - [x] Edit name
+  - [x] Change avatar (upload)
+  - [x] API: `PUT /auth/profile`, `POST /auth/avatar`
+- [x] 🟢 Account settings
+  - [x] Change password (with current password verification)
   - [ ] Email preferences
   - [ ] Privacy settings
-  - [ ] Change password
 
 ### 4.2 User Library
 
@@ -413,7 +415,7 @@
 - ✅ Notifications system
 
 **Timeline**: Days 19-25
-**Progress**: 0/24 tasks (0%)
+**Progress**: 8/24 tasks (33%)
 
 ---
 

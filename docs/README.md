@@ -142,6 +142,15 @@ function handleSubmit(data: any) {}
 - **Project Roadmap**: [ROADMAP.md](./ROADMAP.md)
 - **Project Overview**: [project-overview-pdr.md](./project-overview-pdr.md)
 
+## 📑 Feature Implementation Phases
+
+Documentation for major feature implementations:
+
+- **[Phase 2 - Validation Schemas](./phase-2-validation-schemas-documentation.md)** - User profile and password validation
+- **[Phase 3 - Custom Hooks](./phase-3-custom-hooks-documentation.md)** - Profile management hooks
+- **[Phase 5 - Profile Display](./phase-5-profile-display-documentation.md)** - User profile page
+- **[Phase 6 - Profile Edit](./phase-6-profile-edit-documentation.md)** - Profile editing functionality
+
 ---
 
 ## 🎯 Documentation Structure
@@ -171,7 +180,13 @@ docs/
 │
 ├── API_DOCUMENTATION.md               # Backend API reference
 ├── ROADMAP.md                         # Project phases and progress
-└── project-overview-pdr.md            # Project overview
+├── project-overview-pdr.md            # Project overview
+│
+└── Phase Documentation/                # Feature implementation phases
+    ├── phase-2-validation-schemas-documentation.md
+    ├── phase-3-custom-hooks-documentation.md
+    ├── phase-5-profile-display-documentation.md
+    └── phase-6-profile-edit-documentation.md
 ```
 
 ---
@@ -262,4 +277,4 @@ Found an issue with the documentation? Create a GitHub issue or update the docs 
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-04

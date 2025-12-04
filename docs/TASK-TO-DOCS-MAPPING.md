@@ -471,6 +471,45 @@ Before ANY commit, verify:
 - **Phase 3**: ✅ Hooks created in `lib/hooks/use-profile.ts` (`useUpdateProfile`, `useChangePassword`, `useAvatarUpload`)
 - **Phase 4**: ✅ UI components created (`ProfileHeader`, `ProfileStats`, `ProfileAchievements`)
 - **Phase 5**: ✅ Profile display page implemented
+- **Phase 6**: ✅ Edit profile page implemented with forms and validation
+
+---
+
+### "I need to work on the edit profile page"
+
+**Read:**
+
+- [Phase 6 Documentation](./phase-6-profile-edit-documentation.md) - Complete implementation details
+- [Forms & Validation](./guides/05-FORMS-VALIDATION.md) - Form patterns and validation
+- [Component Patterns](./guides/02-COMPONENT-PATTERNS.md) - Page structure and patterns
+- [i18n Guide](./guides/06-I18N-GUIDE.md) - All text must be internationalized
+
+**Reference:**
+
+- `app/(user)/profile/edit/page.tsx` - Main edit profile page with metadata (Phase 6) - NEW
+- `app/(user)/profile/edit/EditProfilePageClient.tsx` - Client component implementation (Phase 6) - NEW
+- `components/user/edit-profile-form.tsx` - Profile edit form component
+- `components/user/change-password-form.tsx` - Password change form component
+- `components/user/avatar-upload.tsx` - Avatar upload component
+- `lib/hooks/use-profile.ts` - Profile operation hooks (Phase 3)
+- `messages/vi.json` - Edit profile translations in `profile.*` namespace
+
+**Key features implemented:**
+
+- Protected route requiring authentication
+- Edit profile form with validation
+- Password change form with security
+- Avatar upload with preview
+- All forms use Phase 3 hooks and Phase 2 validation
+- Complete Vietnamese translations
+- Automatic redirect to profile on success
+
+**API endpoints used:**
+
+- `PUT /auth/profile` - Update profile information (name, email, avatar, password)
+  - Supports partial updates
+  - Avatar upload via multipart/form-data
+  - Password change requires current_password verification
 
 ---
 
@@ -623,6 +662,7 @@ pnpm dlx shadcn@latest add [component-name]
 | Use UI components        | [UI Components](./guides/08-UI-COMPONENTS.md)                             |
 | Add password change      | [API Integration](./guides/04-API-INTEGRATION.md#password-change-pattern) |
 | Work on profile page     | [Phase 5 Documentation](./phase-5-profile-display-documentation.md)       |
+| Edit profile page        | [Phase 6 Documentation](./phase-6-profile-edit-documentation.md)          |
 | Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)            |
 | Check before commit      | [Checklist](./references/CHECKLIST.md)                                    |
 | See good examples        | [Examples](./references/EXAMPLES.md)                                      |
@@ -636,4 +676,4 @@ pnpm dlx shadcn@latest add [component-name]
 
 ---
 
-**Last updated**: 2025-12-04
+**Last updated**: 2025-12-04 (Phase 6 completion)
