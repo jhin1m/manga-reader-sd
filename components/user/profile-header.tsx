@@ -14,7 +14,7 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user, onEditClick }: ProfileHeaderProps) {
-  const t = useTranslations("profile");
+  const t = useTranslations("user.profile");
 
   return (
     <Card className="p-6">

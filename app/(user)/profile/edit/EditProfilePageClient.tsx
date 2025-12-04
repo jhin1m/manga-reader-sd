@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useUploadAvatar } from "@/lib/hooks/use-profile";
 import { EditProfileForm } from "@/components/user/edit-profile-form";
@@ -12,10 +13,10 @@ import { ChangePasswordForm } from "@/components/user/change-password-form";
 import { AvatarUpload } from "@/components/user/avatar-upload";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
 
 export default function EditProfilePageClient() {
-  const t = useTranslations("profile");
-  const tCommon = useTranslations("common");
+  const t = useTranslations("user.profile");
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const {
@@ -24,10 +25,29 @@ export default function EditProfilePageClient() {
     error: avatarError,
   } = useUploadAvatar();
 
-  // Redirect if not authenticated (shouldn't happen on protected route)
-  if (!isAuthenticated || !user) {
-    router.push("/login");
-    return null;
+  // Use useEffect for redirect to avoid SSR issues
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // Set client-side flag on mount
+    const timer = setTimeout(() => setIsClient(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Only redirect on client side after component mounts
+    if (isClient && (!isAuthenticated || !user)) {
+      router.push("/login");
+    }
+  }, [isClient, isAuthenticated, user, router]);
+
+  // Show loading during SSR or while checking auth
+  if (!isClient || !isAuthenticated || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
   }
 
   // Handle profile update success - redirect to profile
@@ -48,14 +68,13 @@ export default function EditProfilePageClient() {
 
   // Handle avatar upload with error handling
   const handleAvatarUpload = async (file: File) => {
-    try {
-      const result = await uploadAvatar(file);
-      if (result.success) {
-        toast.success(t("editForm.success"));
-      }
-    } catch (error) {
-      // Error handling is done in the hook, but show additional feedback if needed
-      console.error("Avatar upload failed");
+    const result = await uploadAvatar(file);
+    if (result.success) {
+      toast.success(t("editForm.success"));
+    } else {
+      toast.error(t("editForm.avatarUploadError"), {
+        description: result.error,
+      });
     }
   };
 

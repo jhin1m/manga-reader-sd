@@ -149,6 +149,14 @@
 - ❌ `components/layout/footer.tsx` - Mixed text
 - ❌ `components/layout/header/user-menu.tsx` - Hardcoded text
 
+**Recently fixed (Phase 7):**
+
+- ✅ `components/user/EditProfileForm.tsx` - Fixed namespace from "profile" to "user.profile"
+- ✅ `components/user/ChangePasswordForm.tsx` - Fixed namespace from "profile" to "user.profile"
+- ✅ `components/user/AvatarUpload.tsx` - Fixed namespace from "profile" to "user.profile"
+- ✅ `app/(user)/profile/page.tsx` - Fixed namespace from "profile" to "user.profile"
+- ✅ `app/(user)/profile/edit/page.tsx` - Fixed namespace from "profile" to "user.profile"
+
 **Common mistakes to avoid:**
 
 - ❌ ANY hardcoded text in JSX
@@ -663,6 +671,7 @@ pnpm dlx shadcn@latest add [component-name]
 | Add password change      | [API Integration](./guides/04-API-INTEGRATION.md#password-change-pattern) |
 | Work on profile page     | [Phase 5 Documentation](./phase-5-profile-display-documentation.md)       |
 | Edit profile page        | [Phase 6 Documentation](./phase-6-profile-edit-documentation.md)          |
+| Fix i18n translations    | [Phase 7 Documentation](./phase-7-i18n-completion-documentation.md)       |
 | Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)            |
 | Check before commit      | [Checklist](./references/CHECKLIST.md)                                    |
 | See good examples        | [Examples](./references/EXAMPLES.md)                                      |
@@ -676,4 +685,4 @@ pnpm dlx shadcn@latest add [component-name]
 
 ---
 
-**Last updated**: 2025-12-04 (Phase 6 completion)
+**Last updated**: 2025-12-04 (Phase 7 completion)

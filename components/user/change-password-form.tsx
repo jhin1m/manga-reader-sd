@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUpdatePassword } from "@/lib/hooks/use-profile";
 import { changePasswordSchema } from "@/lib/validators/user-schemas";
-import type { ChangePasswordData } from "@/types/user";
 import type { z } from "zod";
 
 type FormData = z.infer<typeof changePasswordSchema>;

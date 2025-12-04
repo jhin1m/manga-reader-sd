@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUpdateProfile } from "@/lib/hooks/use-profile";
 import { updateProfileSchema } from "@/lib/validators/user-schemas";
-import type { User, UpdateProfileData } from "@/types/user";
+import type { User } from "@/types/user";
 import type { z } from "zod";
 
 type FormData = z.infer<typeof updateProfileSchema>;

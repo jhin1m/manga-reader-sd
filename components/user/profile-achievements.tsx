@@ -14,7 +14,7 @@ export function ProfileAchievements({
   pet,
   achievement,
 }: ProfileAchievementsProps) {
-  const t = useTranslations("profile");
+  const t = useTranslations("user.profile");
   const tUser = useTranslations("user");
 
   return (

@@ -8,6 +8,45 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types/user";
 
 /**
+ * Custom storage that works on both client and server
+ */
+const customStorage = () => {
+  if (typeof window === "undefined") {
+    // Server-side - return noop storage
+    return {
+      getItem: (_name: string) => null,
+      setItem: (_name: string, _value: string) => {},
+      removeItem: (_name: string) => {},
+    };
+  }
+
+  // Client-side - use localStorage
+  return {
+    getItem: (name: string) => {
+      try {
+        return localStorage.getItem(name);
+      } catch {
+        return null;
+      }
+    },
+    setItem: (name: string, value: string) => {
+      try {
+        localStorage.setItem(name, value);
+      } catch {
+        // Ignore errors
+      }
+    },
+    removeItem: (name: string) => {
+      try {
+        localStorage.removeItem(name);
+      } catch {
+        // Ignore errors
+      }
+    },
+  };
+};
+
+/**
  * Authentication state interface
  */
 interface AuthState {
@@ -90,7 +129,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "auth-storage", // localStorage key
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(customStorage),
       // Only persist these fields
       partialize: (state) => ({
         user: state.user,

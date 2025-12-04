@@ -150,6 +150,7 @@ Documentation for major feature implementations:
 - **[Phase 3 - Custom Hooks](./phase-3-custom-hooks-documentation.md)** - Profile management hooks
 - **[Phase 5 - Profile Display](./phase-5-profile-display-documentation.md)** - User profile page
 - **[Phase 6 - Profile Edit](./phase-6-profile-edit-documentation.md)** - Profile editing functionality
+- **[Phase 7 - i18n Completion](./phase-7-i18n-completion-documentation.md)** - Translation fixes and SSR compatibility
 
 ---
 

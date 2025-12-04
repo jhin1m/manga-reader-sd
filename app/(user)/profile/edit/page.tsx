@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import EditProfilePageClient from "./EditProfilePageClient";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("profile");
+  const t = await getTranslations("user.profile");
 
   return {
     title: t("editProfile"),

@@ -217,8 +217,18 @@
       "editForm": {
         "title": "Chỉnh sửa thông tin",
         "success": "Cập nhật hồ sơ thành công",
+        "error": "Không thể cập nhật hồ sơ. Vui lòng thử lại.",
         "avatarLabel": "Ảnh đại diện",
         "avatarDescription": "Tải lên ảnh đại diện mới. Kích thước tối đa 5MB. Định dạng: JPG, PNG, GIF, WebP.",
+        "avatarUploading": "Đang tải lên ảnh...",
+        "avatarUploadSuccess": "Ảnh đại diện đã được cập nhật!",
+        "avatarUploadError": "Không thể tải lên ảnh. Vui lòng thử lại.",
+        "avatarSelectFile": "Chọn ảnh",
+        "avatarFileSelected": "Đã chọn file: {filename}",
+        "avatarPreview": "Xem trước",
+        "namePlaceholder": "Nhập tên của bạn",
+        "emailPlaceholder": "Nhập email của bạn",
+        "saveChanges": "Lưu thay đổi",
         "upload": "Tải lên",
         "cancel": "Hủy",
         "remove": "Xóa"
@@ -226,7 +236,14 @@
       "passwordForm": {
         "title": "Đổi mật khẩu",
         "success": "Đổi mật khẩu thành công",
-        "error": "Đổi mật khẩu thất bại"
+        "error": "Đổi mật khẩu thất bại",
+        "currentPassword": "Mật khẩu hiện tại",
+        "currentPasswordPlaceholder": "Nhập mật khẩu hiện tại",
+        "newPassword": "Mật khẩu mới",
+        "newPasswordPlaceholder": "Nhập mật khẩu mới",
+        "confirmPassword": "Xác nhận mật khẩu",
+        "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+        "changePassword": "Đổi mật khẩu"
       },
       "sections": {
         "statistics": "Thống kê",

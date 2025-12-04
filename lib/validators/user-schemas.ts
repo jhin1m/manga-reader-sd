@@ -4,7 +4,6 @@
  */
 
 import { z } from "zod";
-import type { UpdateProfileData } from "@/types/user";
 
 /**
  * Common validation rules

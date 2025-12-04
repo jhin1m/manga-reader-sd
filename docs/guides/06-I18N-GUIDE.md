@@ -445,6 +445,33 @@ export function Stats() {
    - "Profile", "Library", "Logout", etc.
    - Status: ❌ Needs i18n implementation
 
+### ✅ Recently Fixed (Phase 7)
+
+**Profile components have been fixed:**
+
+1. **`components/user/EditProfileForm.tsx`** - ✅ Fixed
+   - Updated namespace from "profile" to "user.profile"
+   - Added form placeholders and validation translations
+   - Status: ✅ Complete i18n implementation
+
+2. **`components/user/ChangePasswordForm.tsx`** - ✅ Fixed
+   - Updated namespace from "profile" to "user.profile"
+   - Added password form translations
+   - Status: ✅ Complete i18n implementation
+
+3. **`components/user/AvatarUpload.tsx`** - ✅ Fixed
+   - Updated namespace from "profile" to "user.profile"
+   - Added avatar upload translations
+   - Status: ✅ Complete i18n implementation
+
+4. **`app/(user)/profile/page.tsx`** - ✅ Fixed
+   - Updated namespace from "profile" to "user.profile"
+   - Status: ✅ Complete i18n implementation
+
+5. **`app/(user)/profile/edit/page.tsx`** - ✅ Fixed
+   - Updated namespace from "profile" to "user.profile"
+   - Status: ✅ Complete i18n implementation
+
 ### ✅ Good Reference
 
 **`app/home-content.tsx`** - ✅ Correct i18n usage
@@ -719,6 +746,170 @@ Use same keys across namespaces where applicable:
 
 ---
 
+## SSR Compatibility
+
+### ⚠️ Critical for i18n Components
+
+When using translations, ensure components are SSR-compatible:
+
+### Common SSR Issues
+
+1. **Browser APIs on Server**
+   - `window`, `document`, `localStorage` cause crashes
+   - Use Next.js navigation primitives instead
+
+2. **Location Handling**
+
+   ```tsx
+   // ❌ WRONG - Browser-only API
+   const router = useRouter();
+   const pathname = window.location.pathname;
+
+   // ✅ CORRECT - Next.js primitives
+   const router = useRouter();
+   const pathname = usePathname();
+   ```
+
+3. **localStorage Access**
+
+   ```tsx
+   // ❌ WRONG - Crashes on SSR
+   const token = localStorage.getItem("token");
+
+   // ✅ CORRECT - SSR-safe wrapper
+   const token =
+     typeof window !== "undefined" ? localStorage.getItem("token") : null;
+   ```
+
+### SSR-Safe Patterns
+
+1. **Dynamic Imports for Client-Only Code**
+
+   ```tsx
+   "use client";
+
+   import dynamic from "next/dynamic";
+
+   const ClientOnlyComponent = dynamic(
+     () => import("./ComponentUsingBrowserAPIs"),
+     { ssr: false }
+   );
+   ```
+
+2. **Conditional Rendering**
+
+   ```tsx
+   "use client";
+
+   export function Component() {
+     const [isClient, setIsClient] = useState(false);
+
+     useEffect(() => {
+       setIsClient(true);
+     }, []);
+
+     if (!isClient) {
+       return <div>Loading...</div>;
+     }
+
+     // Client-only content here
+   }
+   ```
+
+### Testing SSR Compatibility
+
+Always test components with:
+
+- Server rendering (`next build && next start`)
+- Static generation (`next build && next export`)
+- Hydration mismatches in browser console
+
+---
+
+## Common Translation Mistakes
+
+### 1. Wrong Namespace Paths
+
+```tsx
+// ❌ WRONG - Incorrect namespace
+const t = useTranslations("profile");
+
+// ✅ CORRECT - Use user namespace
+const t = useTranslations("user.profile");
+```
+
+### 2. Missing Translation Keys
+
+```tsx
+// ❌ WRONG - Key doesn't exist
+<button>{t("submit")}</button>
+
+// ✅ CORRECT - Key exists in vi.json
+<button>{t("saveChanges")}</button>
+```
+
+### 3. Hardcoded Placeholders
+
+```tsx
+// ❌ WRONG - Hardcoded placeholder
+<input placeholder="Enter your email" />
+
+// ✅ CORRECT - Translated placeholder
+<input placeholder={t("emailPlaceholder")} />
+```
+
+### 4. Direct String Concatenation
+
+```tsx
+// ❌ WRONG - Direct concatenation
+<p>{t("welcome")} {user.name}</p>
+
+// ✅ CORRECT - Using interpolation
+<p>{t("welcome", { name: user.name })}</p>
+```
+
+---
+
+## Translation Keys Best Practices
+
+### Naming Conventions
+
+1. **Buttons**: Use action-based names
+   - `"saveChanges"`, `"cancel"`, `"delete"`, `"upload"`
+
+2. **Placeholders**: Use `Placeholder` suffix
+   - `"emailPlaceholder"`, `"namePlaceholder"`, `"searchPlaceholder"`
+
+3. **Labels**: Use descriptive names
+   - `"emailLabel"`, `"passwordLabel"`, `"avatarLabel"`
+
+4. **Validation**: Use descriptive error names
+   - `"emailInvalid"`, `"passwordMinLength"`, `"fileSizeExceeded"`
+
+5. **Status Messages**: Use success/error suffixes
+   - `"avatarUploadSuccess"`, `"loginFailed"`, `"passwordUpdateFailed"`
+
+### Organization
+
+```json
+{
+  "feature": {
+    "action": "Text",
+    "form": {
+      "fieldPlaceholder": "Placeholder text",
+      "fieldLabel": "Label text",
+      "validationError": "Error message"
+    },
+    "messages": {
+      "success": "Success message",
+      "error": "Error message"
+    }
+  }
+}
+```
+
+---
+
 ## Pre-Commit Checklist
 
 Before committing ANY code:
@@ -760,4 +951,4 @@ See [Anti-Patterns Reference](../references/ANTI-PATTERNS.md) for detailed issue
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-04

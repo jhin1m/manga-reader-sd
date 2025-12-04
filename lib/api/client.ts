@@ -137,9 +137,8 @@ async function processResponse<T>(response: Response): Promise<T> {
       // Handle 401 Unauthorized - auto logout
       if (response.status === 401) {
         useAuthStore.getState().logout();
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
-        }
+        // Note: Redirect should be handled by the component, not here
+        // This prevents SSR issues with location/window
       }
 
       throw new ApiClientError(

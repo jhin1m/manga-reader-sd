@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
 function ProfilePageContent() {
-  const t = useTranslations("profile");
+  const t = useTranslations("user.profile");
   const { user, isAuthenticated } = useAuth();
 
   // Loading state (shouldn't happen on protected route, but safety)
