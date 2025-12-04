@@ -97,6 +97,25 @@ Configured for Next.js domains:
 
 ## Authentication Endpoints
 
+**Available Authentication & User Management Operations:**
+
+- `POST /auth/login` - Login and get access token
+- `POST /auth/register` - Create new user account
+- `POST /auth/google` - OAuth authentication via Google
+- `GET /auth/profile` - Get current user profile with relationships
+- `PUT /auth/profile` - Update profile (name, email, password, avatar)
+- `POST /auth/logout` - Revoke current access token
+
+**User Settings Management:**
+The `PUT /auth/profile` endpoint provides comprehensive user settings management including:
+
+- Profile information (name, email)
+- Password change (requires confirmation)
+- Avatar upload (automatic S3 storage, max 2MB)
+- All fields optional for partial updates
+
+---
+
 ### POST /auth/login
 
 Login user and get access token.
@@ -315,36 +334,28 @@ Get authenticated user profile with achievements and pets.
 
 ### PUT /auth/profile
 
-Update authenticated user profile.
+Update authenticated user profile including name, email, password, and avatar.
 
 **Headers:** `Authorization: Bearer {token}`
 
 **Request Body (multipart/form-data):**
 
-```
-name=Nguyễn Văn A Updated
-email=updated@example.com
-password=newpassword123
-password_confirmation=newpassword123
-avatar=<file>
-```
+All fields are optional - only include fields you want to update:
 
-**Request Body (Password Change - JSON):**
-
-```json
-{
-  "current_password": "oldpassword123",
-  "password": "newpassword123",
-  "password_confirmation": "newpassword123"
-}
+```
+name=Nguyễn Văn A Updated (optional, max: 255 chars)
+email=updated@example.com (optional, must be unique)
+password=newpassword123 (optional, min: 8 chars, requires confirmation)
+password_confirmation=newpassword123 (required if password is provided)
+avatar=<file> (optional, image: jpeg/png/jpg/gif, max: 2MB)
 ```
 
-**Password Change Requirements:**
+**Validation Rules:**
 
-- `current_password`: Required for password changes (UX security)
-- `password`: New password (minimum 6 characters)
-- `password_confirmation`: Must match new password
-- Endpoint automatically detects password change requests by presence of `current_password` field
+- **name**: `sometimes|required|string|max:255`
+- **email**: `sometimes|required|email|max:255|unique:users,email,{user_id}`
+- **password**: `sometimes|required|string|min:8|confirmed`
+- **avatar**: `sometimes|image|mimes:jpeg,png,jpg,gif|max:2048` (KB)
 
 **Success Response (200):**
 
@@ -362,8 +373,26 @@ avatar=<file>
     "used_points": 300,
     "available_points": 1200,
     "achievements_points": 250,
+    "limit_pet_points": 1000,
+    "limit_achievement_points": 1000,
     "created_at": "2024-01-15T10:30:00.000000Z",
-    "updated_at": "2024-03-28T17:00:00.000000Z"
+    "updated_at": "2024-03-28T17:00:00.000000Z",
+    "pet": {
+      "id": 5,
+      "uuid": "6e7f8a9b-0c1d-2e3f-4a5b-6c7d8e9f0a1b",
+      "name": "Rồng Vàng",
+      "description": "Pet huyền thoại với sức mạnh khổng lồ",
+      "image": "/storage/images/pets/golden-dragon.png",
+      "points": 500
+    },
+    "achievement": {
+      "id": 8,
+      "uuid": "7f8a9b0c-1d2e-3f4a-5b6c-7d8e9f0a1b2c",
+      "name": "Veteran Reader",
+      "description": "Đọc hơn 1000 chương",
+      "icon": "🏆",
+      "points": 200
+    }
   }
 }
 ```
@@ -375,7 +404,18 @@ avatar=<file>
   "success": false,
   "message": "Validation failed",
   "errors": {
-    "email": ["The email has already been taken."],
+    "name": [
+      "The name field is required.",
+      "The name must not be greater than 255 characters."
+    ],
+    "email": [
+      "The email has already been taken.",
+      "The email must be a valid email address."
+    ],
+    "password": [
+      "The password must be at least 8 characters.",
+      "The password confirmation does not match."
+    ],
     "avatar": [
       "The avatar must be an image.",
       "The avatar must not be greater than 2048 kilobytes."
@@ -383,6 +423,15 @@ avatar=<file>
   }
 }
 ```
+
+**Implementation Notes:**
+
+- Password is automatically hashed by User model mutator before storage
+- Avatar upload uses `HasImageUploads` trait with automatic S3 storage
+- Old avatar is automatically cleaned up when uploading new avatar
+- Profile loads full user relationships (pet, achievement, pets, achievements)
+- Uses Laravel Sanctum token authentication
+- All fields are optional - partial updates supported
 
 ---
 

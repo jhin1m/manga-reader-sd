@@ -340,9 +340,6 @@
 - [ ] 🔴 Create `/app/profile/page.tsx`
 - [ ] 🔴 Display user info
   - [ ] Avatar, Name, Email
-  - [ ] Join date
-  - [ ] Points (total, used, available)
-  - [ ] Achievements
 - [ ] 🔴 Edit profile
   - [ ] Edit name
   - [ ] Change avatar (upload)

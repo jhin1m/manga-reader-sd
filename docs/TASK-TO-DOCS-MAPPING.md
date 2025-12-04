@@ -65,6 +65,7 @@
 **Reference examples:**
 
 - `lib/validators/auth.ts` - Zod schemas
+- `lib/validators/user-schemas.ts` - User profile & password schemas (Phase 2)
 - See [Examples](./references/EXAMPLES.md#validation)
 
 **Common mistakes to avoid:**
@@ -423,15 +424,50 @@ Before ANY commit, verify:
 **Reference:**
 
 - `types/user.ts` - `ChangePasswordData` interface
+- `lib/validators/user-schemas.ts` - `changePasswordSchema` (Phase 2)
 - `lib/api/endpoints/auth.ts` - `updateProfile` method
-- `messages/vi.json` - Add `auth.changePassword` translations
+- `messages/vi.json` - Add `user.profile.*` translations
 
 **Key requirements:**
 
 - Use `ChangePasswordData` type (requires `current_password` for security)
-- All labels/messages must use i18n (`useTranslations("auth.changePassword")`)
+- Use `changePasswordSchema` from `lib/validators/user-schemas.ts`
+- All labels/messages must use i18n (`useTranslations("user.profile")`)
 - Handle success/error states properly
 - Update auth store after successful change
+
+---
+
+### "I need to create a user profile update form"
+
+**Read:**
+
+- [Forms & Validation](./guides/05-FORMS-VALIDATION.md) - User profile schemas (Phase 2)
+- [API Integration](./guides/04-API-INTEGRATION.md) - Profile update mutation
+- [i18n Guide](./guides/06-I18N-GUIDE.md) - Profile form translations
+- [API Documentation](./API_DOCUMENTATION.md) - `PUT /auth/profile` endpoint
+
+**Reference:**
+
+- `types/user.ts` - `UpdateProfileData` interface
+- `lib/validators/user-schemas.ts` - `updateProfileSchema` and `avatarFileSchema`
+- `lib/api/endpoints/auth.ts` - `updateProfile` method
+- `messages/vi.json` - Add `user.profile.*` translations (already exists)
+
+**Key requirements:**
+
+- Use `UpdateProfileData` type for partial updates
+- Use `updateProfileSchema` for validation
+- Use `avatarFileSchema` for avatar uploads
+- All error messages use i18n keys (`user.profile.*`)
+- Handle file uploads separately from text fields
+- Preview avatar before upload
+
+**Phase breakdown:**
+
+- **Phase 2**: Schemas already created in `lib/validators/user-schemas.ts`
+- **Phase 3**: Create hooks (`useUpdateProfile`, `useChangePassword`, `useAvatarUpload`)
+- **Phase 4**: Create UI components (`UpdateProfileForm`, `ChangePasswordForm`, `AvatarUpload`)
 
 ---
 

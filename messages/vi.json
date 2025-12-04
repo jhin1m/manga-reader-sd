@@ -192,7 +192,7 @@
     "failedToSignInWithGoogle": "Không thể đăng nhập với Google"
   },
   "user": {
-    "profile": "Trang cá nhân",
+    "profilePage": "Trang cá nhân",
     "editProfile": "Chỉnh sửa hồ sơ",
     "changePassword": "Đổi mật khẩu",
     "changeAvatar": "Đổi avatar",
@@ -207,7 +207,21 @@
     "chaptersRead": "Chương đã đọc",
     "timeSpent": "Thời gian đọc",
     "favoriteGenres": "Thể loại yêu thích",
-    "readingStreak": "Chuỗi đọc liên tục"
+    "readingStreak": "Chuỗi đọc liên tục",
+    "profile": {
+      "nameMinChars": "Tên tối thiểu 2 ký tự",
+      "nameMaxChars": "Tên tối đa 50 ký tự",
+      "emailInvalid": "Email không hợp lệ",
+      "passwordMinLength": "Mật khẩu mới tối thiểu 6 ký tự",
+      "passwordMaxLength": "Mật khẩu quá dài",
+      "currentPasswordRequired": "Vui lòng nhập mật khẩu hiện tại",
+      "passwordConfirmationRequired": "Vui lòng xác nhận mật khẩu",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp",
+      "fileRequired": "Vui lòng chọn một file",
+      "fileSizeExceeded": "Kích thước file tối đa 5MB",
+      "fileTypeInvalid": "Chỉ chấp nhận file ảnh (JPG, PNG, GIF, WebP)",
+      "avatarRequired": "Vui lòng chọn avatar"
+    }
   },
   "search": {
     "search": "Tìm kiếm",
