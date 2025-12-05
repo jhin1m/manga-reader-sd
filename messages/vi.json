@@ -68,6 +68,9 @@
     "addToBookmarks": "Thêm vào đã lưu",
     "removeFromBookmarks": "Xóa khỏi đã lưu",
     "bookmarked": "Đã lưu",
+    "comment": {
+      "addError": "Không thể thêm bình luận"
+    },
     "detail": {
       "uploadedBy": "Đăng bởi",
       "updatedAt": "Cập nhật",
@@ -359,7 +362,9 @@
   "comment": {
     "title": "Bình luận",
     "placeholder": "Viết bình luận của bạn...",
-    "replyPlaceholder": "Trả lời @{username}...",
+    "replyPlaceholder": "Trả lời @{name}...",
+    "replyingTo": "Trả lời @{name}",
+    "cancel": "Hủy",
     "submit": "Gửi",
     "submitHint": "Ctrl + Enter để gửi",
     "reply": "Trả lời",

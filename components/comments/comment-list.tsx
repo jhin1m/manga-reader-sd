@@ -8,7 +8,7 @@ import type { Comment } from "@/types/comment";
 
 interface CommentListProps {
   comments: Comment[];
-  onReply: (content: string, parentId: number) => Promise<void>;
+  onReply: (content: string, parentId: number | null) => Promise<void>;
   onLoadMore?: () => void;
   hasMore?: boolean;
   isLoadingMore?: boolean;

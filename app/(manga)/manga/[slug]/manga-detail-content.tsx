@@ -13,7 +13,8 @@ import {
   User,
   PawPrint,
 } from "lucide-react";
-import { useState, useMemo, type ComponentType } from "react";
+import { useState, useMemo, useCallback, type ComponentType } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,10 +23,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { MangaDetailSkeleton } from "@/components/layout/loading/detail-skeleton";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
+import { CommentSection } from "@/components/comments";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { userFavoritesApi } from "@/lib/api/endpoints/user";
 import { useAuthStore } from "@/lib/store/authStore";
 import { cn, formatNumber } from "@/lib/utils";
+import { useMangaComments, useAddMangaComment } from "@/lib/hooks/use-comments";
 import type { Manga } from "@/types/manga";
 import type { ChapterListItem } from "@/types/chapter";
 
@@ -125,6 +128,8 @@ function MangaDetail({
 
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [searchTerm, setSearchTerm] = useState("");
+  const [commentSort, setCommentSort] = useState<"asc" | "desc">("desc");
+  const [commentPage, setCommentPage] = useState(1);
 
   const firstChapterSlug =
     manga.first_chapter?.slug || manga.latest_chapter?.slug;
@@ -146,6 +151,36 @@ function MangaDetail({
     );
     return result;
   }, [chapters, sortOrder, searchTerm]);
+
+  // Comments hooks
+  const { data: commentsData, isLoading: isCommentsLoading } = useMangaComments(
+    manga.slug,
+    {
+      page: commentPage,
+      sort: commentSort,
+      type: "manga",
+    }
+  );
+
+  const addCommentMutation = useAddMangaComment(manga.slug);
+
+  // Comment handlers
+  const handleAddComment = useCallback(
+    async (content: string, parentId?: number | null) => {
+      try {
+        // Ensure parent_id is always either a number or null, never undefined
+        await addCommentMutation.mutateAsync({
+          content,
+          parent_id: parentId ?? null,
+        });
+        toast.success(t("comment.addSuccess"));
+      } catch (error) {
+        toast.error(t("comment.addError"));
+        throw error;
+      }
+    },
+    [addCommentMutation, t]
+  );
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -400,6 +435,21 @@ function MangaDetail({
           </div>
         </CardContent>
       </Card>
+
+      {/* Comments Section */}
+      <CommentSection
+        comments={commentsData?.items || []}
+        totalCount={commentsData?.pagination.total || 0}
+        isLoading={isCommentsLoading}
+        sort={commentSort}
+        onSortChange={setCommentSort}
+        onAddComment={handleAddComment}
+        hasMore={
+          (commentsData?.pagination.current_page || 1) <
+          (commentsData?.pagination.last_page || 1)
+        }
+        onLoadMore={() => setCommentPage((p) => p + 1)}
+      />
     </div>
   );
 }
