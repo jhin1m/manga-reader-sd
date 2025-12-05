@@ -125,6 +125,7 @@ function MangaDetail({
   const t = useTranslations("manga");
   const tCommon = useTranslations("common");
   const tChapter = useTranslations("chapter");
+  const tComment = useTranslations("comment");
 
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [searchTerm, setSearchTerm] = useState("");
@@ -173,13 +174,13 @@ function MangaDetail({
           content,
           parent_id: parentId ?? null,
         });
-        toast.success(t("comment.addSuccess"));
+        toast.success(tComment("addSuccess"));
       } catch (error) {
-        toast.error(t("comment.addError"));
+        toast.error(tComment("addError"));
         throw error;
       }
     },
-    [addCommentMutation, t]
+    [addCommentMutation, tComment]
   );
 
   return (
