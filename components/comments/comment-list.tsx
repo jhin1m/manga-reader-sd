@@ -24,7 +24,7 @@ export function CommentList({
   const t = useTranslations("comment");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 transition-opacity duration-200">
       <ul className="space-y-4" role="list" aria-label={t("listLabel")}>
         {comments.map((comment) => (
           <CommentItem

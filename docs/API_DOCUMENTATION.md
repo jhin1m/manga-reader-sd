@@ -2499,6 +2499,94 @@ Add a new comment to a manga.
 - `dompurify`: For XSS protection in comment content
 - `@types/dompurify`: TypeScript definitions
 
+### Comments System Phase 5: Page Integration
+
+**Frontend integration of comments system into manga reading experience (2025-12-05)**
+
+#### Integration Points
+
+1. **Manga Detail Page Integration**
+   - File: `app/(manga)/manga/[slug]/manga-detail-content.tsx`
+   - Uses: `CommentSection` with `resourceType="manga"`
+   - Endpoint: `GET /mangas/{slug}/comments?type=manga`
+
+2. **Chapter Reader Integration**
+   - File: `components/reader/reader-view.tsx`
+   - Uses: `CommentSection` with `resourceType="chapter"`
+   - Endpoint: `GET /mangas/{manga_slug}/chapters/{chapter_slug}/comments`
+
+#### Resource Type Implementation
+
+The frontend `CommentSection` component automatically handles:
+
+- Resource type detection (`manga` vs `chapter`)
+- Appropriate endpoint selection
+- Context-aware comment display
+- Consistent UI/UX across both contexts
+
+#### No API Changes Required
+
+Phase 5 uses existing endpoints:
+
+- `GET /mangas/{slug}/comments` - For manga-level comments
+
+---
+
+### Comments System Phase 6: Final Touches (COMPLETE)
+
+**Production-ready polish and user experience enhancements (2025-12-05)**
+
+#### Internationalization
+
+**Vietnamese translations added to `messages/vi.json`:**
+
+- Complete `comment` namespace with all UI text
+- `emojiPicker` namespace for emoji search
+- Context-aware error messages in Vietnamese
+- User-friendly placeholder text
+
+#### Authentication Integration
+
+**Login prompts for unauthenticated users:**
+
+- Clean, centered login prompt design
+- Direct link to login page from comment sections
+- Maintains user flow context
+- Prevents unauthorized API calls
+
+#### Performance & UX Enhancements
+
+**Smooth loading transitions:**
+
+- Skeleton loading states matching comment structure
+- Optimistic updates for immediate feedback
+- Debounced emoji search (300ms)
+- Progressive loading of comment threads
+
+**Mobile optimization:**
+
+- Touch-optimized interaction targets (44px minimum)
+- Auto-dismiss keyboard on submit
+- Responsive design improvements
+- Better text scaling and readability
+
+#### No Backend Changes Required
+
+Phase 6 is purely frontend enhancements using existing APIs:
+
+- All comment endpoints remain unchanged
+- Existing authentication flows reused
+- No new database schemas or migrations
+
+#### Implementation Files
+
+- `messages/vi.json` - Vietnamese translations
+- Enhanced comment components with animations
+- Improved loading states and error handling
+- Mobile-responsive optimizations
+
+**All Comments System phases (1-6) are now complete!**
+
 ---
 
 ## Social Features (Authenticated)

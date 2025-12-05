@@ -356,26 +356,29 @@
     "filterByStatus": "Lọc theo trạng thái",
     "clearFilters": "Xóa bộ lọc"
   },
-  "comments": {
-    "comments": "Bình luận",
-    "addComment": "Thêm bình luận",
-    "reply": "Trả lời",
-    "edit": "Sửa",
-    "delete": "Xóa",
-    "report": "Báo cáo",
-    "like": "Thích",
-    "noComments": "Chưa có bình luận nào",
-    "writeComment": "Viết bình luận...",
-    "commentPosted": "Đã đăng bình luận",
-    "commentDeleted": "Đã xóa bình luận",
-    "confirmDelete": "Bạn có chắc muốn xóa bình luận này?",
-    "loginToComment": "Đăng nhập để bình luận",
+  "comment": {
+    "title": "Bình luận",
     "placeholder": "Viết bình luận của bạn...",
-    "replyPlaceholder": "Viết câu trả lời của bạn...",
+    "replyPlaceholder": "Trả lời @{username}...",
     "submit": "Gửi",
-    "submitHint": "Ctrl+Enter để gửi",
-    "cancel": "Hủy",
-    "replyingTo": "Đang trả lời {name}"
+    "submitHint": "Ctrl + Enter để gửi",
+    "reply": "Trả lời",
+    "loading": "Đang tải...",
+    "loadMore": "Xem thêm bình luận",
+    "sortNewest": "Mới nhất",
+    "sortOldest": "Cũ nhất",
+    "showReplies": "Xem {count} phản hồi",
+    "hideReplies": "Ẩn phản hồi",
+    "empty": "Chưa có bình luận nào",
+    "emptyHint": "Hãy là người đầu tiên bình luận!",
+    "listLabel": "Danh sách bình luận",
+    "loginRequired": "Đăng nhập để bình luận",
+    "addSuccess": "Đã thêm bình luận",
+    "addError": "Không thể thêm bình luận",
+    "errors": {
+      "contentRequired": "Vui lòng nhập nội dung",
+      "contentTooLong": "Bình luận quá dài (tối đa 2000 ký tự)"
+    }
   },
   "emojiPicker": {
     "search": "Tìm emoji...",

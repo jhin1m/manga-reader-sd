@@ -9,6 +9,7 @@ import { CommentForm } from "./comment-form";
 import { CommentList } from "./comment-list";
 import { CommentSkeleton } from "./comment-skeleton";
 import { CommentEmpty } from "./comment-empty";
+import Link from "next/link";
 import type { Comment } from "@/types/comment";
 
 interface CommentSectionProps {
@@ -35,14 +36,19 @@ export function CommentSection({
   isLoadingMore,
 }: CommentSectionProps) {
   const t = useTranslations("comment");
+  const tAuth = useTranslations("auth");
   const { isAuthenticated } = useAuthStore();
 
   if (isLoading) {
-    return <CommentSkeleton count={3} />;
+    return (
+      <div className="transition-opacity duration-200">
+        <CommentSkeleton count={3} />
+      </div>
+    );
   }
 
   return (
-    <Card>
+    <Card className="transition-opacity duration-200">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -63,8 +69,17 @@ export function CommentSection({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {isAuthenticated && (
+        {isAuthenticated ? (
           <CommentForm onSubmit={(content) => onAddComment(content)} />
+        ) : (
+          <div className="flex items-center justify-center py-4 bg-muted/30 rounded-lg">
+            <p className="text-sm text-muted-foreground mr-2">
+              {t("loginRequired")}
+            </p>
+            <Button size="sm" variant="outline" asChild>
+              <Link href="/login">{tAuth("login")}</Link>
+            </Button>
+          </div>
         )}
 
         {comments.length === 0 ? (
