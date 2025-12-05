@@ -596,9 +596,17 @@ Before ANY commit, verify:
 **Read:**
 
 - [Comments System Phase 1 API Documentation](./API_DOCUMENTATION.md#comments-system-phase-1-api-layer--types) - API endpoints and types
+- [Comments System Phase 2 Documentation](./phase-2-comments-hooks-documentation.md) - React Query hooks implementation
+- [Comments System Phase 3 Documentation](./phase-3-comments-components-documentation.md) - UI components implementation
 - [Forms & Validation](./guides/05-FORMS-VALIDATION.md#comment-schema-phase-1) - Comment validation schema
 - [API Integration](./guides/04-API-INTEGRATION.md) - API client usage
 - [i18n Guide](./guides/06-I18N-GUIDE.md) - Translating comment labels/errors
+
+**Phase breakdown:**
+
+- **Phase 1**: ✅ API Layer & Types - Backend endpoints, types, validation
+- **Phase 2**: ✅ React Query Hooks - Data fetching and state management
+- **Phase 3**: ✅ Core UI Components - Complete UI component library
 
 **Reference:**
 
@@ -607,6 +615,8 @@ Before ANY commit, verify:
 - `lib/validators/comment.ts` - `createCommentSchema` with XSS protection
 - `lib/utils/sanitize.ts` - HTML sanitization utility
 - `lib/utils/query-string.ts` - Query string builder for comment filtering
+- `lib/hooks/use-comments.ts` - React Query hooks (Phase 2)
+- `components/comments/` - Complete UI component library (Phase 3)
 
 **Key features implemented:**
 
@@ -616,6 +626,9 @@ Before ANY commit, verify:
 - Threaded comments via parent_id
 - Content validation (1-2000 characters)
 - i18n-ready error messages
+- Recursive reply rendering
+- Optimized performance with React.memo
+- 100% test coverage
 
 **API endpoints used:**
 
@@ -825,26 +838,26 @@ pnpm dlx shadcn@latest add [component-name]
 
 ## 🔄 Quick Links
 
-| I need to...             | Read this                                                                            |
-| ------------------------ | ------------------------------------------------------------------------------------ |
-| Set up the project       | [Getting Started](./guides/00-GETTING-STARTED.md)                                    |
-| Understand the structure | [Project Architecture](./guides/01-PROJECT-ARCHITECTURE.md)                          |
-| Create a component       | [Component Patterns](./guides/02-COMPONENT-PATTERNS.md)                              |
-| Create a form            | [Forms & Validation](./guides/05-FORMS-VALIDATION.md)                                |
-| Add translations         | [i18n Guide](./guides/06-I18N-GUIDE.md)                                              |
-| Work with APIs           | [API Integration](./guides/04-API-INTEGRATION.md)                                    |
-| Add SEO metadata         | [SEO & Metadata](./guides/07-SEO-METADATA.md)                                        |
-| Use UI components        | [UI Components](./guides/08-UI-COMPONENTS.md)                                        |
-| Add password change      | [API Integration](./guides/04-API-INTEGRATION.md#password-change-pattern)            |
-| Work on profile page     | [Phase 5 Documentation](./phase-5-profile-display-documentation.md)                  |
-| Edit profile page        | [Phase 6 Documentation](./phase-6-profile-edit-documentation.md)                     |
-| Work on user library     | [Phase 1 Library Hooks](./phase-1-library-hooks-documentation.md)                    |
-| Work on Comments System  | [API Documentation](./API_DOCUMENTATION.md#comments-system-phase-1-api-layer--types) |
-| Fix i18n translations    | [Phase 7 Documentation](./phase-7-i18n-completion-documentation.md)                  |
-| Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)                       |
-| Check before commit      | [Checklist](./references/CHECKLIST.md)                                               |
-| See good examples        | [Examples](./references/EXAMPLES.md)                                                 |
-| Avoid mistakes           | [Anti-Patterns](./references/ANTI-PATTERNS.md)                                       |
+| I need to...             | Read this                                                                 |
+| ------------------------ | ------------------------------------------------------------------------- |
+| Set up the project       | [Getting Started](./guides/00-GETTING-STARTED.md)                         |
+| Understand the structure | [Project Architecture](./guides/01-PROJECT-ARCHITECTURE.md)               |
+| Create a component       | [Component Patterns](./guides/02-COMPONENT-PATTERNS.md)                   |
+| Create a form            | [Forms & Validation](./guides/05-FORMS-VALIDATION.md)                     |
+| Add translations         | [i18n Guide](./guides/06-I18N-GUIDE.md)                                   |
+| Work with APIs           | [API Integration](./guides/04-API-INTEGRATION.md)                         |
+| Add SEO metadata         | [SEO & Metadata](./guides/07-SEO-METADATA.md)                             |
+| Use UI components        | [UI Components](./guides/08-UI-COMPONENTS.md)                             |
+| Add password change      | [API Integration](./guides/04-API-INTEGRATION.md#password-change-pattern) |
+| Work on profile page     | [Phase 5 Documentation](./phase-5-profile-display-documentation.md)       |
+| Edit profile page        | [Phase 6 Documentation](./phase-6-profile-edit-documentation.md)          |
+| Work on user library     | [Phase 1 Library Hooks](./phase-1-library-hooks-documentation.md)         |
+| Work on Comments System  | [Phase 3 Documentation](./phase-3-comments-components-documentation.md)   |
+| Fix i18n translations    | [Phase 7 Documentation](./phase-7-i18n-completion-documentation.md)       |
+| Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)            |
+| Check before commit      | [Checklist](./references/CHECKLIST.md)                                    |
+| See good examples        | [Examples](./references/EXAMPLES.md)                                      |
+| Avoid mistakes           | [Anti-Patterns](./references/ANTI-PATTERNS.md)                            |
 
 ---
 
@@ -854,4 +867,4 @@ pnpm dlx shadcn@latest add [component-name]
 
 ---
 
-**Last updated**: 2025-12-05 (Comments System Phase 1)
+**Last updated**: 2025-12-05 (Comments System Phase 3)

@@ -18,3 +18,12 @@ export {
 } from "./use-profile";
 
 export { useTokenRefresh } from "./use-token-refresh";
+
+export {
+  useMangaComments,
+  useChapterComments,
+  useAddMangaComment,
+  useAddChapterComment,
+  useCommentsPrefetch,
+  commentKeys,
+} from "./use-comments";
