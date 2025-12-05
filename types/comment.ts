@@ -7,13 +7,18 @@ import type { ListParams } from "./api";
 import type { UserBasic } from "./user";
 
 /**
+ * Commentable entity types
+ */
+export type CommentableType = "manga" | "chapter";
+
+/**
  * Comment entity
  */
 export interface Comment {
   id: number;
   uuid: string;
   content: string;
-  commentable_type: string; // e.g., "App\\Models\\Chapter"
+  commentable_type: CommentableType;
   commentable_id: number;
   parent_id: number | null;
   created_at: string;
@@ -45,6 +50,14 @@ export interface UpdateCommentRequest {
  */
 export interface CommentListParams extends ListParams {
   sort?: "asc" | "desc";
+}
+
+/**
+ * Manga comment list params
+ * Extends base with type filter
+ */
+export interface MangaCommentParams extends CommentListParams {
+  type?: "all" | "manga" | "chapter";
 }
 
 /**

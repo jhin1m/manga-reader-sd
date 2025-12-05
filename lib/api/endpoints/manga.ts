@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from "../client";
+import { buildQueryString } from "@/lib/utils/query-string";
 import type { PaginatedResponse } from "@/types/api";
 import type {
   Manga,
@@ -17,23 +18,11 @@ import type {
   Doujinshi,
 } from "@/types/manga";
 import type { ChapterListItem, ChapterListParams } from "@/types/chapter";
-
-/**
- * Build query string from params object
- */
-function buildQueryString(params?: Record<string, unknown>): string {
-  if (!params) return "";
-
-  const searchParams = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      searchParams.append(key, String(value));
-    }
-  });
-
-  const queryString = searchParams.toString();
-  return queryString ? `?${queryString}` : "";
-}
+import type {
+  Comment,
+  CreateCommentRequest,
+  MangaCommentParams,
+} from "@/types/comment";
 
 /**
  * Manga API
@@ -111,6 +100,32 @@ export const mangaApi = {
     return apiClient.get<PaginatedResponse<ChapterListItem>>(
       `/mangas/${slug}/chapters${query}`
     );
+  },
+
+  /**
+   * Get comments for a manga
+   * GET /mangas/{slug}/comments
+   * @param type - 'all' | 'manga' | 'chapter' (default: 'all')
+   */
+  getComments: async (
+    slug: string,
+    params?: MangaCommentParams
+  ): Promise<PaginatedResponse<Comment>> => {
+    const query = buildQueryString(params);
+    return apiClient.get<PaginatedResponse<Comment>>(
+      `/mangas/${slug}/comments${query}`
+    );
+  },
+
+  /**
+   * Add comment to a manga
+   * POST /mangas/{slug}/comments
+   */
+  addComment: async (
+    slug: string,
+    data: CreateCommentRequest
+  ): Promise<Comment> => {
+    return apiClient.post<Comment>(`/mangas/${slug}/comments`, data);
   },
 };
 

@@ -41,8 +41,8 @@ lib/validators/
 ├── auth.ts         # Login, register schemas
 ├── user-schemas.ts # User profile & password schemas
 ├── manga.ts        # Manga-related forms
-├── comment.ts      # Comment form schema
-└── ...
+├── comment.ts      # Comment form schema (Phase 1)
+└── index.ts        # Export barrel
 ```
 
 ### Basic Schema Pattern
@@ -234,6 +234,41 @@ export const mangaSchema = z.object({
 
 export type MangaFormData = z.infer<typeof mangaSchema>;
 ```
+
+### Comment Schema (Phase 1)
+
+**`lib/validators/comment.ts`:**
+
+```typescript
+import { z } from "zod";
+import { sanitizeHtml } from "@/lib/utils/sanitize";
+
+/**
+ * Comment form validation schema with XSS protection
+ */
+export const createCommentSchema = z.object({
+  content: z
+    .string()
+    .min(1, "comment.errors.contentRequired")
+    .max(2000, "comment.errors.contentTooLong")
+    .transform((content) => sanitizeHtml(content)),
+  parent_id: z.number().nullable().optional(),
+});
+
+// Type inference from schema
+export type CreateCommentInput = z.infer<typeof createCommentSchema>;
+```
+
+#### Key Points for Comment Schema:
+
+1. **XSS Protection**: Content is automatically sanitized using `sanitizeHtml()` utility
+2. **Length Validation**: Comments must be 1-2000 characters
+3. **Reply Support**: Optional `parent_id` for threaded comments
+4. **Translation Keys**: Error messages use i18n keys (`comment.errors.*`)
+5. **Type Safety**: Full TypeScript support with inferred types
+
+**Security Feature:**
+The schema uses a transform function to automatically sanitize HTML content, preventing XSS attacks while preserving basic formatting.
 
 ---
 
@@ -1356,9 +1391,11 @@ This ensures:
 
 - `lib/validators/auth.ts` - Auth validation schemas
 - `lib/validators/user-schemas.ts` - User profile & password validation schemas (Phase 2)
-- `lib/hooks/use-profile.ts` - Custom hooks for profile operations (Phase 3) - NEW
+- `lib/validators/comment.ts` - Comment form schema with XSS protection (Phase 1) - NEW
+- `lib/hooks/use-profile.ts` - Custom hooks for profile operations (Phase 3)
 - `components/auth/login-form.tsx` - Login form example (needs i18n fixes)
 - `components/auth/register-form.tsx` - Register form example (needs i18n fixes)
+- `lib/utils/sanitize.ts` - HTML sanitization utility for XSS protection - NEW
 
 ---
 

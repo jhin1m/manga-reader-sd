@@ -2436,6 +2436,71 @@ GET /api/v1/user/pets
 
 ---
 
+## Comments System Phase 1: API Layer & Types
+
+**New comment-related endpoints and types added for manga comments functionality**
+
+### API Endpoints Added
+
+#### GET /mangas/{slug}/comments
+
+Get comments for a manga with pagination support.
+
+**Query Parameters:**
+
+- `per_page` (int): Items per page (default: 20)
+- `page` (int): Page number
+- `sort` (string): Order (asc, desc - default: desc)
+- `type` (string): Filter by comment type ('all', 'manga', 'chapter' - default: 'all')
+
+**Response:** Paginated list of comments with user data and nested replies
+
+#### POST /mangas/{slug}/comments
+
+Add a new comment to a manga.
+
+**Request Body:**
+
+```json
+{
+  "content": "Comment content (sanitized)",
+  "parent_id": 123 // Optional, for replies
+}
+```
+
+**Response:** Created comment with full user data
+
+### Type Definitions Added
+
+**`types/comment.ts`:**
+
+- `Comment` - Core comment type with user relationships
+- `CreateCommentRequest` - Type for creating new comments
+- `MangaCommentParams` - Query parameters for fetching manga comments
+
+### Validation & Security
+
+**`lib/validators/comment.ts`:**
+
+- `createCommentSchema` - Zod schema for comment validation
+- Content validation: 1-2000 characters
+- XSS protection via DOMPurify integration
+- Optional parent_id for reply threading
+
+### Implementation Details
+
+- **XSS Protection**: All comment content is sanitized using DOMPurify before API submission
+- **Type Safety**: Full TypeScript support with inferred types from Zod schemas
+- **Query Support**: Full pagination and filtering support for comment retrieval
+- **Reply Threading**: Support for nested comments via parent_id
+
+**Dependencies Added:**
+
+- `dompurify`: For XSS protection in comment content
+- `@types/dompurify`: TypeScript definitions
+
+---
+
 ## Social Features (Authenticated)
 
 ### Comments
