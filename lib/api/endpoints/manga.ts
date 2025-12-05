@@ -125,7 +125,13 @@ export const mangaApi = {
     slug: string,
     data: CreateCommentRequest
   ): Promise<Comment> => {
-    return apiClient.post<Comment>(`/mangas/${slug}/comments`, data);
+    // Only include parent_id if it's a valid number (not null or undefined)
+    const requestData = {
+      content: data.content,
+      ...(data.parent_id !== null &&
+        data.parent_id !== undefined && { parent_id: data.parent_id }),
+    };
+    return apiClient.post<Comment>(`/mangas/${slug}/comments`, requestData);
   },
 };
 
