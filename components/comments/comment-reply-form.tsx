@@ -81,7 +81,11 @@ export function CommentReplyForm({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={t("replyPlaceholder")}
+          placeholder={
+            replyingTo
+              ? t("replyPlaceholder", { name: replyingTo })
+              : t("placeholder")
+          }
           className="min-h-[60px] resize-none text-sm"
           disabled={isSubmitting}
           autoFocus

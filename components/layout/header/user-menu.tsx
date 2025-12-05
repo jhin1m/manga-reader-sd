@@ -68,7 +68,9 @@ export function UserMenu() {
               {user.email}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {t("user.availablePoints", { points: user.available_points })}
+              {t("user.availablePoints", {
+                points: user.available_points ?? 0,
+              })}
             </p>
           </div>
         </DropdownMenuLabel>

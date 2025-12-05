@@ -95,7 +95,9 @@ export function MobileNav() {
                 <p className="text-sm font-medium">{user.name}</p>
                 <p className="text-xs text-muted-foreground">{user.email}</p>
                 <p className="text-xs font-medium text-primary">
-                  {t("user.availablePoints", { points: user.available_points })}
+                  {t("user.availablePoints", {
+                    points: user.available_points ?? 0,
+                  })}
                 </p>
               </div>
             </div>
