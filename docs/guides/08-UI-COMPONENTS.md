@@ -72,7 +72,9 @@ Located in `components/ui/`:
 - **dialog** - Modal dialog
 - **dropdown-menu** - Dropdown menu
 - **tabs** - Tabbed interface
+- **popover** - Popover overlay component
 - **sonner** - Toast notifications (via Sonner)
+- **emoji-picker** - Custom emoji picker for comments
 
 ### Documentation
 
@@ -299,6 +301,87 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
   <TabsContent value="password">Password content</TabsContent>
 </Tabs>;
 ```
+
+### Popover
+
+```tsx
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+<Popover>
+  <PopoverTrigger asChild>
+    <Button variant="ghost">Open Popover</Button>
+  </PopoverTrigger>
+  <PopoverContent>
+    <div>Popover content</div>
+  </PopoverContent>
+</Popover>;
+```
+
+### Emoji Picker
+
+Custom emoji picker component for comment forms.
+
+```tsx
+import { EmojiPickerComponent } from "@/components/ui/emoji-picker";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Smile } from "lucide-react";
+
+// Basic usage
+<Popover>
+  <PopoverTrigger asChild>
+    <Button type="button" variant="ghost" size="sm">
+      <Smile className="h-4 w-4" />
+    </Button>
+  </PopoverTrigger>
+  <PopoverContent>
+    <EmojiPickerComponent onEmojiSelect={(emoji) => console.log(emoji)} />
+  </PopoverContent>
+</Popover>;
+
+// With textarea integration
+import { useEmojiInsertion } from "@/hooks/use-emoji-insertion";
+
+function CommentForm() {
+  const [content, setContent] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { handleEmojiSelect } = useEmojiInsertion(content, setContent);
+
+  const handleEmojiSelectWithClose = (emoji: string) => {
+    handleEmojiSelect(emoji, textareaRef.current);
+    // Close popover after selection
+  };
+
+  return (
+    <div>
+      <textarea
+        ref={textareaRef}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+      />
+      <EmojiPickerComponent onEmojiSelect={handleEmojiSelectWithClose} />
+    </div>
+  );
+}
+```
+
+**Features:**
+
+- 400+ curated emojis for performance
+- Real-time search functionality
+- Keyboard navigation support
+- Accessibility compliant (ARIA labels)
+- Internationalization support
+- Grid layout with 8 columns
+- Virtual scrolling for performance
 
 ### Skeleton (Loading State)
 
@@ -879,6 +962,7 @@ import {
 - **[Phase 1 Library Hooks](../phase-1-library-hooks-documentation.md)** - Library data management
 - **[Phase 3 Library Content](../phase-3-library-content-documentation.md)** - Complete library implementation
 - **[Phase 4 Empty States & Skeletons](../phase-4-library-empty-states-skeletons-documentation.md)** - Advanced loading states and empty states
+- **[Phase 4 Emoji Integration](../phase-4-emoji-integration-documentation.md)** - Emoji picker implementation for comments
 
 ---
 

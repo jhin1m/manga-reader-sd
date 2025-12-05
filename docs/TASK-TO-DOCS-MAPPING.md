@@ -598,6 +598,7 @@ Before ANY commit, verify:
 - [Comments System Phase 1 API Documentation](./API_DOCUMENTATION.md#comments-system-phase-1-api-layer--types) - API endpoints and types
 - [Comments System Phase 2 Documentation](./phase-2-comments-hooks-documentation.md) - React Query hooks implementation
 - [Comments System Phase 3 Documentation](./phase-3-comments-components-documentation.md) - UI components implementation
+- [Comments System Phase 4 Documentation](./phase-4-emoji-integration-documentation.md) - Emoji picker for comments
 - [Forms & Validation](./guides/05-FORMS-VALIDATION.md#comment-schema-phase-1) - Comment validation schema
 - [API Integration](./guides/04-API-INTEGRATION.md) - API client usage
 - [i18n Guide](./guides/06-I18N-GUIDE.md) - Translating comment labels/errors
@@ -607,6 +608,7 @@ Before ANY commit, verify:
 - **Phase 1**: ✅ API Layer & Types - Backend endpoints, types, validation
 - **Phase 2**: ✅ React Query Hooks - Data fetching and state management
 - **Phase 3**: ✅ Core UI Components - Complete UI component library
+- **Phase 4**: ✅ Emoji Integration - Custom emoji picker with 400+ emojis
 
 **Reference:**
 
@@ -629,6 +631,8 @@ Before ANY commit, verify:
 - Recursive reply rendering
 - Optimized performance with React.memo
 - 100% test coverage
+- Emoji picker with 400+ curated emojis
+- Performance-optimized search and grid layout
 
 **API endpoints used:**
 
@@ -852,7 +856,7 @@ pnpm dlx shadcn@latest add [component-name]
 | Work on profile page     | [Phase 5 Documentation](./phase-5-profile-display-documentation.md)       |
 | Edit profile page        | [Phase 6 Documentation](./phase-6-profile-edit-documentation.md)          |
 | Work on user library     | [Phase 1 Library Hooks](./phase-1-library-hooks-documentation.md)         |
-| Work on Comments System  | [Phase 3 Documentation](./phase-3-comments-components-documentation.md)   |
+| Work on Comments System  | [Phase 4 Documentation](./phase-4-emoji-integration-documentation.md)     |
 | Fix i18n translations    | [Phase 7 Documentation](./phase-7-i18n-completion-documentation.md)       |
 | Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)            |
 | Check before commit      | [Checklist](./references/CHECKLIST.md)                                    |
@@ -867,4 +871,4 @@ pnpm dlx shadcn@latest add [component-name]
 
 ---
 
-**Last updated**: 2025-12-05 (Comments System Phase 3)
+**Last updated**: 2025-12-05 (Comments System Phase 4 - Emoji Integration)

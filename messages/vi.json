@@ -369,7 +369,17 @@
     "commentPosted": "Đã đăng bình luận",
     "commentDeleted": "Đã xóa bình luận",
     "confirmDelete": "Bạn có chắc muốn xóa bình luận này?",
-    "loginToComment": "Đăng nhập để bình luận"
+    "loginToComment": "Đăng nhập để bình luận",
+    "placeholder": "Viết bình luận của bạn...",
+    "replyPlaceholder": "Viết câu trả lời của bạn...",
+    "submit": "Gửi",
+    "submitHint": "Ctrl+Enter để gửi",
+    "cancel": "Hủy",
+    "replyingTo": "Đang trả lời {name}"
+  },
+  "emojiPicker": {
+    "search": "Tìm emoji...",
+    "noEmojiFound": "Không tìm thấy emoji"
   },
   "rating": {
     "rateThisManga": "Đánh giá truyện này",
