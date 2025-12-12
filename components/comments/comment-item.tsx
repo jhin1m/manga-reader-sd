@@ -13,7 +13,7 @@ import { sanitizeText } from "@/lib/utils/sanitize";
 import { CommentReplyForm } from "./comment-reply-form";
 import type { Comment } from "@/types/comment";
 
-const MAX_DEPTH = 2;
+const MAX_DEPTH = 1; // API only supports comment (depth 0) and reply (depth 1)
 
 interface CommentItemProps {
   comment: Comment;
