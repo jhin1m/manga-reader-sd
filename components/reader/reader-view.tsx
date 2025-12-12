@@ -124,18 +124,6 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
         }
       } else if (e.key === "Escape") {
         setShowControls((prev) => !prev);
-      } else if (e.key === " ") {
-        e.preventDefault();
-        if (readingMode === "single") {
-          setCurrentPage((prev) =>
-            Math.min(prev + 1, (chapter?.content?.length || 1) - 1)
-          );
-        } else {
-          window.scrollBy({
-            top: window.innerHeight * 0.8,
-            behavior: "smooth",
-          });
-        }
       }
     };
 
