@@ -18,7 +18,7 @@ interface CommentSectionProps {
   isLoading: boolean;
   sort: "asc" | "desc";
   onSortChange: (sort: "asc" | "desc") => void;
-  onAddComment: (content: string, parentId?: number | null) => Promise<void>;
+  onAddComment: (content: string, parentId?: string | null) => Promise<void>;
   onLoadMore?: () => void;
   hasMore?: boolean;
   isLoadingMore?: boolean;

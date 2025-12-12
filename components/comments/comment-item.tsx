@@ -19,7 +19,7 @@ const MAX_DEPTH = 1; // API only supports comment (depth 0) and reply (depth 1)
 interface CommentItemProps {
   comment: Comment;
   depth: number;
-  onReply: (content: string, parentId: number | null) => Promise<void>;
+  onReply: (content: string, parentId: string | null) => Promise<void>;
 }
 
 export function CommentItem({ comment, depth, onReply }: CommentItemProps) {

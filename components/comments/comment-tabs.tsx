@@ -142,23 +142,19 @@ export function CommentTabs({
         </div>
 
         <AnimatePresence mode="wait">
-          <TabsContent
+          <motion.div
             key={activeTab}
-            value={activeTab}
-            className="mt-4"
-            asChild
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="focus:outline-none mt-4"
+            tabIndex={-1}
           >
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="focus:outline-none"
-              tabIndex={-1}
-            >
+            <TabsContent value={activeTab} className="outline-none" forceMount>
               {tabs.find((tab) => tab.id === activeTab)?.content}
-            </motion.div>
-          </TabsContent>
+            </TabsContent>
+          </motion.div>
         </AnimatePresence>
       </Tabs>
 
