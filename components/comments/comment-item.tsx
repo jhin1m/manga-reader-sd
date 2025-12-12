@@ -13,12 +13,12 @@ import { sanitizeText } from "@/lib/utils/sanitize";
 import { CommentReplyForm } from "./comment-reply-form";
 import type { Comment } from "@/types/comment";
 
-const MAX_DEPTH = 3;
+const MAX_DEPTH = 2;
 
 interface CommentItemProps {
   comment: Comment;
   depth: number;
-  onReply: (content: string, parentId: number) => Promise<void>;
+  onReply: (content: string, parentId: number | null) => Promise<void>;
 }
 
 export function CommentItem({ comment, depth, onReply }: CommentItemProps) {
@@ -33,6 +33,7 @@ export function CommentItem({ comment, depth, onReply }: CommentItemProps) {
   const canNest = depth < MAX_DEPTH && depth >= 0; // Ensure depth is non-negative
 
   const handleReply = async (content: string) => {
+    // Always pass comment.id for replies, never null or undefined
     await onReply(content, comment.id);
     setIsReplying(false);
   };
