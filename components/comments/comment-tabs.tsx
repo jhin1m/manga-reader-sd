@@ -34,7 +34,7 @@ export function CommentTabs({
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({});
   const tabsListRef = useRef<HTMLDivElement>(null);
-  const t = useTranslations("comment");
+  const t = useTranslations();
 
   // Update indicator position when tab changes
   useEffect(() => {
@@ -164,7 +164,7 @@ export function CommentTabs({
 
       {/* Tab navigation hints for keyboard users */}
       <div className="sr-only" aria-live="polite">
-        {t("activeTab", { tab: tabs.find((t) => t.id === activeTab)?.label })}
+        {tabs.find((t) => t.id === activeTab)?.label}
       </div>
 
       {/* Swipe hint for mobile users (only show on first load) */}
