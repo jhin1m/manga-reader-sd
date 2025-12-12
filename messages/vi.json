@@ -380,11 +380,26 @@
     "loginRequired": "Đăng nhập để bình luận",
     "addSuccess": "Đã thêm bình luận",
     "addError": "Không thể thêm bình luận",
+    "badge": {
+      "chapter": "CH",
+      "manga": "MG",
+      "chapterAria": "Bình luận chương",
+      "mangaAria": "Bình luận truyện",
+      "chapterTooltip": "Bình luận về chương này",
+      "mangaTooltip": "Bình luận về toàn bộ truyện"
+    },
     "errors": {
       "contentRequired": "Vui lòng nhập nội dung",
       "contentTooLong": "Bình luận quá dài (tối đa 2000 ký tự)"
     }
   },
+  "tabs": {
+    "chapterComments": "Bình luận chương",
+    "mangaComments": "Bình luận truyện",
+    "allComments": "Tất cả bình luận"
+  },
+  "activeTab": "Đang xem tab {{tab}}",
+  "swipeHint": "Vuốt sang trái hoặc phải để chuyển tab",
   "emojiPicker": {
     "search": "Tìm emoji...",
     "noEmojiFound": "Không tìm thấy emoji"

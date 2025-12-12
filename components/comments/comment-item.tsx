@@ -11,6 +11,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { cn } from "@/lib/utils";
 import { sanitizeText } from "@/lib/utils/sanitize";
 import { CommentReplyForm } from "./comment-reply-form";
+import { CommentBadge } from "./comment-badge";
 import type { Comment } from "@/types/comment";
 
 const MAX_DEPTH = 1; // API only supports comment (depth 0) and reply (depth 1)
@@ -70,6 +71,7 @@ export function CommentItem({ comment, depth, onReply }: CommentItemProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-sm">{comment.user.name}</span>
+            <CommentBadge type={comment.commentable_type} variant="compact" />
             <span className="text-xs text-muted-foreground">{timeAgo}</span>
           </div>
 

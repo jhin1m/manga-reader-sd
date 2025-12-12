@@ -9,6 +9,7 @@ import { ReaderControls } from "./reader-controls";
 import { ReaderImage } from "./reader-image";
 import { ChapterWithNavigation } from "@/types/chapter";
 import { Loader2 } from "lucide-react";
+import { ChapterReaderComments } from "@/components/comments/chapter-reader-comments";
 
 import { cn } from "@/lib/utils";
 
@@ -277,6 +278,15 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
           )}
         </div>
       </main>
+
+      {/* Comments Section */}
+      <div className="relative z-0 mx-auto w-full max-w-4xl bg-background px-4 py-8">
+        <ChapterReaderComments
+          mangaSlug={mangaSlug}
+          chapterSlug={chapterSlug}
+          className="w-full"
+        />
+      </div>
 
       {/* Single Mode Pagination Info */}
       {readingMode === "single" && (
