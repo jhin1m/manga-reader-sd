@@ -19,7 +19,7 @@ export const commentApi = {
    * Update your own comment
    * PUT /comments/{id}
    */
-  update: async (id: number, data: UpdateCommentRequest): Promise<Comment> => {
+  update: async (id: string, data: UpdateCommentRequest): Promise<Comment> => {
     return apiClient.put<Comment>(`/comments/${id}`, data);
   },
 
@@ -28,7 +28,7 @@ export const commentApi = {
    * DELETE /comments/{id}
    * Note: If comment has replies, it will be soft-deleted
    */
-  delete: async (id: number): Promise<null> => {
+  delete: async (id: string): Promise<null> => {
     return apiClient.delete<null>(`/comments/${id}`);
   },
 };

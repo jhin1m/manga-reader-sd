@@ -15,12 +15,12 @@ export type CommentableType = "manga" | "chapter";
  * Comment entity
  */
 export interface Comment {
-  id: number;
-  uuid: string;
+  id: string;
+  uuid: string | null;
   content: string;
-  commentable_type: CommentableType;
-  commentable_id: number;
-  parent_id: number | null;
+  commentable_type: string; // "App\\Models\\Manga" or "App\\Models\\Chapter"
+  commentable_id: string;
+  parent_id: string | null;
   created_at: string;
   updated_at: string;
   user: UserBasic;
@@ -35,7 +35,7 @@ export interface Comment {
  */
 export interface CreateCommentRequest {
   content: string;
-  parent_id?: number | null;
+  parent_id?: string | null;
 }
 
 /**
