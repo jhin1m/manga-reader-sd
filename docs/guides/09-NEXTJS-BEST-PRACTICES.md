@@ -125,13 +125,14 @@ const nextConfig = {
 };
 ```
 
-### Complete Example
+### Complete Example with Shimmer Placeholder
 
 ```tsx
 "use client";
 
 import Image from "next/image";
 import { useState } from "react";
+import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 
 export function MangaCover({ manga }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -149,6 +150,8 @@ export function MangaCover({ manga }) {
             ? "scale-110 blur-2xl grayscale"
             : "scale-100 blur-0 grayscale-0"
         )}
+        placeholder="blur"
+        blurDataURL={getShimmerPlaceholder()}
         onLoad={() => setIsLoading(false)}
         priority={manga.isFeatured}
       />
@@ -156,6 +159,29 @@ export function MangaCover({ manga }) {
   );
 }
 ```
+
+### Image Placeholder Utility
+
+Use the provided shimmer placeholder utility for consistent loading effects:
+
+```tsx
+import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
+
+// In your Image component
+<Image
+  src={src}
+  alt={alt}
+  placeholder="blur"
+  blurDataURL={getShimmerPlaceholder()}
+  // ... other props
+/>
+```
+
+**Features:**
+- Dark blue gradient shimmer matching app theme
+- Browser and Node.js compatible
+- Base64 encoded for immediate display
+- No external dependencies
 
 ---
 
@@ -468,6 +494,8 @@ export default async function MangaDetailPage({ params }) {
 
 ### Dynamic Imports
 
+Use dynamic imports to reduce initial bundle size by loading components on-demand.
+
 ```tsx
 import dynamic from "next/dynamic";
 
@@ -477,6 +505,14 @@ const HeavyComponent = dynamic(() => import("@/components/heavy-component"), {
   ssr: false, // Disable SSR for this component
 });
 
+// Pattern for components with default export
+const ComponentWithDefault = dynamic(
+  () => import("@/components/component").then(mod => ({ default: mod.Component })),
+  {
+    loading: () => <ComponentSkeleton />,
+  }
+);
+
 export function Page() {
   return (
     <div>
@@ -484,6 +520,63 @@ export function Page() {
     </div>
   );
 }
+```
+
+### When to Use Dynamic Imports
+
+1. **Below-the-fold content**: Components not visible on initial render
+2. **User-triggered UI**: Modals, panels, or settings dialogs
+3. **Heavy components**: Components with many dependencies
+4. **Client-side only**: Components that don't need SSR
+
+### Package Optimization
+
+Configure Next.js to optimize package imports:
+
+```typescript
+// next.config.ts
+const nextConfig = {
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@radix-ui/react-icons",
+      "framer-motion",
+      "@tanstack/react-query",
+      "sonner",
+    ],
+  },
+};
+```
+
+### Bundle Analysis
+
+Analyze your bundle size to identify optimization opportunities:
+
+```bash
+# Generate bundle analysis
+ANALYZE=true pnpm build
+
+# Reports are saved to /analyze directory
+```
+
+### Replace Heavy Dependencies
+
+Consider using native browser APIs instead of heavy libraries:
+
+```tsx
+// ❌ Using date-fns (9.5KB gzipped)
+import { formatDistanceToNow } from "date-fns";
+const timeAgo = formatDistanceToNow(date);
+
+// ✅ Using native Intl (0KB)
+const timeAgo = useMemo(() => {
+  const rtf = new Intl.RelativeTimeFormat("vi", { numeric: "auto" });
+  const diff = Date.now() - date.getTime();
+  const seconds = Math.round(diff / 1000);
+  const minutes = Math.round(seconds / 60);
+  // ... calculate relative time
+  return rtf.format(-minutes, "minute");
+}, [date]);
 ```
 
 ### Font Optimization
@@ -656,6 +749,10 @@ export function Pagination({ totalPages }: { totalPages: number }) {
 6. **Parallel Fetching** - Load data concurrently
 7. **Proper Caching** - Optimize data fetching
 8. **Font Optimization** - Use Next.js font loader
+9. **Dynamic Imports** - Reduce initial bundle size
+10. **Package Optimization** - Configure optimizePackageImports
+11. **Bundle Analysis** - Regularly analyze bundle size
+12. **Native APIs** - Prefer native browser APIs over heavy libraries
 
 ---
 
@@ -675,4 +772,4 @@ export function Pagination({ totalPages }: { totalPages: number }) {
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-16

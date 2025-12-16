@@ -67,6 +67,10 @@ manga-reader-sd/
 │   │   └── chapter-list.tsx
 │   │
 │   ├── reader/                  # Chapter reader components
+│   │   ├── reader-view.tsx      # Main reader with comments integration
+│   │   ├── reader-state-reducer.ts  # useReducer for reader state (Phase 04)
+│   │   ├── reader-state-actions.ts  # Action creators for reader state
+│   │   ├── reader-state-refactoring-guide.md  # Migration guide
 │   │   ├── image-viewer.tsx
 │   │   └── navigation-controls.tsx
 │   │
@@ -127,7 +131,9 @@ manga-reader-sd/
 │   │   ├── auth.ts
 │   │   └── ...
 │   │
-│   └── utils.ts                 # Utility functions (cn, formatters, etc.)
+│   └── utils/                   # Utility functions
+│       ├── comment-cache-utils.ts  # Comment cache utilities (Phase 04)
+│       └── utils.ts               # General utilities (cn, formatters, etc.)
 │
 ├── types/                       # Global TypeScript types
 │   ├── manga.ts
@@ -215,6 +221,49 @@ Components follow atomic design principles:
 3. **Organisms** → `components/manga/`, `components/auth/` (login-form, manga-card)
 4. **Pages** → `app/**/page.tsx` (composition of organisms)
 
+### Performance-First Component Design
+
+Components should be designed with performance in mind:
+
+#### Dynamic Imports for Heavy Components
+
+Use Next.js dynamic imports for components that:
+- Are below-the-fold or not immediately visible
+- Have large dependencies
+- Are only shown on user interaction
+- Don't require SSR
+
+```tsx
+// reader-view.tsx
+const ChapterReaderComments = dynamic(
+  () => import("@/components/comments/chapter-reader-comments").then(mod => ({
+    default: mod.ChapterReaderComments
+  })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false,
+  }
+);
+```
+
+#### Loading State Components
+
+Create skeleton components for dynamic imports:
+
+```tsx
+// comments-skeleton.tsx
+export function CommentsSkeleton() {
+  return (
+    <div className="w-full max-w-4xl bg-background px-4 py-8">
+      {/* Skeleton structure matching actual component */}
+      <Skeleton className="h-8 w-48 mb-2" />
+      <Skeleton className="h-4 w-24" />
+      {/* More skeleton elements... */}
+    </div>
+  );
+}
+```
+
 ### Single Responsibility
 
 Each component file should have **one primary export**:
@@ -232,6 +281,53 @@ function CardFooter() { ... }
 // ❌ WRONG - Multiple unrelated components
 export function MangaCard() { ... }
 export function UserProfile() { ... }  // Should be separate file
+```
+
+### State Management Patterns
+
+#### useReducer for Complex State
+
+Components with multiple related state values should use `useReducer`:
+
+```tsx
+// components/reader/reader-view.tsx - Example from Phase 04
+import { readerReducer, initialState } from "./reader-state-reducer";
+import { readerActions } from "./reader-state-actions";
+
+export function ReaderView() {
+  const [state, dispatch] = useReducer(readerReducer, initialState);
+
+  // All related state in one object
+  const { readingMode, zoom, showControls, currentPage } = state;
+
+  // Type-safe actions
+  const handleModeChange = () => dispatch(readerActions.setSingleMode());
+  const handleZoom = () => dispatch(readerActions.zoomIn(state.zoom));
+}
+```
+
+**File organization for reducer pattern:**
+```
+components/reader/
+├── reader-view.tsx              # Main component using reducer
+├── reader-state-reducer.ts      # Reducer logic and types
+├── reader-state-actions.ts      # Action creators
+└── reader-state-refactoring-guide.md  # Migration guide
+```
+
+#### Utility Functions for Data Transformation
+
+For complex data operations, create dedicated utility files:
+
+```tsx
+// lib/utils/comment-cache-utils.ts - Example from Phase 04
+export function insertReplyIntoComments(
+  comments: Comment[],
+  parentId: string,
+  reply: Comment
+): Comment[] {
+  // Handle nested comment insertion with depth protection
+}
 ```
 
 ---
@@ -470,6 +566,34 @@ Fixes issue where next/prev chapter buttons were not responsive on mobile device
 - [State Management](./03-STATE-MANAGEMENT.md) - State management patterns
 - [Task-to-Docs Mapping](../TASK-TO-DOCS-MAPPING.md) - Quick task lookup
 
+## Component Updates (2025-12-05)
+
+### Comments System Integration (Phase 5)
+
+The following components have been added/updated for the Comments System:
+
+1. **New Components** (`components/comments/`):
+   - `comment-section.tsx` - Main comment section with resource type support
+   - `comment-list.tsx` - Paginated list of comments
+   - `comment-item.tsx` - Individual comment with replies
+   - `comment-form.tsx` - Comment submission form with emoji picker
+   - `comment-reply-form.tsx` - Reply form for threaded comments
+   - `comment-skeleton.tsx` - Loading skeleton states
+   - `comment-empty.tsx` - Empty state when no comments
+   - `comment-actions.tsx` - Like, reply, and report actions
+
+2. **Updated Components**:
+   - `components/reader/reader-view.tsx` - Added CommentSection for chapter-level comments
+   - `app/(manga)/manga/[slug]/manga-detail-content.tsx` - Added CommentSection for manga-level comments
+   - `app/(manga)/manga/[slug]/[chapter]/page.tsx` - Updated to use ReaderView
+
+3. **Removed Files**:
+   - `app/(manga)/manga/[slug]/[chapter]/chapter-content.tsx` - Replaced by ReaderView integration
+
+4. **Resource Types**:
+   - Comments support both `manga` and `chapter` resource types
+   - Context-aware comment sections based on page type
+
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-16 (Phase 04 - Code Quality & Refactoring)

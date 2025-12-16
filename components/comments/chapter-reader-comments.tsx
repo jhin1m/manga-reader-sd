@@ -37,8 +37,7 @@ export function ChapterReaderComments({
           sort: sortOrder,
           per_page: 20,
         });
-        console.log("Chapter comments response:", response); // Debug log
-        return {
+      return {
           comments: response.data || [],
           totalCount: response.meta?.pagination?.total || 0,
           hasMore:
@@ -58,8 +57,7 @@ export function ChapterReaderComments({
           sort: sortOrder,
           per_page: 20,
         });
-        console.log("Manga comments response:", response); // Debug log
-        return {
+      return {
           comments: response.data || [],
           totalCount: response.meta?.pagination?.total || 0,
           hasMore:
@@ -77,7 +75,7 @@ export function ChapterReaderComments({
       type,
     }: {
       content: string;
-      parentId?: number | null;
+      parentId?: string | null;
       type: "chapter" | "manga";
     }) => {
       if (type === "chapter") {
@@ -118,7 +116,7 @@ export function ChapterReaderComments({
 
   // Handle adding comments
   const handleAddComment = useCallback(
-    async (content: string, parentId?: number | null) => {
+    async (content: string, parentId?: string | null) => {
       const type = activeTab === "chapter" ? "chapter" : "manga";
       await addCommentMutation.mutateAsync({ content, parentId, type });
     },
@@ -176,14 +174,6 @@ export function ChapterReaderComments({
             onAddComment={handleAddComment}
             hasMore={mangaCommentsData?.hasMore || false}
           />
-          {/* Debug info */}
-          {process.env.NODE_ENV === "development" && (
-            <div className="mt-4 p-2 bg-yellow-100 text-xs">
-              Debug: Manga Comments - Count:{" "}
-              {mangaCommentsData?.comments?.length || 0}, Total:{" "}
-              {mangaCommentsData?.totalCount || 0}
-            </div>
-          )}
         </TabContent>
       ),
     },

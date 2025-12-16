@@ -19,7 +19,15 @@ import { ArrowLeft, ArrowRight, ChevronLeft, Settings } from "lucide-react";
 import Link from "next/link";
 import { ChapterNavigation } from "@/types/chapter";
 import { cn } from "@/lib/utils";
-import { ReaderSettingsPanel } from "./reader-settings-panel";
+import dynamic from "next/dynamic";
+
+const ReaderSettingsPanel = dynamic(
+  () => import("./reader-settings-panel").then(mod => ({ default: mod.ReaderSettingsPanel })),
+  {
+    ssr: false,
+    loading: () => null
+  }
+);
 
 interface ReaderControlsProps {
   mangaSlug: string;

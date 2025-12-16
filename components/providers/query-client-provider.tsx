@@ -28,10 +28,15 @@ export function ReactQueryProvider({ children }: ReactQueryProviderProps) {
           queries: {
             // Disable automatic refetching on window focus
             refetchOnWindowFocus: false,
-            // Retry failed requests once
-            retry: 1,
-            // Cache data for 5 minutes
+            // Retry failed requests twice with exponential backoff
+            retry: 2,
+            retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000),
+            // Cache data for 5 minutes (considered fresh)
             staleTime: 5 * 60 * 1000,
+            // Keep in memory for 30 minutes to prevent cache thrashing during reading sessions
+            gcTime: 30 * 60 * 1000,
+            // Refetch when network returns from offline state
+            refetchOnReconnect: 'always',
           },
         },
       })

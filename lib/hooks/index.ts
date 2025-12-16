@@ -19,6 +19,8 @@ export {
 
 export { useTokenRefresh } from "./use-token-refresh";
 
+export { useRefreshUser } from "./use-refresh-user";
+
 export {
   useMangaComments,
   useChapterComments,

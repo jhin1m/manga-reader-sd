@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { chapterApi } from "@/lib/api/endpoints/chapter";
 import { mangaApi } from "@/lib/api/endpoints/manga";
@@ -9,7 +9,16 @@ import { ReaderControls } from "./reader-controls";
 import { ReaderImage } from "./reader-image";
 import { ChapterWithNavigation } from "@/types/chapter";
 import { Loader2 } from "lucide-react";
-import { ChapterReaderComments } from "@/components/comments/chapter-reader-comments";
+import dynamic from "next/dynamic";
+import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+
+const ChapterReaderComments = dynamic(
+  () => import("@/components/comments/chapter-reader-comments").then(mod => ({ default: mod.ChapterReaderComments })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false, // Comments don't need SSR
+  }
+);
 
 import { cn } from "@/lib/utils";
 
@@ -20,6 +29,7 @@ interface ReaderViewProps {
 
 export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // State
   const [readingMode, setReadingMode] = useState<"single" | "long-strip">(
@@ -109,6 +119,42 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
       chapterApi.trackView(mangaSlug, chapterSlug).catch(console.error);
     }
   }, [mangaSlug, chapterSlug]);
+
+  // Prefetch adjacent chapters when current chapter loads
+  useEffect(() => {
+    if (navigation?.next?.slug) {
+      queryClient.prefetchQuery({
+        queryKey: ["chapter", mangaSlug, navigation.next.slug],
+        queryFn: async () => {
+          const [chapterData, imagesData] = await Promise.all([
+            chapterApi.getDetail(mangaSlug, navigation.next!.slug),
+            chapterApi.getImages(mangaSlug, navigation.next!.slug),
+          ]);
+          return {
+            ...chapterData,
+            content: imagesData.images,
+          } as ChapterWithNavigation;
+        },
+        staleTime: 2 * 60 * 1000, // 2 minutes fresh
+      });
+    }
+    if (navigation?.previous?.slug) {
+      queryClient.prefetchQuery({
+        queryKey: ["chapter", mangaSlug, navigation.previous.slug],
+        queryFn: async () => {
+          const [chapterData, imagesData] = await Promise.all([
+            chapterApi.getDetail(mangaSlug, navigation.previous!.slug),
+            chapterApi.getImages(mangaSlug, navigation.previous!.slug),
+          ]);
+          return {
+            ...chapterData,
+            content: imagesData.images,
+          } as ChapterWithNavigation;
+        },
+        staleTime: 2 * 60 * 1000, // 2 minutes fresh
+      });
+    }
+  }, [mangaSlug, navigation, queryClient]);
 
   // Keyboard Shortcuts
   useEffect(() => {

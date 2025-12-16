@@ -32,6 +32,7 @@
 | 07  | **[SEO & Metadata](./guides/07-SEO-METADATA.md)**                  | Centralized SEO, JSON-LD schemas             |
 | 08  | **[UI Components](./guides/08-UI-COMPONENTS.md)**                  | shadcn/ui usage, styling                     |
 | 09  | **[Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)** | Image, Link, optimization                    |
+| 10  | **[Performance Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md)** | useReducer, memoization, bundle optimization |
 
 ---
 
@@ -59,6 +60,8 @@
 - **Working with forms** → [Forms & Validation](./guides/05-FORMS-VALIDATION.md)
 - **API integration** → [API Integration](./guides/04-API-INTEGRATION.md) + [State Management](./guides/03-STATE-MANAGEMENT.md)
 - **Adding a new page** → [Component Patterns](./guides/02-COMPONENT-PATTERNS.md) + [SEO & Metadata](./guides/07-SEO-METADATA.md)
+- **Performance optimization** → [Performance Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md) + [Performance Testing Guide](./performance-testing-guide.md)
+- **Refactoring existing code** → [Performance Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md) + [Task-to-Docs Mapping](./TASK-TO-DOCS-MAPPING.md)
 - **Before committing** → [Checklist](./references/CHECKLIST.md)
 
 ---

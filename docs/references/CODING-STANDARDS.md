@@ -384,6 +384,167 @@ export interface Genre {}
 import type { Manga } from "@/types/manga";
 ```
 
+### Reducer Pattern Organization
+
+When using useReducer for complex state:
+
+```typescript
+// ✅ CORRECT - Organize reducer pattern files
+components/reader/
+├── reader-view.tsx              // Main component
+├── reader-state-reducer.ts      // Reducer logic and types
+├── reader-state-actions.ts      // Action creators
+└── reader-state-refactoring-guide.md  // Migration guide
+
+// Reducer file structure
+// reader-state-reducer.ts
+export interface ReaderState {
+  // State interface
+}
+
+export type ReaderAction =
+  | { type: "ACTION_TYPE"; payload: Type }
+  | // ... more actions
+
+export function readerReducer(state: ReaderState, action: ReaderAction): ReaderState {
+  // Reducer implementation
+}
+
+export const initialState: ReaderState = {
+  // Initial state
+};
+```
+
+---
+
+## Performance Standards
+
+### State Management Performance
+
+#### Choose useState vs useReducer Wisely
+
+```typescript
+// ✅ useState for simple, unrelated state
+const [isOpen, setIsOpen] = useState(false);
+const [selectedTab, setSelectedTab] = useState(0);
+
+// ✅ useReducer for complex, related state (3+ related values)
+// Example: Reader component with 6+ state properties
+const [state, dispatch] = useReducer(readerReducer, initialState);
+```
+
+#### Memoize Expensive Operations
+
+```typescript
+// ✅ Memoize callbacks to prevent unnecessary re-renders
+const handleClick = useCallback((id: string) => {
+  onItemClick(id);
+}, [onItemClick]);
+
+// ✅ Memoize expensive calculations
+const expensiveValue = useMemo(() => {
+  return data.reduce((sum, item) => sum + item.value, 0);
+}, [data]);
+
+// ✅ Memoize heavy components
+export default memo(ExpensiveComponent);
+```
+
+### Component Performance
+
+#### Dynamic Imports for Code Splitting
+
+```typescript
+// ✅ Lazy load heavy components
+const CommentSection = dynamic(
+  () => import("@/components/comments/comment-section"),
+  {
+    loading: () => <CommentSkeleton />,
+    ssr: false,
+  }
+);
+```
+
+#### Optimize Renders
+
+```typescript
+// ✅ Avoid creating new objects/arrays in render
+// ❌ BAD
+const style = { color: "red", fontSize: "16px" }; // New object each render
+
+// ✅ GOOD
+const buttonStyle = useMemo(() => ({
+  color: "red",
+  fontSize: "16px",
+}), []); // Memoized
+
+// ✅ Use stable references for prop objects
+const memoizedProps = useMemo(() => ({
+  id: manga.id,
+  title: manga.title,
+  onBookmark: handleBookmark,
+}), [manga.id, manga.title, handleBookmark]);
+```
+
+### Data Optimization
+
+#### React Query Best Practices
+
+```typescript
+// ✅ Configure proper caching
+const { data } = useQuery({
+  queryKey: ["mangas", params],
+  queryFn: () => mangaApi.getAll(params),
+  staleTime: 5 * 60 * 1000, // 5 minutes
+  cacheTime: 10 * 60 * 1000, // 10 minutes
+  refetchOnWindowFocus: false,
+});
+
+// ✅ Use query keys properly
+export const mangaKeys = {
+  all: ["mangas"] as const,
+  lists: () => [...mangaKeys.all, "list"] as const,
+  list: (params: any) => [...mangaKeys.lists(), params] as const,
+  details: () => [...mangaKeys.all, "detail"] as const,
+  detail: (id: string) => [...mangaKeys.details(), id] as const,
+};
+```
+
+### Bundle Optimization
+
+#### Import Patterns
+
+```typescript
+// ✅ Import only what you need
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+
+// ❌ Avoid importing entire libraries
+import * as UI from "@/components/ui";
+import * as DateFns from "date-fns";
+```
+
+### Image and Asset Optimization
+
+```typescript
+// ✅ Always use Next.js Image component
+import Image from "next/image";
+
+function MangaCover({ src, alt }: { src: string; alt: string }) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={200}
+      height={280}
+      priority={false} // Only for above-the-fold images
+      placeholder="blur"
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+    />
+  );
+}
+```
+
 ---
 
 ## Code Quality Checklist
@@ -398,7 +559,13 @@ Before committing:
 - [ ] **NO commented code**: Remove it, use Git
 - [ ] **Error handling**: Try-catch where needed
 - [ ] **Translations**: All text uses `useTranslations()`
+- [ ] **Images**: Use Next.js `<Image>` component, never `<img>` tags
 - [ ] **Git commit**: Follows conventional commits format
+- [ ] **Performance**: Memoize expensive operations and callbacks
+- [ ] **State**: Use useReducer for complex state (3+ related values)
+- [ ] **Bundle**: Import only what's needed, use tree shaking
+- [ ] **Lazy Loading**: Dynamic imports for heavy components
+- [ ] **Cache**: React Query configured with appropriate cache times
 
 ---
 
@@ -417,4 +584,4 @@ Before committing:
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-16 (Phase 04 - Performance Standards Added)

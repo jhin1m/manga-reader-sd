@@ -101,6 +101,66 @@
 
 ---
 
+### Performance Optimization
+
+**Read (in order):**
+
+1. [Performance Optimization Guide](./guides/10-PERFORMANCE-OPTIMIZATION.md) - Complete patterns
+2. [Performance Testing Guide](./performance-testing-guide.md) - How to measure performance
+3. [State Management](./guides/03-STATE-MANAGEMENT.md) - useReducer for complex state
+4. [Coding Standards → Performance Standards](./references/CODING-STANDARDS.md#performance-standards) - Checklist
+
+**Common optimization tasks:**
+
+#### Component with Multiple useState
+
+**Symptoms:** Component has 3+ related state properties causing re-renders
+
+**Read:** [State Management → When to use useReducer](./guides/03-STATE-MANAGEMENT.md#when-to-prefer-usereducer-over-usestate)
+
+**Example:** Reader component optimization (Phase 04)
+- Consolidated 6+ useState into useReducer
+- Reduced re-renders by 80%
+- Files: `components/reader/reader-state-reducer.ts`
+
+#### Slow Initial Load
+
+**Symptoms:** Large bundle size, slow FCP/LCP
+
+**Read:** [Performance Guide → Bundle Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md#bundle-optimization)
+
+**Common fixes:**
+- Dynamic imports for heavy components
+- Tree shaking with proper imports
+- Optimize images with Next.js Image component
+- Use webpack-bundle-analyzer
+
+#### Unnecessary Re-renders
+
+**Symptoms:** Components re-rendering without prop changes
+
+**Read:** [Performance Guide → Component Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md#component-optimization)
+
+**Common fixes:**
+- Memoize callbacks with `useCallback`
+- Memoize values with `useMemo`
+- Wrap components in `React.memo`
+- Use stable object references
+
+**Reference examples:**
+
+- `components/reader/reader-state-reducer.ts` - useReducer pattern
+- `lib/utils/comment-cache-utils.ts` - Optimized data transformations
+- `docs/performance-testing-guide.md` - Testing methodology
+
+**Tools:**
+
+- React DevTools Profiler
+- Chrome DevTools Performance tab
+- Lighthouse CI for automated testing
+
+---
+
 ### State Management
 
 **Read (in order):**
@@ -125,6 +185,66 @@
 - ❌ Using `useState` for API data (use React Query)
 - ❌ Selecting entire store (use selectors)
 - ❌ Not persisting auth state
+
+---
+
+### Performance Optimization
+
+**Read (in order):**
+
+1. [Performance Optimization Guide](./guides/10-PERFORMANCE-OPTIMIZATION.md) - Complete patterns
+2. [Performance Testing Guide](./performance-testing-guide.md) - How to measure performance
+3. [State Management](./guides/03-STATE-MANAGEMENT.md) - useReducer for complex state
+4. [Coding Standards → Performance Standards](./references/CODING-STANDARDS.md#performance-standards) - Checklist
+
+**Common optimization tasks:**
+
+#### Component with Multiple useState
+
+**Symptoms:** Component has 3+ related state properties causing re-renders
+
+**Read:** [State Management → When to use useReducer](./guides/03-STATE-MANAGEMENT.md#when-to-prefer-usereducer-over-usestate)
+
+**Example:** Reader component optimization (Phase 04)
+- Consolidated 6+ useState into useReducer
+- Reduced re-renders by 80%
+- Files: `components/reader/reader-state-reducer.ts`
+
+#### Slow Initial Load
+
+**Symptoms:** Large bundle size, slow FCP/LCP
+
+**Read:** [Performance Guide → Bundle Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md#bundle-optimization)
+
+**Common fixes:**
+- Dynamic imports for heavy components
+- Tree shaking with proper imports
+- Optimize images with Next.js Image component
+- Use webpack-bundle-analyzer
+
+#### Unnecessary Re-renders
+
+**Symptoms:** Components re-rendering without prop changes
+
+**Read:** [Performance Guide → Component Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md#component-optimization)
+
+**Common fixes:**
+- Memoize callbacks with `useCallback`
+- Memoize values with `useMemo`
+- Wrap components in `React.memo`
+- Use stable object references
+
+**Reference examples:**
+
+- `components/reader/reader-state-reducer.ts` - useReducer pattern
+- `lib/utils/comment-cache-utils.ts` - Optimized data transformations
+- `docs/performance-testing-guide.md` - Testing methodology
+
+**Tools:**
+
+- React DevTools Profiler
+- Chrome DevTools Performance tab
+- Lighthouse CI for automated testing
 
 ---
 
@@ -273,18 +393,51 @@
 **Read (in order):**
 
 1. [Anti-Patterns](./references/ANTI-PATTERNS.md) - What to fix
-2. Relevant guide based on code type
-3. [Checklist](./references/CHECKLIST.md) - Verification
+2. [Performance Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md) - Performance patterns
+3. [State Management](./guides/03-STATE-MANAGEMENT.md) - useState vs useReducer
+4. [Component Patterns](./guides/02-COMPONENT-PATTERNS.md) - Component best practices
+5. [Checklist](./references/CHECKLIST.md) - Verification
+
+**Common refactoring tasks:**
+
+#### Consolidating Multiple useState
+
+**When:** Component has 3+ related state properties
+
+**Read:** [State Management Guide → useReducer Pattern](./guides/03-STATE-MANAGEMENT.md#when-to-prefer-usereducer-over-usestate)
+
+**Example:** Reader component refactoring (Phase 04)
+- Before: 6+ useState hooks
+- After: Single useReducer with action creators
+- Files: `components/reader/reader-state-reducer.ts`, `reader-state-actions.ts`
+
+#### Performance Optimization
+
+**When:** Component re-renders unnecessarily
+
+**Read:** [Performance Optimization Guide](./guides/10-PERFORMANCE-OPTIMIZATION.md)
+
+**Common fixes:**
+- Memoize callbacks with `useCallback`
+- Memoize values with `useMemo`
+- Use `React.memo` for heavy components
+- Implement code splitting with dynamic imports
+
+#### Code Quality Improvements
+
+**Read:** [Coding Standards → Performance Standards](./references/CODING-STANDARDS.md#performance-standards)
 
 **Files needing refactoring:**
 
 - See [Anti-Patterns](./references/ANTI-PATTERNS.md#files-with-violations)
+- Components with performance issues (use React DevTools Profiler)
 
 **Priority:**
 
-1. HIGH: Auth forms, navigation (i18n violations)
-2. MEDIUM: User menu, footer
-3. LOW: TODO comments, commented code
+1. HIGH: Components with multiple useState (performance impact)
+2. HIGH: Auth forms, navigation (i18n violations)
+3. MEDIUM: User menu, footer, heavy components
+4. LOW: TODO comments, commented code
 
 ---
 
@@ -863,7 +1016,7 @@ pnpm dlx shadcn@latest add [component-name]
 | Work on user library     | [Phase 1 Library Hooks](./phase-1-library-hooks-documentation.md)             |
 | Work on Comments System  | [Phase 5 Documentation](./phase-5-comments-page-integration-documentation.md) |
 | Fix i18n translations    | [Phase 7 Documentation](./phase-7-i18n-completion-documentation.md)           |
-| Optimize Next.js         | [Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)                |
+| Optimize bundle size      | [Phase 03 Bundle Optimization](./phase-3-bundle-optimization-documentation.md) |
 | Check before commit      | [Checklist](./references/CHECKLIST.md)                                        |
 | See good examples        | [Examples](./references/EXAMPLES.md)                                          |
 | Avoid mistakes           | [Anti-Patterns](./references/ANTI-PATTERNS.md)                                |
@@ -876,4 +1029,4 @@ pnpm dlx shadcn@latest add [component-name]
 
 ---
 
-**Last updated**: 2025-12-05 (Comments System Phase 6 - Final Touches Complete)
+**Last updated**: 2025-12-16 (Phase 03 Bundle Optimization Complete)

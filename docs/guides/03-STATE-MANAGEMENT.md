@@ -132,6 +132,135 @@ export function MangaFilters() {
 }
 ```
 
+### When to Prefer useReducer over useState
+
+**Use useReducer when:**
+
+1. **Multiple related state values** - 3+ pieces of state that update together
+2. **Complex update logic** - State transitions depend on current state
+3. **Performance optimization** - Reducing re-renders from multiple useState calls
+4. **Predictable state updates** - Easier to test and debug state transitions
+
+**Example from Reader Component (Phase 04):**
+
+The manga reader originally had 6+ separate useState hooks:
+```typescript
+// ❌ Before - Multiple useState causing unnecessary re-renders
+const [readingMode, setReadingMode] = useState<"single" | "long-strip">("long-strip");
+const [zoom, setZoom] = useState(100);
+const [showControls, setShowControls] = useState(true);
+const [currentPage, setCurrentPage] = useState(0);
+const [backgroundColor, setBackgroundColor] = useState("#000000");
+const [imageSpacing, setImageSpacing] = useState(0);
+```
+
+Refactored to useReducer:
+```typescript
+// ✅ After - Consolidated state with useReducer
+import { readerReducer, initialState } from "./reader-state-reducer";
+import { readerActions } from "./reader-state-actions";
+
+const [state, dispatch] = useReducer(readerReducer, initialState);
+
+// Single state object, one re-render per action
+console.log(state.readingMode, state.zoom, state.showControls);
+
+// Type-safe actions
+dispatch(readerActions.setSingleMode());
+dispatch(readerActions.zoomIn(state.zoom));
+dispatch(readerActions.setBlackBackground());
+```
+
+#### Reader State Pattern
+
+**Reducer definition** (`components/reader/reader-state-reducer.ts`):
+```typescript
+export type ReadingMode = "single" | "long-strip";
+
+export interface ReaderState {
+  readingMode: ReadingMode;
+  zoom: number;
+  showControls: boolean;
+  currentPage: number;
+  backgroundColor: string;
+  imageSpacing: number;
+}
+
+export type ReaderAction =
+  | { type: "SET_READING_MODE"; payload: ReadingMode }
+  | { type: "SET_ZOOM"; payload: number }
+  | { type: "TOGGLE_CONTROLS" }
+  | { type: "SET_PAGE"; payload: number }
+  | { type: "NEXT_PAGE"; totalPages: number }
+  | { type: "PREVIOUS_PAGE" }
+  | { type: "SET_BACKGROUND_COLOR"; payload: string }
+  | { type: "SET_IMAGE_SPACING"; payload: number }
+  | { type: "RESET_TO_DEFAULTS" };
+
+export function readerReducer(state: ReaderState, action: ReaderAction): ReaderState {
+  switch (action.type) {
+    case "SET_READING_MODE":
+      return {
+        ...state,
+        readingMode: action.payload,
+        currentPage: 0, // Reset page when changing modes
+      };
+
+    case "SET_ZOOM":
+      return {
+        ...state,
+        zoom: Math.max(50, Math.min(200, action.payload)), // Clamp values
+      };
+
+    // ... more cases
+  }
+}
+```
+
+**Action creators** (`components/reader/reader-state-actions.ts`):
+```typescript
+export const readerActions = {
+  // Mode actions
+  setReadingMode: (mode: ReadingMode): ReaderAction => ({
+    type: "SET_READING_MODE",
+    payload: mode,
+  }),
+
+  setSingleMode: (): ReaderAction => ({
+    type: "SET_READING_MODE",
+    payload: "single",
+  }),
+
+  // Zoom helpers
+  zoomIn: (currentZoom: number): ReaderAction => ({
+    type: "SET_ZOOM",
+    payload: Math.min(currentZoom + 25, 200),
+  }),
+
+  zoomOut: (currentZoom: number): ReaderAction => ({
+    type: "SET_ZOOM",
+    payload: Math.max(currentZoom - 25, 50),
+  }),
+
+  // ... more actions
+};
+```
+
+#### Benefits of Reader State Pattern
+
+1. **Single State Update**: All related state changes happen in one dispatch
+2. **Type Safety**: All actions are typed and validated
+3. **Centralized Logic**: State update logic is in one place
+4. **Better Performance**: Fewer re-renders than multiple useState
+5. **Easier Testing**: Reducer is pure and easy to test
+6. **Debugging**: Easier to trace state changes with devtools
+
+For the complete implementation guide, see:
+- `components/reader/reader-state-reducer.ts` - Reducer logic
+- `components/reader/reader-state-actions.ts` - Action creators
+- `components/reader/reader-state-refactoring-guide.md` - Step-by-step guide
+- `docs/performance-testing-guide.md` - Performance testing instructions
+
 ---
 
 ## Server State (React Query)
@@ -547,6 +676,79 @@ export const useThemeStore = create<ThemeStore>()(
 );
 ```
 
+**Reader preferences store example (added December 12, 2024):**
+
+```typescript
+// lib/store/readerStore.ts
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface ReaderPreferences {
+  disableSpacebarNav: boolean;
+  readingMode: 'single' | 'long-strip';
+  backgroundColor: string;
+  imageSpacing: number;
+  zoom: number;
+}
+
+interface ReaderStore {
+  preferences: ReaderPreferences;
+  updatePreference: <K extends keyof ReaderPreferences>(
+    key: K,
+    value: ReaderPreferences[K]
+  ) => void;
+  resetPreferences: () => void;
+}
+
+const defaultPreferences: ReaderPreferences = {
+  disableSpacebarNav: true,
+  readingMode: 'long-strip',
+  backgroundColor: '#000000',
+  imageSpacing: 0,
+  zoom: 100,
+};
+
+export const useReaderStore = create<ReaderStore>()(
+  persist(
+    (set) => ({
+      preferences: defaultPreferences,
+      updatePreference: (key, value) =>
+        set((state) => ({
+          preferences: { ...state.preferences, [key]: value },
+        })),
+      resetPreferences: () => set({ preferences: defaultPreferences }),
+    }),
+    {
+      name: 'reader-preferences',
+      partialize: (state) => state.preferences,
+    }
+  )
+);
+```
+
+**Using the reader store in components:**
+
+```tsx
+// components/reader/reader-view.tsx
+import { useReaderStore } from "@/lib/store/readerStore";
+
+export function ReaderView() {
+  const { preferences, updatePreference } = useReaderStore();
+
+  // Update a single preference
+  const handleReadingModeChange = (mode: 'single' | 'long-strip') => {
+    updatePreference('readingMode', mode);
+  };
+
+  // Use preferences in your component
+  return (
+    <div style={{ backgroundColor: preferences.backgroundColor }}>
+      {/* Reader content */}
+    </div>
+  );
+}
+```
+
 ---
 
 ## Best Practices
@@ -666,6 +868,101 @@ const mutation = useMutation({
 });
 ```
 
+#### Comment Cache Utilities (Phase 04)
+
+For complex nested data structures like comments with replies, use dedicated cache utilities:
+
+**Utilities file** (`lib/utils/comment-cache-utils.ts`):
+```typescript
+import type { Comment } from "@/types/comment";
+
+// Insert reply into parent comment's replies array
+export function insertReplyIntoComments(
+  comments: Comment[],
+  parentId: string,
+  reply: Comment,
+  depth = 0
+): Comment[] {
+  // Prevent infinite recursion with depth guard
+  if (depth > 10) {
+    console.warn("Maximum comment depth exceeded while inserting reply");
+    return comments;
+  }
+
+  return comments.map((comment) => {
+    if (comment.id === parentId) {
+      return {
+        ...comment,
+        replies: [reply, ...(comment.replies || [])],
+        replies_count: comment.replies_count + 1,
+      };
+    }
+    if (comment.replies && comment.replies.length > 0) {
+      return {
+        ...comment,
+        replies: insertReplyIntoComments(comment.replies, parentId, reply, depth + 1),
+      };
+    }
+    return comment;
+  });
+}
+
+// Add comment optimistically to the beginning of the list
+export function addCommentOptimistically(
+  oldData: Comment[] | undefined,
+  newComment: Comment
+): Comment[] {
+  if (!oldData) return [newComment];
+  return [newComment, ...oldData];
+}
+
+// Remove comment optimistically from cache (handles nested replies)
+export function removeCommentOptimistically(
+  comments: Comment[],
+  commentId: string
+): Comment[] {
+  // Implementation handles both top-level and nested comments
+  // See full implementation in lib/utils/comment-cache-utils.ts
+}
+```
+
+**Usage in comment mutations**:
+```tsx
+import {
+  insertReplyIntoComments,
+  addCommentOptimistically,
+  removeCommentOptimistically,
+} from "@/lib/utils/comment-cache-utils";
+
+const replyMutation = useMutation({
+  mutationFn: commentApi.reply,
+  onMutate: async ({ commentId, content }) => {
+    await queryClient.cancelQueries({ queryKey: ["comments", mangaId] });
+
+    const previousComments = queryClient.getQueryData(["comments", mangaId]);
+
+    // Create optimistic reply
+    const optimisticReply: Comment = {
+      id: `temp-${Date.now()}`,
+      content,
+      created_at: new Date().toISOString(),
+      user: currentUser,
+      // ... other fields
+    };
+
+    // Insert reply into correct location
+    queryClient.setQueryData(["comments", mangaId], (old: Comment[]) =>
+      insertReplyIntoComments(old, commentId, optimisticReply)
+    );
+
+    return { previousComments };
+  },
+  onError: (err, variables, context) => {
+    queryClient.setQueryData(["comments", variables.mangaId], context.previousComments);
+  },
+});
+```
+
 ---
 
 ## Related Guides
@@ -689,4 +986,4 @@ const mutation = useMutation({
 
 ---
 
-**Last updated**: 2025-12-04 (Phase 1 library hooks)
+**Last updated**: 2025-12-16 (Phase 04 - Code Quality & Refactoring)

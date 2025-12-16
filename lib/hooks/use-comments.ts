@@ -28,7 +28,7 @@ const COMMENTS_STALE_TIME = 1000 * 60 * 5; // 5 minutes
  */
 function insertReplyIntoComments(
   comments: Comment[],
-  parentId: number,
+  parentId: string,
   reply: Comment,
   depth = 0
 ): Comment[] {
@@ -64,8 +64,8 @@ function insertReplyIntoComments(
 /**
  * Generate unique temporary ID for optimistic comments
  */
-function generateTempId(): number {
-  return Date.now() + Math.floor(Math.random() * 1000);
+function generateTempId(): string {
+  return (Date.now() + Math.floor(Math.random() * 1000)).toString();
 }
 
 // === Query Keys ===
@@ -197,8 +197,8 @@ export function useAddMangaComment(slug: string) {
         uuid: `temp-${tempId}`,
         content: newComment.content,
         commentable_type: "manga" as CommentableType,
-        commentable_id: 0, // Will be replaced by real data
-        parent_id: newComment.parent_id || null,
+        commentable_id: "0", // Will be replaced by real data
+        parent_id: newComment.parent_id?.toString() || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         user: {
@@ -240,7 +240,7 @@ export function useAddMangaComment(slug: string) {
               ...old,
               data: insertReplyIntoComments(
                 old.data,
-                newComment.parent_id,
+                newComment.parent_id.toString(),
                 optimisticComment
               ),
             };
@@ -315,8 +315,8 @@ export function useAddChapterComment(mangaSlug: string, chapterSlug: string) {
         uuid: `temp-${tempId}`,
         content: newComment.content,
         commentable_type: "chapter" as CommentableType,
-        commentable_id: 0, // Will be replaced by real data
-        parent_id: newComment.parent_id || null,
+        commentable_id: "0", // Will be replaced by real data
+        parent_id: newComment.parent_id?.toString() || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         user: {
@@ -361,7 +361,7 @@ export function useAddChapterComment(mangaSlug: string, chapterSlug: string) {
               ...old,
               data: insertReplyIntoComments(
                 old.data,
-                newComment.parent_id,
+                newComment.parent_id.toString(),
                 optimisticComment
               ),
             };

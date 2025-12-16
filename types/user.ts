@@ -40,10 +40,10 @@ export interface User {
   name: string;
   email: string;
   avatar_full_url: string;
-  total_points: number;
-  used_points: number;
-  available_points: number;
-  achievements_points: number;
+  total_points?: number; // Made optional to handle backend inconsistencies
+  used_points?: number; // Made optional to handle backend inconsistencies
+  available_points?: number; // Made optional to handle backend inconsistencies
+  achievements_points?: number; // Made optional to handle backend inconsistencies
   limit_pet_points?: number;
   limit_achievement_points?: number;
   created_at: string;

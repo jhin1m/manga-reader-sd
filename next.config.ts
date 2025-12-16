@@ -40,6 +40,9 @@ const nextConfig: NextConfig = {
       "lucide-react",
       "@radix-ui/react-icons",
       "embla-carousel-react",
+      "framer-motion",
+      "@tanstack/react-query",
+      "sonner",
     ],
   },
   // Remove console logs in production

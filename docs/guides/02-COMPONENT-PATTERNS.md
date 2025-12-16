@@ -609,6 +609,191 @@ if (error) {
 
 ---
 
+## State Management Patterns
+
+### useState Pattern
+
+For simple, unrelated state:
+
+```tsx
+export function SimpleComponent() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  return (
+    <div>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? "Close" : "Open"}
+      </button>
+      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+        {/* Tab content */}
+      </Tabs>
+    </div>
+  );
+}
+```
+
+### useReducer Pattern (Phase 04)
+
+For complex, related state (3+ properties):
+
+**When to use useReducer:**
+- Multiple state values that change together
+- Complex state logic that depends on previous state
+- Need to optimize performance (reduce re-renders)
+
+**Example - Reader Component:**
+
+```tsx
+// reader-view.tsx
+"use client";
+
+import { useReducer, useCallback } from "react";
+import { readerReducer, initialState } from "./reader-state-reducer";
+import { readerActions } from "./reader-state-actions";
+import type { ReaderState } from "./reader-state-reducer";
+
+export function ReaderView() {
+  const [state, dispatch] = useReducer(readerReducer, initialState);
+
+  // Memoize callbacks to prevent unnecessary re-renders
+  const handleModeChange = useCallback((mode: "single" | "long-strip") => {
+    dispatch(readerActions.setReadingMode(mode));
+  }, []);
+
+  const handleZoomIn = useCallback(() => {
+    dispatch(readerActions.zoomIn(state.zoom));
+  }, [state.zoom]);
+
+  const handleNextPage = useCallback(() => {
+    if (chapter?.content) {
+      dispatch(readerActions.nextPage(chapter.content.length));
+    }
+  }, [chapter?.content]);
+
+  return (
+    <div>
+      <ReaderControls
+        state={state}
+        onModeChange={handleModeChange}
+        onZoomIn={handleZoomIn}
+        onNextPage={handleNextPage}
+      />
+    </div>
+  );
+}
+```
+
+**Reducer file structure:**
+
+```tsx
+// reader-state-reducer.ts
+export type ReadingMode = "single" | "long-strip";
+
+export interface ReaderState {
+  readingMode: ReadingMode;
+  zoom: number;
+  showControls: boolean;
+  currentPage: number;
+  backgroundColor: string;
+  imageSpacing: number;
+}
+
+export type ReaderAction =
+  | { type: "SET_READING_MODE"; payload: ReadingMode }
+  | { type: "SET_ZOOM"; payload: number }
+  | { type: "TOGGLE_CONTROLS" }
+  | { type: "SET_PAGE"; payload: number }
+  | { type: "NEXT_PAGE"; totalPages: number }
+  | { type: "PREVIOUS_PAGE" }
+  | { type: "SET_BACKGROUND_COLOR"; payload: string }
+  | { type: "SET_IMAGE_SPACING"; payload: number }
+  | { type: "RESET_TO_DEFAULTS" };
+
+export function readerReducer(state: ReaderState, action: ReaderAction): ReaderState {
+  switch (action.type) {
+    case "SET_READING_MODE":
+      return {
+        ...state,
+        readingMode: action.payload,
+        currentPage: 0, // Reset page when changing modes
+      };
+
+    case "SET_ZOOM":
+      return {
+        ...state,
+        zoom: Math.max(50, Math.min(200, action.payload)),
+      };
+
+    case "TOGGLE_CONTROLS":
+      return {
+        ...state,
+        showControls: !state.showControls,
+      };
+
+    // ... more cases
+
+    default:
+      return state;
+  }
+}
+
+export const initialState: ReaderState = {
+  readingMode: "long-strip",
+  zoom: 100,
+  showControls: true,
+  currentPage: 0,
+  backgroundColor: "#000000",
+  imageSpacing: 0,
+};
+```
+
+**Action creators:**
+
+```tsx
+// reader-state-actions.ts
+import type { ReaderAction, ReadingMode } from "./reader-state-reducer";
+
+export const readerActions = {
+  setReadingMode: (mode: ReadingMode): ReaderAction => ({
+    type: "SET_READING_MODE",
+    payload: mode,
+  }),
+
+  setZoom: (zoom: number): ReaderAction => ({
+    type: "SET_ZOOM",
+    payload: zoom,
+  }),
+
+  zoomIn: (currentZoom: number): ReaderAction => ({
+    type: "SET_ZOOM",
+    payload: Math.min(currentZoom + 25, 200),
+  }),
+
+  zoomOut: (currentZoom: number): ReaderAction => ({
+    type: "SET_ZOOM",
+    payload: Math.max(currentZoom - 25, 50),
+  }),
+
+  toggleControls: (): ReaderAction => ({
+    type: "TOGGLE_CONTROLS",
+  }),
+
+  // ... more actions
+};
+```
+
+### Benefits of useReducer Pattern
+
+1. **Single State Update**: One dispatch updates multiple state properties
+2. **Better Performance**: Fewer re-renders than multiple useState
+3. **Predictable State**: All state transitions are explicit
+4. **Type Safety**: Actions are typed, preventing invalid state updates
+5. **Easier Testing**: Reducer is pure and can be tested independently
+6. **Centralized Logic**: All state logic in one place
+
+---
+
 ## Related Guides
 
 - **[i18n Guide](./06-I18N-GUIDE.md)** - Using translations (MANDATORY for all text)
@@ -627,10 +812,13 @@ if (error) {
 - `app/(user)/library/page.tsx` - Protected route with URL state management
 - `components/auth/protected-route.tsx` - Route protection pattern
 - `components/library/library-tabs.tsx` - Responsive tabs with prefetching
+- `components/reader/reader-view.tsx` - useReducer pattern implementation (Phase 04)
+- `components/reader/reader-state-reducer.ts` - Reducer logic example (Phase 04)
+- `components/reader/reader-state-actions.ts` - Action creators pattern (Phase 04)
 - `lib/hooks/use-auth.ts` - Custom hook pattern
 
 See [Examples Reference](../references/EXAMPLES.md#components) for complete list.
 
 ---
 
-**Last updated**: 2025-11-15
+**Last updated**: 2025-12-16 (Phase 04 - useReducer patterns added)

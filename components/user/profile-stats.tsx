@@ -11,11 +11,12 @@ interface ProfileStatsProps {
 export function ProfileStats({ user }: ProfileStatsProps) {
   const t = useTranslations("user.profile.fields");
 
+  // Defensive programming: handle cases where fields might be missing
   const stats = [
-    { label: t("totalPoints"), value: user.total_points },
-    { label: t("usedPoints"), value: user.used_points },
-    { label: t("availablePoints"), value: user.available_points },
-    { label: t("achievementsPoints"), value: user.achievements_points },
+    { label: t("totalPoints"), value: user.total_points ?? 0 },
+    { label: t("usedPoints"), value: user.used_points ?? 0 },
+    { label: t("availablePoints"), value: user.available_points ?? 0 },
+    { label: t("achievementsPoints"), value: user.achievements_points ?? 0 },
   ];
 
   return (
