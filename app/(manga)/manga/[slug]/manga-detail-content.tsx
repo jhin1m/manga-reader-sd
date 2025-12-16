@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ChevronRight,
   Star,
@@ -31,6 +32,7 @@ import { cn, formatNumber } from "@/lib/utils";
 import { useMangaComments, useAddMangaComment } from "@/lib/hooks/use-comments";
 import type { Manga } from "@/types/manga";
 import type { ChapterListItem } from "@/types/chapter";
+import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 
 // --- Sub-components ---
 
@@ -167,9 +169,9 @@ function MangaDetail({
 
   // Comment handlers
   const handleAddComment = useCallback(
-    async (content: string, parentId?: number | null) => {
+    async (content: string, parentId?: string | null) => {
       try {
-        // Ensure parent_id is always either a number or null, never undefined
+        // Ensure parent_id is always either a string or null, never undefined
         await addCommentMutation.mutateAsync({
           content,
           parent_id: parentId ?? null,
@@ -192,11 +194,15 @@ function MangaDetail({
             {/* Left: Cover Image (Fixed widths) */}
             <div className="shrink-0 w-[110px] sm:w-[150px] md:w-[220px]">
               <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden shadow-md">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={manga.cover_full_url}
                   alt={manga.name}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 640px) 100vw, 400px"
+                  style={{ objectFit: "cover" }}
+                  placeholder="blur"
+                  blurDataURL={getShimmerPlaceholder()}
+                  priority // Hero image - always prioritize
                 />
                 {manga.is_hot && (
                   <Badge

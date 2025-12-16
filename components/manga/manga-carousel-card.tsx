@@ -8,9 +8,11 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import Image from "next/image";
 
 import type { MangaListItem } from "@/types/manga";
 import { cn } from "@/lib/utils";
+import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 
 export interface MangaCarouselCardProps {
   manga: MangaListItem;
@@ -43,11 +45,14 @@ export function MangaCarouselCard({
         )}
       >
         {/* Cover Image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={manga.cover_full_url}
           alt={manga.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw"
+          style={{ objectFit: "cover" }}
+          placeholder="blur"
+          blurDataURL={getShimmerPlaceholder()}
         />
 
         {/* Gradient Overlay at Bottom */}

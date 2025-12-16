@@ -8,14 +8,17 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import Image from "next/image";
 
 import type { MangaListItem } from "@/types/manga";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 
 export interface MangaCardProps {
   manga: MangaListItem;
   className?: string;
+  priority?: boolean; // For first N items in lists
 }
 
 /**
@@ -25,7 +28,7 @@ export interface MangaCardProps {
  * @param manga - Manga data to display
  * @param className - Optional additional CSS classes
  */
-export function MangaCard({ manga, className }: MangaCardProps) {
+export function MangaCard({ manga, className, priority }: MangaCardProps) {
   const t = useTranslations("homepage.mangaCard");
 
   return (
@@ -40,11 +43,15 @@ export function MangaCard({ manga, className }: MangaCardProps) {
         )}
       >
         {/* Cover Image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={manga.cover_full_url}
           alt={manga.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+          style={{ objectFit: "cover" }}
+          placeholder="blur"
+          blurDataURL={getShimmerPlaceholder()}
+          priority={priority}
         />
 
         {/* Hot Badge */}
