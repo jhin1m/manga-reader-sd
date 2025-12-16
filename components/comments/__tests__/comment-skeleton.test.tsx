@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { CommentSkeleton } from "../comment-skeleton";
 
 describe("CommentSkeleton", () => {
@@ -15,34 +15,36 @@ describe("CommentSkeleton", () => {
 
     it("should render custom count of skeleton items", () => {
       render(<CommentSkeleton count={5} />);
-      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(16); // 1 header + 3 per comment * 5 comments
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        16
+      ); // 1 header + 3 per comment * 5 comments
     });
 
     it("should render card structure", () => {
       render(<CommentSkeleton />);
-      const card = document.querySelector(".card");
-      expect(card).toBeInTheDocument();
+      const cardEl = document.querySelector(".card");
+      expect(cardEl).toBeInTheDocument();
     });
 
     it("should render card header", () => {
       render(<CommentSkeleton />);
-      const header = document.querySelector(".card-header");
-      expect(header).toBeInTheDocument();
-      expect(header).toHaveClass("pb-3");
+      const headerEl = document.querySelector(".card-header");
+      expect(headerEl).toBeInTheDocument();
+      expect(headerEl).toHaveClass("pb-3");
     });
 
     it("should render card content", () => {
       render(<CommentSkeleton />);
-      const content = document.querySelector(".card-content");
-      expect(content).toBeInTheDocument();
-      expect(content).toHaveClass("space-y-4");
+      const contentEl = document.querySelector(".card-content");
+      expect(contentEl).toBeInTheDocument();
+      expect(contentEl).toHaveClass("space-y-4");
     });
 
     it("should render title skeleton in header", () => {
       render(<CommentSkeleton />);
-      const titleSkeleton = document.querySelector(".card-header .h-6");
-      expect(titleSkeleton).toBeInTheDocument();
-      expect(titleSkeleton).toHaveClass("w-32");
+      const titleSkeletonEl = document.querySelector(".card-header .h-6");
+      expect(titleSkeletonEl).toBeInTheDocument();
+      expect(titleSkeletonEl).toHaveClass("w-32");
     });
   });
 
@@ -50,23 +52,23 @@ describe("CommentSkeleton", () => {
     it("should render correct skeleton structure for each item", () => {
       render(<CommentSkeleton count={1} />);
 
-      const container = document.querySelector(".flex.gap-3");
-      expect(container).toBeInTheDocument();
+      const containerEl = document.querySelector(".flex.gap-3");
+      expect(containerEl).toBeInTheDocument();
 
-      const avatarSkeleton = container?.querySelector(".h-8.w-8");
+      const avatarSkeleton = containerEl?.querySelector(".h-8.w-8");
       expect(avatarSkeleton).toBeInTheDocument();
       expect(avatarSkeleton).toHaveClass("rounded-full", "flex-shrink-0");
 
-      const contentContainer = container?.querySelector(".flex-1");
-      expect(contentContainer).toBeInTheDocument();
-      expect(contentContainer).toHaveClass("space-y-2");
+      const contentContainerEl = containerEl?.querySelector(".flex-1");
+      expect(contentContainerEl).toBeInTheDocument();
+      expect(contentContainerEl).toHaveClass("space-y-2");
     });
 
     it("should render correct skeleton lines", () => {
       render(<CommentSkeleton count={1} />);
 
-      const contentContainer = document.querySelector(".flex-1.space-y-2");
-      const skeletonLines = contentContainer?.querySelectorAll(".skeleton");
+      const contentContainerEl = document.querySelector(".flex-1.space-y-2");
+      const skeletonLines = contentContainerEl?.querySelectorAll(".skeleton");
 
       expect(skeletonLines).toHaveLength(3);
 
@@ -91,17 +93,23 @@ describe("CommentSkeleton", () => {
 
     it("should handle count of 1", () => {
       render(<CommentSkeleton count={1} />);
-      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(4); // 1 header + 3 for 1 comment
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        4
+      ); // 1 header + 3 for 1 comment
     });
 
     it("should handle large count", () => {
       render(<CommentSkeleton count={10} />);
-      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(10);
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        10
+      );
     });
 
     it("should handle missing count prop (should use default)", () => {
       render(<CommentSkeleton />);
-      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(0);
+      expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(
+        0
+      );
     });
   });
 
@@ -154,7 +162,7 @@ describe("CommentSkeleton", () => {
 
     it("should announce loading content", () => {
       render(<CommentSkeleton />);
-      const card = document.querySelector('[role="status"]');
+      document.querySelector('[role="status"]');
       // Note: This would require adding role="status" to the component for better accessibility
     });
   });
@@ -164,7 +172,7 @@ describe("CommentSkeleton", () => {
       const { container } = render(<CommentSkeleton />);
 
       // Should contain Skeleton components
-      expect(container.querySelectorAll('.skeleton').length).toBeGreaterThan(0);
+      expect(container.querySelectorAll(".skeleton").length).toBeGreaterThan(0);
 
       // Should contain Card components
       expect(container.querySelector('[class*="card"]')).toBeInTheDocument();

@@ -7,6 +7,17 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   prettier,
+  // Test-specific ESLint rules
+  {
+    files: ['**/*.test.{ts,tsx}', '**/__tests__/**/*'],
+    rules: {
+      // Relaxed rules for test files
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@next/next/no-img-element': 'off',
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -17,6 +28,8 @@ const eslintConfig = defineConfig([
     "node_modules/**",
     "pnpm-lock.yaml",
     ".claude/**",
+    // Coverage report
+    "coverage/**",
   ]),
 ]);
 

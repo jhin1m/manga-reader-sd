@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Reply, ChevronDown, ChevronUp } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/store/authStore";
 import { cn } from "@/lib/utils";
 import { sanitizeText } from "@/lib/utils/sanitize";
+import { useRelativeTime } from "@/hooks/use-relative-time";
 import { CommentReplyForm } from "./comment-reply-form";
 import { CommentBadge } from "./comment-badge";
 import type { Comment } from "@/types/comment";
@@ -37,26 +38,11 @@ export function CommentItem({ comment, depth, onReply }: CommentItemProps) {
     setIsReplying(false);
   };
 
-  // Validate and format date safely (memoized for performance)
-  const timeAgo = useMemo(() => {
-    if (!comment.created_at) return t("unknownTime");
-
-    const rtf = new Intl.RelativeTimeFormat("vi", { numeric: "auto" });
-    const diff = Date.now() - new Date(comment.created_at).getTime();
-    const seconds = Math.round(diff / 1000);
-    const minutes = Math.round(seconds / 60);
-    const hours = Math.round(minutes / 60);
-    const days = Math.round(hours / 24);
-    const months = Math.round(days / 30);
-    const years = Math.round(months / 12);
-
-    if (years > 0) return rtf.format(-years, "year");
-    if (months > 0) return rtf.format(-months, "month");
-    if (days > 0) return rtf.format(-days, "day");
-    if (hours > 0) return rtf.format(-hours, "hour");
-    if (minutes > 0) return rtf.format(-minutes, "minute");
-    return rtf.format(-seconds, "second");
-  }, [comment.created_at, t]);
+  // Calculate relative time using custom hook (client-side only)
+  const timeAgo =
+    useRelativeTime(comment.created_at || new Date().toISOString(), {
+      locale: "vi",
+    }) || t("unknownTime");
 
   return (
     <li
@@ -80,7 +66,10 @@ export function CommentItem({ comment, depth, onReply }: CommentItemProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-sm">{comment.user.name}</span>
-            <CommentBadge type={comment.commentable_type as "manga" | "chapter"} variant="compact" />
+            <CommentBadge
+              type={comment.commentable_type as "manga" | "chapter"}
+              variant="compact"
+            />
             <span className="text-xs text-muted-foreground">{timeAgo}</span>
           </div>
 

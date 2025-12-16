@@ -21,7 +21,6 @@ export function ChapterReaderComments({
   className,
 }: ChapterReaderCommentsProps) {
   const tTabs = useTranslations("tabs");
-  const tComment = useTranslations("comment");
   const queryClient = useQueryClient();
 
   // State for active tab
@@ -37,7 +36,7 @@ export function ChapterReaderComments({
           sort: sortOrder,
           per_page: 20,
         });
-      return {
+        return {
           comments: response.data || [],
           totalCount: response.meta?.pagination?.total || 0,
           hasMore:
@@ -57,7 +56,7 @@ export function ChapterReaderComments({
           sort: sortOrder,
           per_page: 20,
         });
-      return {
+        return {
           comments: response.data || [],
           totalCount: response.meta?.pagination?.total || 0,
           hasMore:
@@ -124,15 +123,15 @@ export function ChapterReaderComments({
   );
 
   // Handle load more (simplified for now, can be enhanced later)
-  const handleLoadMoreChapterComments = useCallback(() => {
-    // TODO: Implement pagination loading
-    console.log("Load more chapter comments");
-  }, []);
+  // const handleLoadMoreChapterComments = useCallback(() => {
+  //   // TODO: Implement pagination loading
+  //   console.log("Load more chapter comments");
+  // }, []);
 
-  const handleLoadMoreMangaComments = useCallback(() => {
-    // TODO: Implement pagination loading
-    console.log("Load more manga comments");
-  }, []);
+  // const handleLoadMoreMangaComments = useCallback(() => {
+  //   // TODO: Implement pagination loading
+  //   console.log("Load more manga comments");
+  // }, []);
 
   // Prepare tabs data
   const tabs = [

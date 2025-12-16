@@ -22,28 +22,28 @@ export function TabContent({
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollPositions = useRef<Map<string, number>>(new Map());
 
-  // Save scroll position when tab becomes inactive
-  useEffect(() => {
-    const element = contentRef.current;
-    if (!element || !preserveScroll) return;
-
-    return () => {
-      scrollPositions.current.set(tabId, element.scrollTop);
-    };
-  }, [tabId, preserveScroll]);
+  // Save scroll position is now handled in the restore useEffect cleanup
 
   // Restore scroll position when tab becomes active
   useEffect(() => {
     const element = contentRef.current;
     if (!element || !preserveScroll) return;
 
-    const savedPosition = scrollPositions.current.get(tabId);
-    if (savedPosition !== undefined) {
-      // Use requestAnimationFrame to ensure DOM is ready
-      requestAnimationFrame(() => {
-        element.scrollTop = savedPosition;
-      });
-    }
+    const restoreScroll = () => {
+      const saved = scrollPositions.current.get(tabId);
+      if (saved) {
+        element.scrollTop = saved;
+      }
+    };
+
+    // Use requestAnimationFrame for smooth restoration
+    const rafId = requestAnimationFrame(restoreScroll);
+
+    return () => {
+      // Capture scroll position immediately
+      scrollPositions.current.set(tabId, element.scrollTop);
+      cancelAnimationFrame(rafId);
+    };
   }, [tabId, preserveScroll]);
 
   return (

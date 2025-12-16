@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CommentForm } from "../comment-form";
 
@@ -9,15 +9,15 @@ jest.mock("next-intl", () => ({
       comment: {
         placeholder: "Write a comment...",
         submit: "Submit",
-        submitHint: "Press Ctrl+Enter to submit"
+        submitHint: "Press Ctrl+Enter to submit",
       },
       emojiPicker: {
         search: "Search emoji...",
-        noEmojiFound: "No emoji found"
-      }
+        noEmojiFound: "No emoji found",
+      },
     };
     return (key: string) => translations[namespace]?.[key] || key;
-  }
+  },
 }));
 
 describe("CommentForm - Emoji Integration", () => {
@@ -75,7 +75,9 @@ describe("CommentForm - Emoji Integration", () => {
     expect(textarea).toHaveValue("Hello 😀");
 
     // Check if emoji picker is closed
-    expect(screen.queryByPlaceholderText("Search emoji...")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("Search emoji...")
+    ).not.toBeInTheDocument();
   });
 
   it("should insert emoji at cursor position", async () => {
@@ -119,7 +121,9 @@ describe("CommentForm - Emoji Integration", () => {
     await user.keyboard("{Escape}");
 
     // Check if emoji picker is closed
-    expect(screen.queryByPlaceholderText("Search emoji...")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("Search emoji...")
+    ).not.toBeInTheDocument();
   });
 
   it("should filter emojis when searching", async () => {

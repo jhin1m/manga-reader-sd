@@ -4,8 +4,10 @@ import { CommentEmpty } from "../comment-empty";
 // Mock next-intl
 jest.mock("next-intl", () => ({
   useTranslations: (key: string) => (subKey: string) => {
-    if (subKey === "empty") return "No comments yet. Be the first to share your thoughts!";
-    if (subKey === "emptyHint") return "Start a conversation by leaving a comment below.";
+    if (subKey === "empty")
+      return "No comments yet. Be the first to share your thoughts!";
+    if (subKey === "emptyHint")
+      return "Start a conversation by leaving a comment below.";
     return `${key}.${subKey}`;
   },
 }));
@@ -24,12 +26,18 @@ describe("CommentEmpty", () => {
 
     it("should display empty state message", () => {
       render(<CommentEmpty />);
-      expect(screen.getByText("No comments yet. Be the first to share your thoughts!")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "No comments yet. Be the first to share your thoughts!"
+        )
+      ).toBeInTheDocument();
     });
 
     it("should display empty state hint", () => {
       render(<CommentEmpty />);
-      expect(screen.getByText("Start a conversation by leaving a comment below.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Start a conversation by leaving a comment below.")
+      ).toBeInTheDocument();
     });
   });
 
@@ -69,27 +77,33 @@ describe("CommentEmpty", () => {
 
     it("should have correct bottom margin", () => {
       const { container } = render(<CommentEmpty />);
-      const icon = container.querySelector("svg");
-      expect(icon).toHaveClass("mb-3");
+      const iconEl = container.querySelector("svg");
+      expect(iconEl).toHaveClass("mb-3");
     });
   });
 
   describe("Text content styling", () => {
     it("should style main message correctly", () => {
       render(<CommentEmpty />);
-      const message = screen.getByText("No comments yet. Be the first to share your thoughts!");
-      expect(message).toHaveClass("text-sm", "text-muted-foreground");
+      const messageEl = screen.getByText(
+        "No comments yet. Be the first to share your thoughts!"
+      );
+      expect(messageEl).toHaveClass("text-sm", "text-muted-foreground");
     });
 
     it("should style hint message correctly", () => {
       render(<CommentEmpty />);
-      const hint = screen.getByText("Start a conversation by leaving a comment below.");
+      const hint = screen.getByText(
+        "Start a conversation by leaving a comment below."
+      );
       expect(hint).toHaveClass("text-xs", "text-muted-foreground");
     });
 
     it("should apply correct spacing between messages", () => {
-      const { container } = render(<CommentEmpty />);
-      const hint = screen.getByText("Start a conversation by leaving a comment below.");
+      render(<CommentEmpty />);
+      const hint = screen.getByText(
+        "Start a conversation by leaving a comment below."
+      );
       expect(hint).toHaveClass("mt-1");
     });
   });
@@ -97,7 +111,7 @@ describe("CommentEmpty", () => {
   describe("Accessibility", () => {
     it("should have appropriate ARIA roles", () => {
       render(<CommentEmpty />);
-      const container = document.querySelector('[role="status"]');
+      document.querySelector('[role="status"]');
       // Note: This would require adding role="status" to the component for better accessibility
     });
 
@@ -105,8 +119,8 @@ describe("CommentEmpty", () => {
       const { container } = render(<CommentEmpty />);
 
       // Icon should be decorative
-      const icon = container.querySelector("svg");
-      expect(icon).toHaveAttribute("aria-hidden", "true");
+      const iconEl = container.querySelector("svg");
+      expect(iconEl).toHaveAttribute("aria-hidden", "true");
     });
   });
 
@@ -115,8 +129,10 @@ describe("CommentEmpty", () => {
       const { container } = render(<CommentEmpty />);
 
       const icon = container.querySelector("svg");
-      const message = screen.getByText("No comments yet. Be the first to share your thoughts!");
-      const hint = screen.getByText("Start a conversation by leaving a comment below.");
+      screen.getByText("No comments yet. Be the first to share your thoughts!");
+      const hint = screen.getByText(
+        "Start a conversation by leaving a comment below."
+      );
 
       // Check spacing elements
       expect(icon).toHaveClass("mb-3");
@@ -127,8 +143,12 @@ describe("CommentEmpty", () => {
       const { container } = render(<CommentEmpty />);
 
       const icon = container.querySelector("svg");
-      const message = screen.getByText("No comments yet. Be the first to share your thoughts!");
-      const hint = screen.getByText("Start a conversation by leaving a comment below.");
+      const message = screen.getByText(
+        "No comments yet. Be the first to share your thoughts!"
+      );
+      const hint = screen.getByText(
+        "Start a conversation by leaving a comment below."
+      );
 
       expect(icon).toHaveClass("text-muted-foreground/50");
       expect(message).toHaveClass("text-muted-foreground");
@@ -149,10 +169,14 @@ describe("CommentEmpty", () => {
     it("should apply all expected CSS classes", () => {
       const { container } = render(<CommentEmpty />);
 
-      const wrapper = container.querySelector(".flex-col.items-center.justify-center.py-8.text-center");
+      const wrapper = container.querySelector(
+        ".flex-col.items-center.justify-center.py-8.text-center"
+      );
       expect(wrapper).toBeInTheDocument();
 
-      const icon = container.querySelector(".h-12.w-12.text-muted-foreground\\/50.mb-3");
+      const icon = container.querySelector(
+        ".h-12.w-12.text-muted-foreground\\/50.mb-3"
+      );
       expect(icon).toBeInTheDocument();
     });
   });
@@ -162,7 +186,9 @@ describe("CommentEmpty", () => {
       const { container } = render(<CommentEmpty />);
 
       // Component uses flex centering which is responsive by default
-      const wrapper = container.querySelector(".flex-col.items-center.justify-center");
+      const wrapper = container.querySelector(
+        ".flex-col.items-center.justify-center"
+      );
       expect(wrapper).toBeInTheDocument();
     });
   });
@@ -172,15 +198,25 @@ describe("CommentEmpty", () => {
       render(<CommentEmpty />);
 
       // Check that translation is working
-      expect(screen.getByText("No comments yet. Be the first to share your thoughts!")).toBeInTheDocument();
-      expect(screen.getByText("Start a conversation by leaving a comment below.")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "No comments yet. Be the first to share your thoughts!"
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Start a conversation by leaving a comment below.")
+      ).toBeInTheDocument();
     });
 
     it("should have appropriate text sizes", () => {
       render(<CommentEmpty />);
 
-      const message = screen.getByText("No comments yet. Be the first to share your thoughts!");
-      const hint = screen.getByText("Start a conversation by leaving a comment below.");
+      const message = screen.getByText(
+        "No comments yet. Be the first to share your thoughts!"
+      );
+      const hint = screen.getByText(
+        "Start a conversation by leaving a comment below."
+      );
 
       expect(message).toHaveClass("text-sm");
       expect(hint).toHaveClass("text-xs");

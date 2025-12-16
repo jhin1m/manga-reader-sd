@@ -4,7 +4,15 @@ import type { Comment } from "@/types/comment";
 
 // Mock CommentItem component
 jest.mock("../comment-item", () => ({
-  CommentItem: ({ comment, depth, onReply }: { comment: Comment, depth: number, onReply: (content: string, parentId: number) => Promise<void> }) => (
+  CommentItem: ({
+    comment,
+    depth,
+    onReply,
+  }: {
+    comment: Comment;
+    depth: number;
+    onReply: (content: string, parentId: number) => Promise<void>;
+  }) => (
     <li data-testid={`comment-item-${comment.id}`} data-depth={depth}>
       <div>{comment.content}</div>
       <button onClick={() => onReply(`Reply to ${comment.id}`, comment.id)}>
@@ -109,13 +117,21 @@ describe("CommentList", () => {
 
   describe("Load more functionality", () => {
     it("should show load more button when hasMore and onLoadMore are provided", () => {
-      render(<CommentList {...defaultProps} hasMore={true} onLoadMore={jest.fn()} />);
+      render(
+        <CommentList {...defaultProps} hasMore={true} onLoadMore={jest.fn()} />
+      );
       expect(screen.getByText("Load More Comments")).toBeInTheDocument();
     });
 
     it("should call onLoadMore when load more button is clicked", () => {
       const mockOnLoadMore = jest.fn();
-      render(<CommentList {...defaultProps} hasMore={true} onLoadMore={mockOnLoadMore} />);
+      render(
+        <CommentList
+          {...defaultProps}
+          hasMore={true}
+          onLoadMore={mockOnLoadMore}
+        />
+      );
 
       const loadMoreButton = screen.getByText("Load More Comments");
       fireEvent.click(loadMoreButton);
@@ -124,7 +140,14 @@ describe("CommentList", () => {
     });
 
     it("should show loading state when isLoadingMore is true", () => {
-      render(<CommentList {...defaultProps} hasMore={true} onLoadMore={jest.fn()} isLoadingMore={true} />);
+      render(
+        <CommentList
+          {...defaultProps}
+          hasMore={true}
+          onLoadMore={jest.fn()}
+          isLoadingMore={true}
+        />
+      );
 
       expect(screen.getByText("Loading...")).toBeInTheDocument();
       const loadMoreButton = screen.getByRole("button", { name: /loading/i });
@@ -132,7 +155,14 @@ describe("CommentList", () => {
     });
 
     it("should disable load more button when loading", () => {
-      render(<CommentList {...defaultProps} hasMore={true} onLoadMore={jest.fn()} isLoadingMore={true} />);
+      render(
+        <CommentList
+          {...defaultProps}
+          hasMore={true}
+          onLoadMore={jest.fn()}
+          isLoadingMore={true}
+        />
+      );
 
       const loadMoreButton = screen.getByRole("button", { name: /loading/i });
       expect(loadMoreButton).toBeDisabled();
@@ -154,13 +184,13 @@ describe("CommentList", () => {
     });
 
     it("should handle null comments gracefully", () => {
-      render(<CommentList {...defaultProps} comments={null as any} />);
+      render(<CommentList {...defaultProps} comments={null} />);
       const list = screen.getByRole("list", { name: "Comments List" });
       expect(list).toBeEmptyDOMElement();
     });
 
     it("should handle undefined comments gracefully", () => {
-      render(<CommentList {...defaultProps} comments={undefined as any} />);
+      render(<CommentList {...defaultProps} comments={undefined} />);
       const list = screen.getByRole("list", { name: "Comments List" });
       expect(list).toBeEmptyDOMElement();
     });
@@ -210,8 +240,12 @@ describe("CommentList", () => {
     });
 
     it("should render load more in correct container", () => {
-      render(<CommentList {...defaultProps} hasMore={true} onLoadMore={jest.fn()} />);
-      const loadMoreContainer = document.querySelector(".flex.justify-center.pt-2");
+      render(
+        <CommentList {...defaultProps} hasMore={true} onLoadMore={jest.fn()} />
+      );
+      const loadMoreContainer = document.querySelector(
+        ".flex.justify-center.pt-2"
+      );
       expect(loadMoreContainer).toBeInTheDocument();
     });
   });

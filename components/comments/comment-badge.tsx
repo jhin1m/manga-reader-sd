@@ -61,7 +61,7 @@ export function CommentBadge({
   }
 
   // Touch handlers for mobile
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = () => {
     if (showTooltip) {
       setTooltipVisible(true);
       // Haptic feedback if available
