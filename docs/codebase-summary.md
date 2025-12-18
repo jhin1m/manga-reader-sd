@@ -248,8 +248,70 @@ export function UpdateProfileForm() {
 ### State Management
 
 - **Local UI State**: `useState`, `useReducer`
-- **Server Data**: TanStack Query (React Query)
+- **Server Data**: TanStack Query (React Query) with SSR support
 - **Global State**: Zustand with persistence
+
+### Server-Side Rendering (SSR) Implementation
+
+**Phase 01: SSR Prefetch Pattern ✅**
+
+Implemented server-side rendering with TanStack Query for improved performance and SEO:
+
+**Key Components:**
+
+- **QueryClient Factory** (`lib/api/query-client.ts`)
+  - Uses React's `cache()` for request-scoped QueryClient instances
+  - Server-optimized default options (1-minute stale time, no window focus)
+  - Prevents memory leaks and ensures request isolation
+
+- **Browse Page SSR** (`app/(manga)/browse/page.tsx`)
+  - Prefetches manga list and genres in parallel on server
+  - Uses `HydrationBoundary` to transfer cache to client
+  - Implements streaming with `Suspense` boundaries
+  - Includes proper loading skeleton (`BrowseSkeleton`)
+
+- **SSR Pattern Benefits:**
+  - Faster First Contentful Paint (FCP)
+  - Better SEO with content in initial HTML
+  - Improved user experience with no loading spinners
+  - Progressive loading with React Suspense
+
+**Implementation Pattern:**
+
+```tsx
+// Server-side prefetch
+async function prefetchData() {
+  const queryClient = getQueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["manga-list", params],
+      queryFn: () => fetchMangaList(params),
+      staleTime: 30 * 1000, // 30 seconds
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["genres"],
+      queryFn: () => fetchGenres(),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }),
+  ]);
+
+  return dehydrate(queryClient);
+}
+
+// Page component
+export default async function Page() {
+  const dehydratedState = await prefetchData();
+
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      <Suspense fallback={<PageSkeleton />}>
+        <PageContent />
+      </Suspense>
+    </HydrationBoundary>
+  );
+}
+```
 
 ### Error Handling
 
@@ -321,6 +383,9 @@ pnpm lint             # ESLint
 - Phase 3: Profile management hooks
 - Phase 4: User profile UI components
 - Phase 5: Profile display page implementation
+- Phase 6: User library implementation (favorites, history, continue reading)
+- Phase 7: Comments system (reading, posting, emoji reactions)
+- Phase 01: SSR prefetch pattern implementation
 
 **In Progress:**
 
@@ -329,7 +394,6 @@ pnpm lint             # ESLint
 **Planned:**
 
 - Phase 6: Profile editing functionality
-- Phase 7: Library content implementation (tab components)
 - Phase 8: Polish & Optimization
 
 ## Documentation
@@ -339,10 +403,11 @@ pnpm lint             # ESLint
 - **Forms Guide**: `/docs/guides/05-FORMS-VALIDATION.md`
 - **API Docs**: `/docs/API_DOCUMENTATION.md`
 - **Task Mapping**: `/docs/TASK-TO-DOCS-MAPPING.md`
+- **SSR Implementation**: `/docs/guides/11-SSR-IMPLEMENTATION.md` ⭐ **NEW**
 - **Phase 5 Documentation**: `/docs/phase-5-profile-display-documentation.md`
 
 ---
 
-**Last Updated**: 2025-12-04
+**Last Updated**: 2025-12-18
 **Version**: 0.1.0
-**Phase**: 5 (Profile Display Page Complete)
+**Phase**: 01 (SSR Implementation Complete)

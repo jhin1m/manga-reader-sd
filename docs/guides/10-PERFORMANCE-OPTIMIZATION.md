@@ -6,6 +6,7 @@
 
 - [State Management](./03-STATE-MANAGEMENT.md) - Understanding useState vs useReducer
 - [Component Patterns](./02-COMPONENT-PATTERNS.md) - Server/Client components
+- [SSR Implementation](./11-SSR-IMPLEMENTATION.md) - Server-side rendering with TanStack Query
 - [Performance Testing Guide](../performance-testing-guide.md) - How to measure performance
 
 ---
@@ -16,6 +17,7 @@
 - [Component Optimization](#component-optimization)
 - [State Optimization](#state-optimization)
 - [Rendering Optimization](#rendering-optimization)
+- [SSR & Data Fetching Optimization](#ssr--data-fetching-optimization)
 - [Bundle Optimization](#bundle-optimization)
 - [Memory Management](#memory-management)
 - [Image & Asset Optimization](#image--asset-optimization)
@@ -28,6 +30,7 @@
 ### 1. Measure First
 
 Never optimize without measuring:
+
 ```bash
 # Before optimization
 npm run dev
@@ -38,6 +41,7 @@ npm run dev
 ### 2. Optimize for the User
 
 Focus on metrics that matter:
+
 - **First Contentful Paint (FCP)** - First meaningful content
 - **Largest Contentful Paint (LCP)** - Main content visible
 - **Time to Interactive (TTI)** - Page becomes responsive
@@ -54,6 +58,7 @@ Focus on metrics that matter:
 ### Avoid Unnecessary Re-renders
 
 #### Problem: Multiple useState
+
 ```tsx
 // ❌ BAD - Multiple useState causing re-renders
 function ReaderControls() {
@@ -70,6 +75,7 @@ function ReaderControls() {
 ```
 
 #### Solution: useReducer
+
 ```tsx
 // ✅ GOOD - Consolidated state with useReducer
 import { readerReducer, initialState } from "./reader-state-reducer";
@@ -129,14 +135,14 @@ function Component() {
 function FilteredList({ items, filter }: { items: Item[]; filter: string }) {
   const filteredItems = useMemo(() => {
     console.log("Filtering items...");
-    return items.filter(item =>
+    return items.filter((item) =>
       item.name.toLowerCase().includes(filter.toLowerCase())
     );
   }, [items, filter]); // Only recompute when dependencies change
 
   return (
     <ul>
-      {filteredItems.map(item => (
+      {filteredItems.map((item) => (
         <li key={item.id}>{item.name}</li>
       ))}
     </ul>
@@ -183,7 +189,7 @@ function Component() {
   const [filteredCount, setFilteredCount] = useState(0);
 
   useEffect(() => {
-    setFilteredCount(items.filter(item => item.active).length);
+    setFilteredCount(items.filter((item) => item.active).length);
   }, [items]);
 }
 
@@ -191,7 +197,7 @@ function Component() {
 function Component() {
   const [items, setItems] = useState([]);
 
-  const filteredCount = items.filter(item => item.active).length;
+  const filteredCount = items.filter((item) => item.active).length;
 }
 ```
 
@@ -251,19 +257,20 @@ function ReaderPage() {
 import { FixedSizeList as List } from "react-window";
 
 function VirtualizedChapterList({ chapters }: { chapters: Chapter[] }) {
-  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
+  const Row = ({
+    index,
+    style,
+  }: {
+    index: number;
+    style: React.CSSProperties;
+  }) => (
     <div style={style}>
       <ChapterItem chapter={chapters[index]} />
     </div>
   );
 
   return (
-    <List
-      height={600}
-      itemCount={chapters.length}
-      itemSize={60}
-      width="100%"
-    >
+    <List height={600} itemCount={chapters.length} itemSize={60} width="100%">
       {Row}
     </List>
   );
@@ -291,6 +298,204 @@ function MangaCover({ manga }: { manga: Manga }) {
   );
 }
 ```
+
+---
+
+## SSR & Data Fetching Optimization
+
+### Server-Side Rendering Benefits
+
+SSR with TanStack Query provides significant performance improvements:
+
+1. **Faster First Contentful Paint (FCP)** - Data fetched server-side
+2. **Improved SEO** - Content present in initial HTML
+3. **Better User Experience** - No loading spinners for initial data
+4. **Progressive Loading** - Streaming with Suspense boundaries
+
+**See complete guide**: [SSR Implementation](./11-SSR-IMPLEMENTATION.md)
+
+### QueryClient Factory Pattern
+
+Always use a cached QueryClient factory for server-side rendering:
+
+```tsx
+// lib/api/query-client.ts
+import { QueryClient } from "@tanstack/react-query";
+import { cache } from "react";
+
+export const getQueryClient = cache(
+  () =>
+    new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 60 * 1000, // 1 minute on server
+          gcTime: 5 * 60 * 1000, // 5 minutes
+          refetchOnWindowFocus: false, // No window on server
+          retry: false, // Fail fast on server
+        },
+      },
+    })
+);
+```
+
+### Parallel Data Prefetching
+
+Maximize server performance by prefetching data in parallel:
+
+```tsx
+// ✅ GOOD - Parallel prefetching
+async function prefetchPageData(params: PageParams) {
+  const queryClient = getQueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["manga", params.slug],
+      queryFn: () => fetchManga(params.slug),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["chapters", params.slug],
+      queryFn: () => fetchChapters(params.slug),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["genres"],
+      queryFn: () => fetchGenres(),
+    }),
+  ]);
+
+  return dehydrate(queryClient);
+}
+```
+
+### Strategic Cache Times
+
+Configure cache times based on data volatility:
+
+```tsx
+const cacheStrategies = {
+  // Static data - very long cache
+  genres: {
+    staleTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
+  },
+
+  // Semi-static content - medium cache
+  mangaList: {
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  },
+
+  // User-generated content - short cache
+  comments: {
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  },
+
+  // Real-time data - no cache
+  notifications: {
+    staleTime: 0,
+    gcTime: 60 * 1000, // 1 minute cleanup
+  },
+};
+```
+
+### Selective SSR Implementation
+
+Don't SSR everything - be strategic:
+
+```tsx
+// ✅ GOOD - SSR critical content, lazy load the rest
+export default async function Page() {
+  const dehydratedState = await prefetchCriticalData();
+
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      {/* Critical - Always SSR */}
+      <Suspense fallback={<CriticalSkeleton />}>
+        <CriticalContent />
+      </Suspense>
+      {/* Important - Usually SSR */}
+      <Suspense fallback={<ImportantSkeleton />}>
+        <ImportantContent />
+      </Suspense>
+      {/* Optional - Client-side only */}
+      <OptionalContent /> {/* Dynamic import */}
+    </HydrationBoundary>
+  );
+}
+```
+
+### Streaming with Suspense
+
+Use Suspense boundaries for progressive loading:
+
+```tsx
+// Load content in order of priority
+export default function MangaPage() {
+  return (
+    <div>
+      {/* Above the fold - loads first */}
+      <Suspense fallback={<MangaInfoSkeleton />}>
+        <MangaInfo />
+      </Suspense>
+
+      {/* Primary content - loads second */}
+      <Suspense fallback={<ChapterListSkeleton />}>
+        <ChapterList />
+      </Suspense>
+
+      {/* Secondary content - loads last */}
+      <Suspense fallback={<CommentsSkeleton />}>
+        <CommentsSection />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+### Optimize API Calls
+
+Reduce server load with smart fetching:
+
+```tsx
+// ✅ GOOD - Optimized API calls
+await queryClient.prefetchQuery({
+  queryKey: ["manga-list", filters, page],
+  queryFn: async () => {
+    // Use URL with all filters applied
+    const params = new URLSearchParams({
+      page: String(page),
+      per_page: "24",
+      sort: filters.sort,
+      include: "genres,artist,latest_chapter", // Include related data
+    });
+
+    // Only add non-empty filters
+    if (filters.search) params.set("filter[name]", filters.search);
+    if (filters.status !== "all") params.set("filter[status]", filters.status);
+
+    const response = await fetch(`/api/mangas?${params}`);
+    return response.json();
+  },
+  staleTime: 30 * 1000, // 30 seconds for browse data
+});
+```
+
+### Server Component Performance Tips
+
+1. **Minimize Server Work**
+   - Only fetch data that's immediately needed
+   - Use React's cache() for expensive computations
+   - Avoid heavy computations in render path
+
+2. **Optimize Data Transfer**
+   - Include only required fields in API calls
+   - Use compression for large responses
+   - Consider pagination for large datasets
+
+3. **Handle Errors Gracefully**
+   - Use Promise.allSettled() for non-critical data
+   - Provide fallbacks for failed fetches
+   - Don't let one failure break the entire page
 
 ---
 
@@ -350,7 +555,10 @@ module.exports = {
 function useInfiniteScroll(callback: () => void) {
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 1000
+      ) {
         callback();
       }
     };
@@ -375,8 +583,9 @@ function Component() {
   useEffect(() => {
     let cancelled = false;
 
-    fetchData().then(response => {
-      if (!cancelled) { // Check before state update
+    fetchData().then((response) => {
+      if (!cancelled) {
+        // Check before state update
         setData(response);
       }
     });
@@ -553,11 +762,10 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
   // Send to analytics
   if (window.gtag) {
     window.gtag("event", metric.name, {
-      value: Math.round(metric.name === "CLS" ? metric.value * 1000 : metric.value),
-      event_category:
-        metric.name === "CLS"
-          ? "Web Vitals"
-          : "Web Vitals",
+      value: Math.round(
+        metric.name === "CLS" ? metric.value * 1000 : metric.value
+      ),
+      event_category: metric.name === "CLS" ? "Web Vitals" : "Web Vitals",
       event_label: metric.id,
       non_interaction: true,
     });
@@ -609,6 +817,8 @@ export default function App({ Component, pageProps }) {
 - [ ] **Memoization**: Expensive components and calculations memoized
 - [ ] **State Optimization**: No unnecessary re-renders
 - [ ] **API Optimization**: React Query caching configured
+- [ ] **SSR Implementation**: Critical data prefetched on server
+- [ ] **Streaming Setup**: Suspense boundaries for progressive loading
 - [ ] **Memory Leaks**: Effect cleanup implemented
 - [ ] **Performance Testing**: Baseline metrics recorded
 
@@ -660,6 +870,7 @@ if (typeof window !== "undefined" && "PerformanceObserver" in window) {
 - **[Performance Testing Guide](../performance-testing-guide.md)** - How to test performance
 - **[State Management](./03-STATE-MANAGEMENT.md)** - Optimizing state updates
 - **[Component Patterns](./02-COMPONENT-PATTERNS.md)** - Component performance patterns
+- **[SSR Implementation](./11-SSR-IMPLEMENTATION.md)** - Complete SSR patterns
 - **[Next.js Best Practices](./09-NEXTJS-BEST-PRACTICES.md)** - Next.js specific optimizations
 
 ---
@@ -668,6 +879,9 @@ if (typeof window !== "undefined" && "PerformanceObserver" in window) {
 
 **Good examples:**
 
+- `lib/api/query-client.ts` - Server-side QueryClient factory
+- `app/(manga)/browse/page.tsx` - Complete SSR implementation with prefetch
+- `components/browse/browse-skeleton.tsx` - Loading skeleton for SSR
 - `components/reader/reader-state-reducer.ts` - useReducer pattern for performance
 - `lib/utils/comment-cache-utils.ts` - Optimized data transformation utilities
 - `components/reader/reader-view.tsx` - Dynamic imports and optimization
@@ -675,4 +889,4 @@ if (typeof window !== "undefined" && "PerformanceObserver" in window) {
 
 ---
 
-**Last updated**: 2025-12-16 (Phase 04 - Code Quality & Refactoring)
+**Last updated**: 2025-12-18 (Phase 01 - SSR Implementation)

@@ -5,6 +5,7 @@
 **Prerequisites:**
 
 - [Component Patterns](./02-COMPONENT-PATTERNS.md) - Server/Client components
+- [SSR Implementation](./11-SSR-IMPLEMENTATION.md) - Server-side rendering with TanStack Query
 
 ---
 
@@ -15,6 +16,7 @@
 - [Route Groups](#route-groups)
 - [Loading States](#loading-states)
 - [Error Handling](#error-handling)
+- [Server-Side Rendering](#server-side-rendering)
 - [Performance Optimization](#performance-optimization)
 
 ---
@@ -174,10 +176,11 @@ import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
   placeholder="blur"
   blurDataURL={getShimmerPlaceholder()}
   // ... other props
-/>
+/>;
 ```
 
 **Features:**
+
 - Dark blue gradient shimmer matching app theme
 - Browser and Node.js compatible
 - Base64 encoded for immediate display
@@ -490,6 +493,185 @@ export default async function MangaDetailPage({ params }) {
 
 ---
 
+## Server-Side Rendering
+
+### Overview
+
+Next.js 16 App Router provides powerful server-side rendering capabilities. When combined with TanStack Query, it enables:
+
+- **Data prefetching** on server for instant UI
+- **Hydration** of server cache to client
+- **Streaming** with Suspense boundaries
+- **Progressive loading** of content
+
+**Complete guide**: [SSR Implementation](./11-SSR-IMPLEMENTATION.md)
+
+### Basic SSR Pattern
+
+```tsx
+import { Suspense } from "react";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { getQueryClient } from "@/lib/api/query-client";
+
+export default async function Page() {
+  const queryClient = getQueryClient();
+
+  // Prefetch data on server
+  await queryClient.prefetchQuery({
+    queryKey: ["data"],
+    queryFn: fetchData,
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<Skeleton />}>
+        <ClientComponent />
+      </Suspense>
+    </HydrationBoundary>
+  );
+}
+```
+
+### QueryClient Factory
+
+Always use the cached QueryClient factory:
+
+```tsx
+// lib/api/query-client.ts
+import { QueryClient } from "@tanstack/react-query";
+import { cache } from "react";
+
+export const getQueryClient = cache(
+  () =>
+    new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 60 * 1000, // 1 minute
+          refetchOnWindowFocus: false, // No window on server
+          retry: false, // Fail fast
+        },
+      },
+    })
+);
+```
+
+### Parallel Data Prefetching
+
+Maximize performance with parallel prefetching:
+
+```tsx
+async function prefetchPageData() {
+  const queryClient = getQueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["manga", slug],
+      queryFn: () => fetchManga(slug),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["chapters", slug],
+      queryFn: () => fetchChapters(slug),
+    }),
+  ]);
+
+  return dehydrate(queryClient);
+}
+```
+
+### Streaming with Suspense
+
+Implement progressive loading:
+
+```tsx
+export default function Page() {
+  return (
+    <div>
+      {/* Above the fold - loads first */}
+      <Suspense fallback={<HeaderSkeleton />}>
+        <PageHeader />
+      </Suspense>
+
+      {/* Main content - loads second */}
+      <Suspense fallback={<ContentSkeleton />}>
+        <MainContent />
+      </Suspense>
+
+      {/* Below the fold - loads last */}
+      <Suspense fallback={<FooterSkeleton />}>
+        <PageFooter />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+### Selective SSR
+
+Not everything needs SSR:
+
+```tsx
+// ✅ Good - Strategic SSR
+export default function Page() {
+  const dehydratedState = await prefetchCriticalData();
+
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      {/* Critical - SSR */}
+      <CriticalContent />
+      {/* Non-critical - Client only */}
+      <NonCriticalComponent /> {/* Dynamic import */}
+    </HydrationBoundary>
+  );
+}
+```
+
+### Common SSR Patterns
+
+1. **Prefetch Helper**
+
+   ```tsx
+   export async function prefetchSSR(queryKey, queryFn) {
+     const queryClient = getQueryClient();
+     await queryClient.prefetchQuery({ queryKey, queryFn });
+     return dehydrate(queryClient);
+   }
+   ```
+
+2. **Error Handling**
+
+   ```tsx
+   try {
+     await queryClient.prefetchQuery({
+       queryKey: ["data"],
+       queryFn: fetchData,
+       retry: 1, // One retry on server
+     });
+   } catch (error) {
+     console.error("Prefetch failed:", error);
+     // Continue rendering with fallback
+   }
+   ```
+
+3. **Cache Strategy**
+
+   ```tsx
+   // Static data - long cache
+   prefetchQuery({
+     queryKey: ["genres"],
+     queryFn: fetchGenres,
+     staleTime: 60 * 60 * 1000, // 1 hour
+   });
+
+   // Dynamic data - short cache
+   prefetchQuery({
+     queryKey: ["comments"],
+     queryFn: fetchComments,
+     staleTime: 30 * 1000, // 30 seconds
+   });
+   ```
+
+---
+
 ## Performance Optimization
 
 ### Dynamic Imports
@@ -507,7 +689,10 @@ const HeavyComponent = dynamic(() => import("@/components/heavy-component"), {
 
 // Pattern for components with default export
 const ComponentWithDefault = dynamic(
-  () => import("@/components/component").then(mod => ({ default: mod.Component })),
+  () =>
+    import("@/components/component").then((mod) => ({
+      default: mod.Component,
+    })),
   {
     loading: () => <ComponentSkeleton />,
   }
@@ -746,19 +931,21 @@ export function Pagination({ totalPages }: { totalPages: number }) {
 3. **Route Groups** - Organize related routes
 4. **Loading States** - Provide feedback during navigation
 5. **Error Boundaries** - Handle errors gracefully
-6. **Parallel Fetching** - Load data concurrently
-7. **Proper Caching** - Optimize data fetching
-8. **Font Optimization** - Use Next.js font loader
-9. **Dynamic Imports** - Reduce initial bundle size
-10. **Package Optimization** - Configure optimizePackageImports
-11. **Bundle Analysis** - Regularly analyze bundle size
-12. **Native APIs** - Prefer native browser APIs over heavy libraries
+6. **Server-Side Rendering** - Prefetch critical data on server
+7. **Parallel Fetching** - Load data concurrently
+8. **Proper Caching** - Optimize data fetching with appropriate stale times
+9. **Font Optimization** - Use Next.js font loader
+10. **Dynamic Imports** - Reduce initial bundle size
+11. **Package Optimization** - Configure optimizePackageImports
+12. **Bundle Analysis** - Regularly analyze bundle size
+13. **Native APIs** - Prefer native browser APIs over heavy libraries
 
 ---
 
 ## Related Guides
 
 - **[Component Patterns](./02-COMPONENT-PATTERNS.md)** - Server/Client components
+- **[SSR Implementation](./11-SSR-IMPLEMENTATION.md)** - Complete SSR patterns
 - **[SEO Metadata](./07-SEO-METADATA.md)** - Metadata optimization
 - **[UI Components](./08-UI-COMPONENTS.md)** - Component styling
 
@@ -766,10 +953,12 @@ export function Pagination({ totalPages }: { totalPages: number }) {
 
 ## Reference Files
 
+- `lib/api/query-client.ts` - Server-side QueryClient factory
+- `app/(manga)/browse/page.tsx` - Complete SSR implementation
 - `app/layout.tsx` - Root layout with fonts
 - `app/page.tsx` - Homepage with metadata
 - `components/manga/manga-card.tsx` - Card with Image and Link
 
 ---
 
-**Last updated**: 2025-12-16
+**Last updated**: 2025-12-18 (Phase 01 - SSR Implementation)
