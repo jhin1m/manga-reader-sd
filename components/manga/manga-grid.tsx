@@ -13,6 +13,11 @@ import { MangaCard } from "./manga-card";
 import { MangaGridSkeleton } from "@/components/layout/loading";
 import { cn } from "@/lib/utils";
 
+// Above-fold priority count
+// Desktop (5 cols): ~10 items, Tablet (4 cols): ~8, Mobile (3 cols): ~6
+// Conservative: 6 ensures above-fold on all viewports
+const PRIORITY_IMAGE_COUNT = 6;
+
 export interface MangaGridProps {
   mangas: MangaListItem[];
   className?: string;
@@ -25,6 +30,7 @@ export interface MangaGridProps {
     lg?: number;
     xl?: number;
   };
+  priorityCount?: number; // Allow override for different contexts
 }
 
 /**
@@ -35,6 +41,7 @@ export interface MangaGridProps {
  * @param isLoading - Whether the grid is in loading state
  * @param emptyMessage - Custom message to display when no manga found
  * @param columns - Custom column configuration for different breakpoints
+ * @param priorityCount - Number of above-fold images to mark as priority
  */
 export function MangaGrid({
   mangas,
@@ -47,6 +54,7 @@ export function MangaGrid({
     md: 4,
     lg: 5,
   },
+  priorityCount = PRIORITY_IMAGE_COUNT,
 }: MangaGridProps) {
   const t = useTranslations("homepage.emptyStates");
 
@@ -75,8 +83,12 @@ export function MangaGrid({
 
   return (
     <div className={gridClasses}>
-      {mangas.map((manga) => (
-        <MangaCard key={manga.id} manga={manga} />
+      {mangas.map((manga, index) => (
+        <MangaCard
+          key={manga.id}
+          manga={manga}
+          priority={index < priorityCount}
+        />
       ))}
     </div>
   );

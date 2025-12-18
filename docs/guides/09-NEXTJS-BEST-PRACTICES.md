@@ -109,6 +109,36 @@ Use `priority` for above-the-fold images:
 />
 ```
 
+### Smart Priority Loading for Grids
+
+For grid layouts, implement intelligent priority loading:
+
+```tsx
+// Define priority count based on viewport
+const PRIORITY_IMAGE_COUNT = 6; // Covers above-fold on all devices
+
+function MangaGrid({ mangas, priorityCount = PRIORITY_IMAGE_COUNT }) {
+  return (
+    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      {mangas.map((manga, index) => (
+        <MangaCard
+          key={manga.id}
+          manga={manga}
+          priority={index < priorityCount}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+**Benefits:**
+
+- First 6 images load immediately
+- Faster Largest Contentful Paint (LCP)
+- Better perceived performance
+- Configurable for different layouts
+
 ### Remote Images
 
 Configure in `next.config.ts`:
@@ -961,4 +991,4 @@ export function Pagination({ totalPages }: { totalPages: number }) {
 
 ---
 
-**Last updated**: 2025-12-18 (Phase 01 - SSR Implementation)
+**Last updated**: 2025-12-18 (Phase 03 - Image Priority Loading)
