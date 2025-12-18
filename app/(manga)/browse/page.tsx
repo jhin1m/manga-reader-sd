@@ -9,8 +9,10 @@ import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import { defaultMetadata, siteConfig } from "@/lib/seo/config";
 import { getQueryClient } from "@/lib/api/query-client";
+import { mangaKeys, genreKeys } from "@/lib/api/query-keys";
 import { BrowseContent } from "./browse-content";
 import { BrowseSkeleton } from "@/components/browse/browse-skeleton";
+import type { SortOption } from "@/components/browse/sort-select";
 
 /**
  * Generate metadata for browse page
@@ -61,7 +63,7 @@ async function prefetchBrowseData(
   const filters = {
     search: params.q || "",
     status: params.status || "all",
-    sort: params.sort || "-updated_at",
+    sort: (params.sort as SortOption) || "-updated_at",
     genre: params.genre || "all",
   };
   const page = parseInt(params.page || "1", 10);
@@ -89,7 +91,7 @@ async function prefetchBrowseData(
   // Parallel prefetch - manga list + genres
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: ["manga-list", filters, page],
+      queryKey: mangaKeys.list(filters, page),
       queryFn: () =>
         fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/mangas?${mangaParams.toString()}`
@@ -101,7 +103,7 @@ async function prefetchBrowseData(
         }),
     }),
     queryClient.prefetchQuery({
-      queryKey: ["genres"],
+      queryKey: genreKeys.all,
       queryFn: () =>
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/genres?per_page=100`).then(
           (r) => {

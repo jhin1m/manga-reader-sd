@@ -9,11 +9,14 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 
 import type { MangaListItem } from "@/types/manga";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
+import { mangaKeys } from "@/lib/api/query-keys";
+import { mangaApi } from "@/lib/api/endpoints/manga";
 
 export interface MangaCardProps {
   manga: MangaListItem;
@@ -30,11 +33,22 @@ export interface MangaCardProps {
  */
 export function MangaCard({ manga, className, priority }: MangaCardProps) {
   const t = useTranslations("homepage.mangaCard");
+  const queryClient = useQueryClient();
+
+  // Prefetch manga detail on hover for faster navigation
+  const handleMouseEnter = () => {
+    queryClient.prefetchQuery({
+      queryKey: mangaKeys.detail(manga.slug),
+      queryFn: () => mangaApi.getDetail(manga.slug),
+      staleTime: 60_000, // 1 minute fresh
+    });
+  };
 
   return (
     <Link
       href={`/manga/${manga.slug}`}
       className={cn("group flex flex-col space-y-1.5", className)}
+      onMouseEnter={handleMouseEnter}
     >
       <div
         className={cn(

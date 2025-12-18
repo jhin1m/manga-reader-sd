@@ -7,13 +7,11 @@
 
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useQuery } from "@tanstack/react-query";
-import { mangaApi } from "@/lib/api/endpoints/manga";
 import { BrowseFilterBar, type FilterValues } from "@/components/browse";
 import { MangaGrid } from "@/components/manga/manga-grid";
 import { Pagination } from "@/components/ui/pagination";
+import { useBrowseManga } from "@/hooks/use-browse-manga";
 import type { SortOption } from "@/components/browse/sort-select";
-import type { MangaListParams } from "@/types/manga";
 import { formatNumber } from "@/lib/utils";
 
 interface BrowseContentProps {
@@ -42,32 +40,6 @@ function parseSearchParams(searchParams: BrowseContentProps["searchParams"]): {
     },
     page: parseInt(searchParams.page || "1", 10),
   };
-}
-
-/**
- * Build API params from filter values and page
- */
-function buildApiParams(filters: FilterValues, page: number): MangaListParams {
-  const params: MangaListParams = {
-    page,
-    per_page: 24,
-    sort: filters.sort,
-    include: "genres,artist,latest_chapter",
-  };
-
-  if (filters.search) {
-    params["filter[name]"] = filters.search;
-  }
-
-  if (filters.status && filters.status !== "all") {
-    params["filter[status]"] = parseInt(filters.status, 10) as 1 | 2;
-  }
-
-  if (filters.genre && filters.genre !== "all") {
-    params["filter[id]"] = parseInt(filters.genre, 10);
-  }
-
-  return params;
 }
 
 /**
@@ -110,11 +82,11 @@ export function BrowseContent({ searchParams }: BrowseContentProps) {
   // Parse values from URL
   const { filters, page } = parseSearchParams(searchParams);
 
-  // Fetch manga list
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["manga-list", filters, page],
-    queryFn: () => mangaApi.getList(buildApiParams(filters, page)),
-  });
+  // Fetch manga list with prefetch support
+  const { data, isLoading, error, prefetchNextPage } = useBrowseManga(
+    filters,
+    page
+  );
 
   // Handle filter apply
   const handleApplyFilters = (newFilters: FilterValues) => {

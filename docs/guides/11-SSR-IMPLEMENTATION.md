@@ -140,21 +140,21 @@ async function prefetchData(id: string) {
 }
 ```
 
-### Parallel Prefetch Pattern
+### Parallel Prefetch Pattern with Query Keys
 
 ```tsx
-// ✅ GOOD - Parallel prefetching
+// ✅ GOOD - Parallel prefetching with query key factory
 async function prefetchBrowsePage(params: BrowseParams) {
   const queryClient = getQueryClient();
 
   // Prefetch multiple queries in parallel
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: ["manga-list", params],
+      queryKey: mangaKeys.list(params.filters, params.page),
       queryFn: () => fetchMangaList(params),
     }),
     queryClient.prefetchQuery({
-      queryKey: ["genres"],
+      queryKey: genreKeys.list(),
       queryFn: () => fetchGenres(),
     }),
     queryClient.prefetchQuery({
@@ -163,6 +163,128 @@ async function prefetchBrowsePage(params: BrowseParams) {
     }),
   ]);
 
+  return dehydrate(queryClient);
+}
+```
+
+### Smart Prefetching on Server
+
+Prefetch data strategically based on user patterns:
+
+```tsx
+// app/(manga)/browse/page.tsx
+async function prefetchBrowseData(searchParams: BrowseParams) {
+  const queryClient = getQueryClient();
+
+  // Parse filters from search params
+  const filters = parseFilters(searchParams);
+  const currentPage = parseInt(searchParams.page || "1", 10);
+
+  // Primary data - always prefetch
+  const prefetchPromises = [
+    // Current page data
+    queryClient.prefetchQuery({
+      queryKey: mangaKeys.list(filters, currentPage),
+      queryFn: () => mangaApi.getList(buildApiParams(filters, currentPage)),
+      staleTime: 30 * 1000, // 30 seconds
+    }),
+
+    // Static data - long cache
+    queryClient.prefetchQuery({
+      queryKey: genreKeys.list(),
+      queryFn: () => genreApi.getList(),
+      staleTime: 60 * 60 * 1000, // 1 hour for genres
+    }),
+  ];
+
+  // Prefetch next page if not first page (anticipate pagination)
+  if (currentPage > 1) {
+    prefetchPromises.push(
+      queryClient.prefetchQuery({
+        queryKey: mangaKeys.list(filters, currentPage - 1),
+        queryFn: () =>
+          mangaApi.getList(buildApiParams(filters, currentPage - 1)),
+        staleTime: 30 * 1000,
+      })
+    );
+  }
+
+  // Prefetch next page (user likely to navigate forward)
+  prefetchPromises.push(
+    queryClient.prefetchQuery({
+      queryKey: mangaKeys.list(filters, currentPage + 1),
+      queryFn: () => mangaApi.getList(buildApiParams(filters, currentPage + 1)),
+      staleTime: 30 * 1000,
+    })
+  );
+
+  await Promise.allSettled(prefetchPromises); // Use allSettled to continue if one fails
+
+  return dehydrate(queryClient);
+}
+```
+
+### Prefetching Based on User Intent
+
+```tsx
+// Different prefetching strategies based on context
+async function prefetchMangaDetail(
+  slug: string,
+  source: "browse" | "search" | "direct"
+) {
+  const queryClient = getQueryClient();
+
+  // Always prefetch the main manga detail
+  const prefetchPromises = [
+    queryClient.prefetchQuery({
+      queryKey: mangaKeys.detail(slug),
+      queryFn: () => mangaApi.getDetail(slug),
+      staleTime: 60 * 1000,
+    }),
+  ];
+
+  // Contextual prefetching
+  switch (source) {
+    case "browse":
+      // User is browsing, prefetch related manga
+      prefetchPromises.push(
+        queryClient.prefetchQuery({
+          queryKey: ["related-manga", slug],
+          queryFn: () => mangaApi.getRelated(slug),
+          staleTime: 120 * 1000, // 2 minutes
+        })
+      );
+      break;
+
+    case "search":
+      // User searched for this, prefetch first few chapters
+      prefetchPromises.push(
+        queryClient.prefetchQuery({
+          queryKey: chapterKeys.list(slug),
+          queryFn: () => chapterApi.getList(slug, { page: 1, per_page: 10 }),
+          staleTime: 60 * 1000,
+        })
+      );
+      break;
+
+    case "direct":
+      // Direct access, prefetch everything
+      prefetchPromises.push(
+        queryClient.prefetchQuery({
+          queryKey: chapterKeys.list(slug),
+          queryFn: () => chapterApi.getList(slug),
+          staleTime: 60 * 1000,
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ["comments", slug, 1],
+          queryFn: () => commentApi.getList(slug, 1),
+          staleTime: 30 * 1000,
+        })
+      );
+      break;
+  }
+
+  await Promise.allSettled(prefetchPromises);
   return dehydrate(queryClient);
 }
 ```
@@ -738,23 +860,107 @@ export default function Error({
 
 ## Performance Considerations
 
-### 1. Cache Strategy
+### 1. Cache Strategy with Prefetching
 
 ```tsx
 // Different stale times based on data type
 const prefetchStrategies = {
   // Static data - long cache
-  genres: { staleTime: 60 * 60 * 1000 }, // 1 hour
+  genres: {
+    staleTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
+    prefetchOnServer: true,
+  },
 
   // Semi-static data - medium cache
-  mangaList: { staleTime: 5 * 60 * 1000 }, // 5 minutes
+  mangaList: {
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+    prefetchNextPage: true,
+    prefetchOnHover: true,
+  },
 
   // Dynamic data - short cache
-  comments: { staleTime: 30 * 1000 }, // 30 seconds
+  comments: {
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    backgroundRefetch: true,
+  },
 
   // Real-time data - no cache
-  notifications: { staleTime: 0 },
+  notifications: {
+    staleTime: 0,
+    refetchInterval: 30 * 1000, // 30 seconds
+  },
 };
+```
+
+### 2. Prefetching Impact on TTFB (Time to First Byte)
+
+Prefetching increases server processing time but improves perceived performance:
+
+```tsx
+// ✅ GOOD - Balanced prefetching
+async function prefetchCriticalData() {
+  const queryClient = getQueryClient();
+
+  // Only prefetch critical data that blocks initial render
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: mangaKeys.detail(slug),
+      queryFn: () => mangaApi.getDetail(slug),
+      staleTime: 60_000,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: chapterKeys.list(slug),
+      queryFn: () => chapterApi.getList(slug, { page: 1, per_page: 5 }),
+      staleTime: 60_000,
+    }),
+  ]);
+
+  // Defer non-critical prefetching
+  setTimeout(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["related-manga", slug],
+      queryFn: () => mangaApi.getRelated(slug),
+    });
+  }, 0);
+
+  return dehydrate(queryClient);
+}
+```
+
+### 3. Memory Considerations
+
+Prefetching increases memory usage on the server:
+
+```tsx
+// lib/api/query-client.ts - Optimized for SSR
+export const getQueryClient = cache(() => {
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Shorter cache time on server to reduce memory
+        staleTime: 60 * 1000, // 1 minute
+        gcTime: 5 * 60 * 1000, // 5 minutes
+
+        // Prevent excessive prefetching
+        retry: false,
+        refetchOnMount: false,
+      },
+    },
+  });
+
+  // Cleanup on server
+  if (typeof window === "undefined") {
+    // Clear cache after request to free memory
+    setTimeout(() => {
+      client.clear();
+    }, 0);
+  }
+
+  return client;
+});
 ```
 
 ### 2. Selective Hydration
@@ -978,10 +1184,13 @@ describe("SSR Implementation", () => {
 **SSR Implementation Examples:**
 
 - `lib/api/query-client.ts` - Server-side QueryClient factory
-- `app/(manga)/browse/page.tsx` - Complete SSR implementation
+- `lib/api/query-keys.ts` - Centralized query key factory
+- `hooks/use-browse-manga.ts` - Browse hook with prefetch support
+- `app/(manga)/browse/page.tsx` - Complete SSR implementation with smart prefetching
 - `components/browse/browse-skeleton.tsx` - Loading skeleton for SSR
 - `app/(manga)/browse/browse-content.tsx` - Client component with prefetched data
+- `components/manga/manga-card.tsx` - Hover prefetching implementation
 
 ---
 
-**Last updated**: 2025-12-18 (Phase 01 - SSR Implementation)
+**Last updated**: 2025-12-18 (Phase 02 - Caching & Prefetching Implementation)

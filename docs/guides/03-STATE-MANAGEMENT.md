@@ -144,9 +144,12 @@ export function MangaFilters() {
 **Example from Reader Component (Phase 04):**
 
 The manga reader originally had 6+ separate useState hooks:
+
 ```typescript
 // ❌ Before - Multiple useState causing unnecessary re-renders
-const [readingMode, setReadingMode] = useState<"single" | "long-strip">("long-strip");
+const [readingMode, setReadingMode] = useState<"single" | "long-strip">(
+  "long-strip"
+);
 const [zoom, setZoom] = useState(100);
 const [showControls, setShowControls] = useState(true);
 const [currentPage, setCurrentPage] = useState(0);
@@ -155,6 +158,7 @@ const [imageSpacing, setImageSpacing] = useState(0);
 ```
 
 Refactored to useReducer:
+
 ```typescript
 // ✅ After - Consolidated state with useReducer
 import { readerReducer, initialState } from "./reader-state-reducer";
@@ -174,6 +178,7 @@ dispatch(readerActions.setBlackBackground());
 #### Reader State Pattern
 
 **Reducer definition** (`components/reader/reader-state-reducer.ts`):
+
 ```typescript
 export type ReadingMode = "single" | "long-strip";
 
@@ -197,7 +202,10 @@ export type ReaderAction =
   | { type: "SET_IMAGE_SPACING"; payload: number }
   | { type: "RESET_TO_DEFAULTS" };
 
-export function readerReducer(state: ReaderState, action: ReaderAction): ReaderState {
+export function readerReducer(
+  state: ReaderState,
+  action: ReaderAction
+): ReaderState {
   switch (action.type) {
     case "SET_READING_MODE":
       return {
@@ -218,6 +226,7 @@ export function readerReducer(state: ReaderState, action: ReaderAction): ReaderS
 ```
 
 **Action creators** (`components/reader/reader-state-actions.ts`):
+
 ```typescript
 export const readerActions = {
   // Mode actions
@@ -256,6 +265,7 @@ export const readerActions = {
 6. **Debugging**: Easier to trace state changes with devtools
 
 For the complete implementation guide, see:
+
 - `components/reader/reader-state-reducer.ts` - Reducer logic
 - `components/reader/reader-state-actions.ts` - Action creators
 - `components/reader/reader-state-refactoring-guide.md` - Step-by-step guide
@@ -521,18 +531,138 @@ export function LibraryPage() {
 
 ### Query Keys Best Practices
 
-Use consistent, hierarchical query keys:
+#### Query Key Factory Pattern
+
+Implement centralized query key factories for consistency and cache management:
+
+```tsx
+// lib/api/query-keys.ts - Centralized query key definitions
+import type { FilterValues } from "@/components/browse/browse-filter-bar";
+
+// Manga-related query keys
+export const mangaKeys = {
+  all: ["manga"] as const,
+  lists: () => [...mangaKeys.all, "list"] as const,
+  list: (filters: FilterValues, page: number) =>
+    [...mangaKeys.lists(), { filters, page }] as const,
+  details: () => [...mangaKeys.all, "detail"] as const,
+  detail: (slug: string) => [...mangaKeys.details(), slug] as const,
+};
+
+// Genre-related query keys
+export const genreKeys = {
+  all: ["genres"] as const,
+  list: () => [...genreKeys.all, "list"] as const,
+};
+
+// Chapter-related query keys
+export const chapterKeys = {
+  all: ["chapters"] as const,
+  list: (mangaSlug: string) => [...chapterKeys.all, mangaSlug] as const,
+  detail: (chapterId: string) =>
+    [...chapterKeys.all, "chapter", chapterId] as const,
+};
+
+// User library query keys (Phase 1)
+export const libraryKeys = {
+  all: ["library"] as const,
+  favorites: (params?: { page?: number; per_page?: number }) =>
+    [...libraryKeys.all, "favorites", params] as const,
+  history: (params?: { page?: number; per_page?: number }) =>
+    [...libraryKeys.all, "history", params] as const,
+};
+```
+
+#### Benefits of Query Key Factory
+
+1. **Type Safety**: All keys are typed with `as const`
+2. **Consistency**: Standardized structure across the app
+3. **Auto-completion**: IDE suggestions for all available keys
+4. **Cache Management**: Easy to invalidate related queries
+5. **Refactoring Safety**: Changes propagate to all usages
+
+#### Usage in Components
+
+```tsx
+// Using query keys in hooks
+export function useBrowseManga(filters: FilterValues, page: number) {
+  return useQuery({
+    queryKey: mangaKeys.list(filters, page), // Auto-completed, typed
+    queryFn: () => mangaApi.getList(buildApiParams(filters, page)),
+    staleTime: 60_000,
+  });
+}
+
+// Invalidating related queries
+export function useUpdateManga() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateManga,
+    onSuccess: () => {
+      // Invalidate all manga lists
+      queryClient.invalidateQueries({ queryKey: mangaKeys.lists() });
+
+      // Or invalidate specific list
+      queryClient.invalidateQueries({
+        queryKey: mangaKeys.list(currentFilters, currentPage),
+      });
+    },
+  });
+}
+```
+
+#### Key Structure Rules
 
 ```tsx
 // ✅ CORRECT - Hierarchical and consistent
-["mangas"][("mangas", "recent")][("mangas", "hot")][("manga", slug)][ // All manga // Recent manga // Hot manga // Single manga detail
-  ("manga", slug, "chapters")
-][("manga", slug, "chapters", page)][("user", "bookmarks")][ // Manga chapters // Paginated chapters // User bookmarks
-  ("user", "history")
-][("library", "favorites")][("library", "history")][ // User history // Library categories - Phase 1
-  // ❌ WRONG - Inconsistent structure
-  "getRecentMangas"
-]["mangaDetail-" + slug]["chapters_" + slug + "_" + page];
+["manga"][("manga", "list")][("manga", "list", { filters, page })][ // All manga // All manga lists // Specific filtered list
+  ("manga", "detail")
+][("manga", "detail", slug)]["genres"][("genres", "list")]["chapters"][ // All manga details // Specific manga detail // All genres // Genre list // All chapters
+  ("chapters", mangaSlug)
+]; // Chapters for specific manga
+
+// ❌ WRONG - Inconsistent structure
+("getRecentMangas");
+"mangaDetail-" + slug;
+"chapters_" +
+  slug +
+  "_" +
+  page[("manga-list", filters)][("manga_list", filters)]; // Different from standard // Inconsistent naming
+```
+
+#### Advanced Query Key Patterns
+
+```tsx
+// Pagination with additional metadata
+export const mangaKeys = {
+  // ... existing keys
+
+  // Paginated list with sorting
+  paginatedList: (params: {
+    page: number;
+    per_page: number;
+    sort?: string;
+    filters?: FilterValues;
+  }) => [...mangaKeys.lists(), params] as const,
+
+  // Search results
+  search: (query: string, page: number) =>
+    [...mangaKeys.all, "search", { query, page }] as const,
+
+  // User-specific data
+  userManga: (userId: string, action: "favorite" | "history") =>
+    ["user", userId, "manga", action] as const,
+};
+
+// Compound query keys for complex relationships
+export const relationshipKeys = {
+  all: ["relationships"] as const,
+  mangaGenres: (mangaId: number) =>
+    [...relationshipKeys.all, "manga", "genres", mangaId] as const,
+  similarManga: (mangaId: number) =>
+    [...relationshipKeys.all, "similar", mangaId] as const,
+};
 ```
 
 ---
@@ -685,7 +815,7 @@ import { persist } from "zustand/middleware";
 
 interface ReaderPreferences {
   disableSpacebarNav: boolean;
-  readingMode: 'single' | 'long-strip';
+  readingMode: "single" | "long-strip";
   backgroundColor: string;
   imageSpacing: number;
   zoom: number;
@@ -702,8 +832,8 @@ interface ReaderStore {
 
 const defaultPreferences: ReaderPreferences = {
   disableSpacebarNav: true,
-  readingMode: 'long-strip',
-  backgroundColor: '#000000',
+  readingMode: "long-strip",
+  backgroundColor: "#000000",
   imageSpacing: 0,
   zoom: 100,
 };
@@ -719,7 +849,7 @@ export const useReaderStore = create<ReaderStore>()(
       resetPreferences: () => set({ preferences: defaultPreferences }),
     }),
     {
-      name: 'reader-preferences',
+      name: "reader-preferences",
       partialize: (state) => state.preferences,
     }
   )
@@ -736,8 +866,8 @@ export function ReaderView() {
   const { preferences, updatePreference } = useReaderStore();
 
   // Update a single preference
-  const handleReadingModeChange = (mode: 'single' | 'long-strip') => {
-    updatePreference('readingMode', mode);
+  const handleReadingModeChange = (mode: "single" | "long-strip") => {
+    updatePreference("readingMode", mode);
   };
 
   // Use preferences in your component
@@ -873,6 +1003,7 @@ const mutation = useMutation({
 For complex nested data structures like comments with replies, use dedicated cache utilities:
 
 **Utilities file** (`lib/utils/comment-cache-utils.ts`):
+
 ```typescript
 import type { Comment } from "@/types/comment";
 
@@ -900,7 +1031,12 @@ export function insertReplyIntoComments(
     if (comment.replies && comment.replies.length > 0) {
       return {
         ...comment,
-        replies: insertReplyIntoComments(comment.replies, parentId, reply, depth + 1),
+        replies: insertReplyIntoComments(
+          comment.replies,
+          parentId,
+          reply,
+          depth + 1
+        ),
       };
     }
     return comment;
@@ -927,6 +1063,7 @@ export function removeCommentOptimistically(
 ```
 
 **Usage in comment mutations**:
+
 ```tsx
 import {
   insertReplyIntoComments,
@@ -958,7 +1095,10 @@ const replyMutation = useMutation({
     return { previousComments };
   },
   onError: (err, variables, context) => {
-    queryClient.setQueryData(["comments", variables.mangaId], context.previousComments);
+    queryClient.setQueryData(
+      ["comments", variables.mangaId],
+      context.previousComments
+    );
   },
 });
 ```

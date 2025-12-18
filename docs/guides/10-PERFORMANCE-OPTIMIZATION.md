@@ -201,25 +201,149 @@ function Component() {
 }
 ```
 
-### Optimize React Query Usage
+### Query Key Factory Pattern
+
+Implement centralized query key factories for consistency and cache management:
 
 ```tsx
-// ❌ BAD - Unnecessary refetches
-const { data } = useQuery({
-  queryKey: ["mangas"],
-  queryFn: () => mangaApi.getAll(),
-  refetchOnWindowFocus: true,
-  refetchOnMount: true,
-});
+// lib/api/query-keys.ts
+import type { FilterValues } from "@/components/browse/browse-filter-bar";
 
-// ✅ GOOD - Smart caching
-const { data } = useQuery({
-  queryKey: ["mangas"],
-  queryFn: () => mangaApi.getAll(),
-  staleTime: 5 * 60 * 1000, // 5 minutes
-  cacheTime: 10 * 60 * 1000, // 10 minutes
-  refetchOnWindowFocus: false,
-});
+export const mangaKeys = {
+  all: ["manga"] as const,
+  lists: () => [...mangaKeys.all, "list"] as const,
+  list: (filters: FilterValues, page: number) =>
+    [...mangaKeys.lists(), { filters, page }] as const,
+  details: () => [...mangaKeys.all, "detail"] as const,
+  detail: (slug: string) => [...mangaKeys.details(), slug] as const,
+};
+
+export const genreKeys = {
+  all: ["genres"] as const,
+  list: () => [...genreKeys.all, "list"] as const,
+};
+
+export const chapterKeys = {
+  all: ["chapters"] as const,
+  list: (mangaSlug: string) => [...chapterKeys.all, mangaSlug] as const,
+  detail: (chapterId: string) =>
+    [...chapterKeys.all, "chapter", chapterId] as const,
+};
+```
+
+### Smart Prefetching Strategies
+
+#### 1. Pagination Prefetching
+
+```tsx
+// hooks/use-browse-manga.ts
+export function useBrowseManga(filters: FilterValues, page: number) {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: mangaKeys.list(filters, page),
+    queryFn: () => mangaApi.getList(buildApiParams(filters, page)),
+    staleTime: 60_000, // 1 min fresh
+  });
+
+  const prefetchNextPage = useCallback(() => {
+    const totalPages = query.data?.meta?.pagination?.last_page || 1;
+    if (page < totalPages) {
+      queryClient.prefetchQuery({
+        queryKey: mangaKeys.list(filters, page + 1),
+        queryFn: () => mangaApi.getList(buildApiParams(filters, page + 1)),
+        staleTime: 60_000,
+      });
+    }
+  }, [queryClient, filters, page, query.data]);
+
+  // Auto-prefetch next page when current page loads
+  useEffect(() => {
+    if (query.data && !query.isLoading) {
+      const timer = setTimeout(() => {
+        prefetchNextPage();
+      }, 500); // Delay to avoid immediate requests
+
+      return () => clearTimeout(timer);
+    }
+  }, [query.data, query.isLoading, prefetchNextPage]);
+
+  return { ...query, prefetchNextPage };
+}
+```
+
+#### 2. Hover Prefetching
+
+```tsx
+// components/manga/manga-card.tsx
+export function MangaCard({ manga }: MangaCardProps) {
+  const queryClient = useQueryClient();
+
+  // Prefetch manga detail on hover for faster navigation
+  const handleMouseEnter = () => {
+    queryClient.prefetchQuery({
+      queryKey: mangaKeys.detail(manga.slug),
+      queryFn: () => mangaApi.getDetail(manga.slug),
+      staleTime: 60_000, // 1 minute fresh
+    });
+  };
+
+  return (
+    <Link
+      href={`/manga/${manga.slug}`}
+      onMouseEnter={handleMouseEnter}
+      prefetch={true} // Next.js prefetch
+    >
+      <MangaCardContent manga={manga} />
+    </Link>
+  );
+}
+```
+
+#### 3. Viewport-Based Prefetching
+
+```tsx
+// hooks/use-viewport-prefetch.ts
+export function useViewportPrefetch(
+  queryKey: unknown[],
+  queryFn: () => Promise<unknown>,
+  options: {
+    rootMargin?: string;
+    threshold?: number;
+    staleTime?: number;
+  } = {}
+) {
+  const queryClient = useQueryClient();
+  const elementRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          queryClient.prefetchQuery({
+            queryKey,
+            queryFn,
+            staleTime: options.staleTime || 60_000,
+          });
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: options.rootMargin || "200px",
+        threshold: options.threshold || 0.1,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [queryClient, queryKey, queryFn, options]);
+
+  return elementRef;
+}
 ```
 
 ---
@@ -396,6 +520,150 @@ const cacheStrategies = {
     gcTime: 60 * 1000, // 1 minute cleanup
   },
 };
+```
+
+### Advanced Caching Strategies
+
+#### 1. Hierarchical Cache Invalidation
+
+```tsx
+// Smart cache invalidation patterns
+export function useUpdateManga() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateManga,
+    onSuccess: (updatedManga) => {
+      // Invalidate specific manga detail
+      queryClient.invalidateQueries({
+        queryKey: mangaKeys.detail(updatedManga.slug),
+      });
+
+      // Update list items directly
+      queryClient.setQueriesData(
+        { queryKey: mangaKeys.lists() },
+        (oldData: any) => {
+          if (!oldData?.data) return oldData;
+
+          return {
+            ...oldData,
+            data: oldData.data.map((manga: Manga) =>
+              manga.id === updatedManga.id
+                ? { ...manga, ...updatedManga }
+                : manga
+            ),
+          };
+        }
+      );
+    },
+  });
+}
+```
+
+#### 2. Optimistic Updates with Rollback
+
+```tsx
+export function useToggleBookmark() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ mangaId, isBookmarked }: ToggleBookmarkParams) =>
+      bookmarkApi.toggle(mangaId, isBookmarked),
+
+    onMutate: async ({ mangaId, isBookmarked }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: mangaKeys.all });
+
+      // Snapshot the previous value
+      const previousMangaList = queryClient.getQueryData(
+        mangaKeys.list(filters, page)
+      );
+
+      // Optimistically update
+      queryClient.setQueriesData(
+        { queryKey: mangaKeys.lists() },
+        (oldData: any) => {
+          if (!oldData?.data) return oldData;
+
+          return {
+            ...oldData,
+            data: oldData.data.map((manga: Manga) =>
+              manga.id === mangaId
+                ? { ...manga, is_bookmarked: !isBookmarked }
+                : manga
+            ),
+          };
+        }
+      );
+
+      return { previousMangaList };
+    },
+
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousMangaList) {
+        queryClient.setQueryData(
+          mangaKeys.list(filters, page),
+          context.previousMangaList
+        );
+      }
+    },
+
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: mangaKeys.lists() });
+    },
+  });
+}
+```
+
+#### 3. Dependent Query Prefetching
+
+```tsx
+// Prefetch related data when primary data loads
+export function useMangaDetail(slug: string) {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: mangaKeys.detail(slug),
+    queryFn: () => mangaApi.getDetail(slug),
+    onSuccess: (manga) => {
+      // Prefetch chapters when manga detail loads
+      queryClient.prefetchQuery({
+        queryKey: chapterKeys.list(manga.slug),
+        queryFn: () => chapterApi.getList(manga.slug),
+        staleTime: 60_000,
+      });
+
+      // Prefetch related manga
+      if (manga.genres?.length) {
+        queryClient.prefetchQuery({
+          queryKey: ["related-manga", manga.genres.map((g) => g.id)],
+          queryFn: () => mangaApi.getRelated(manga.genres),
+          staleTime: 120_000, // 2 minutes
+        });
+      }
+    },
+  });
+
+  return query;
+}
+```
+
+#### 4. Background Refresh Strategy
+
+```tsx
+// Keep data fresh with background refresh
+export function useRealtimeComments(mangaId: number) {
+  return useQuery({
+    queryKey: ["comments", mangaId],
+    queryFn: () => commentApi.getMangaComments(mangaId),
+    staleTime: 30_000, // 30 seconds
+    refetchInterval: 60_000, // Refresh every minute in background
+    refetchIntervalInBackground: true, // Even when tab is not focused
+    refetchOnWindowFocus: true,
+  });
+}
 ```
 
 ### Selective SSR Implementation
@@ -817,6 +1085,10 @@ export default function App({ Component, pageProps }) {
 - [ ] **Memoization**: Expensive components and calculations memoized
 - [ ] **State Optimization**: No unnecessary re-renders
 - [ ] **API Optimization**: React Query caching configured
+- [ ] **Query Key Factory**: Centralized query keys implemented
+- [ ] **Prefetching Strategy**: Pagination and hover prefetching added
+- [ ] **Cache Invalidation**: Smart invalidation patterns in place
+- [ ] **Optimistic Updates**: With rollback for better UX
 - [ ] **SSR Implementation**: Critical data prefetched on server
 - [ ] **Streaming Setup**: Suspense boundaries for progressive loading
 - [ ] **Memory Leaks**: Effect cleanup implemented
@@ -880,7 +1152,12 @@ if (typeof window !== "undefined" && "PerformanceObserver" in window) {
 **Good examples:**
 
 - `lib/api/query-client.ts` - Server-side QueryClient factory
+- `lib/api/query-keys.ts` - Centralized query key factory pattern
+- `hooks/use-browse-manga.ts` - Browse data hook with prefetch support
 - `app/(manga)/browse/page.tsx` - Complete SSR implementation with prefetch
+- `app/(manga)/browse/browse-content.tsx` - Client component with optimized data fetching
+- `components/manga/manga-card.tsx` - Hover prefetching implementation
+- `components/browse/genre-select.tsx` - Using genreKeys for cache consistency
 - `components/browse/browse-skeleton.tsx` - Loading skeleton for SSR
 - `components/reader/reader-state-reducer.ts` - useReducer pattern for performance
 - `lib/utils/comment-cache-utils.ts` - Optimized data transformation utilities
@@ -889,4 +1166,4 @@ if (typeof window !== "undefined" && "PerformanceObserver" in window) {
 
 ---
 
-**Last updated**: 2025-12-18 (Phase 01 - SSR Implementation)
+**Last updated**: 2025-12-18 (Phase 02 - Caching & Prefetching Implementation)

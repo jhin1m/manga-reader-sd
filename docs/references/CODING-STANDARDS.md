@@ -437,9 +437,12 @@ const [state, dispatch] = useReducer(readerReducer, initialState);
 
 ```typescript
 // ✅ Memoize callbacks to prevent unnecessary re-renders
-const handleClick = useCallback((id: string) => {
-  onItemClick(id);
-}, [onItemClick]);
+const handleClick = useCallback(
+  (id: string) => {
+    onItemClick(id);
+  },
+  [onItemClick]
+);
 
 // ✅ Memoize expensive calculations
 const expensiveValue = useMemo(() => {
@@ -473,17 +476,23 @@ const CommentSection = dynamic(
 const style = { color: "red", fontSize: "16px" }; // New object each render
 
 // ✅ GOOD
-const buttonStyle = useMemo(() => ({
-  color: "red",
-  fontSize: "16px",
-}), []); // Memoized
+const buttonStyle = useMemo(
+  () => ({
+    color: "red",
+    fontSize: "16px",
+  }),
+  []
+); // Memoized
 
 // ✅ Use stable references for prop objects
-const memoizedProps = useMemo(() => ({
-  id: manga.id,
-  title: manga.title,
-  onBookmark: handleBookmark,
-}), [manga.id, manga.title, handleBookmark]);
+const memoizedProps = useMemo(
+  () => ({
+    id: manga.id,
+    title: manga.title,
+    onBookmark: handleBookmark,
+  }),
+  [manga.id, manga.title, handleBookmark]
+);
 ```
 
 ### Data Optimization
@@ -493,21 +502,266 @@ const memoizedProps = useMemo(() => ({
 ```typescript
 // ✅ Configure proper caching
 const { data } = useQuery({
-  queryKey: ["mangas", params],
-  queryFn: () => mangaApi.getAll(params),
-  staleTime: 5 * 60 * 1000, // 5 minutes
-  cacheTime: 10 * 60 * 1000, // 10 minutes
+  queryKey: queryKeys.manga.list(params, page),
+  queryFn: () => mangaApi.getList(buildApiParams(params, page)),
+  staleTime: 60_000, // 1 minute
+  gcTime: 5 * 60 * 1000, // 5 minutes
   refetchOnWindowFocus: false,
 });
 
-// ✅ Use query keys properly
-export const mangaKeys = {
-  all: ["mangas"] as const,
-  lists: () => [...mangaKeys.all, "list"] as const,
-  list: (params: any) => [...mangaKeys.lists(), params] as const,
-  details: () => [...mangaKeys.all, "detail"] as const,
-  detail: (id: string) => [...mangaKeys.details(), id] as const,
+// ✅ Use centralized query keys
+import { queryKeys } from "@/lib/api/query-keys";
+
+export const useMangaDetail = (slug: string) => {
+  return useQuery({
+    queryKey: queryKeys.manga.detail(slug),
+    queryFn: () => mangaApi.getDetail(slug),
+  });
 };
+```
+
+---
+
+## React Query Conventions
+
+### Query Key Factory Pattern
+
+Always use centralized query key factories defined in `lib/api/query-keys.ts`:
+
+```typescript
+// ✅ CORRECT - Using centralized query keys
+import { queryKeys } from "@/lib/api/query-keys";
+
+export function useMangaDetail(slug: string) {
+  return useQuery({
+    queryKey: queryKeys.manga.detail(slug), // Type-safe, consistent
+    queryFn: () => mangaApi.getDetail(slug),
+  });
+}
+
+// ❌ WRONG - Inline query keys
+export function useMangaDetail(slug: string) {
+  return useQuery({
+    queryKey: ["manga", "detail", slug], // Inconsistent, no type safety
+    queryFn: () => mangaApi.getDetail(slug),
+  });
+}
+```
+
+### Query Key Structure
+
+Follow hierarchical structure with `as const` for type inference:
+
+```typescript
+// lib/api/query-keys.ts
+export const queryKeys = {
+  // Entity: hierarchical structure
+  manga: {
+    all: ["manga"] as const,
+    lists: () => [...queryKeys.manga.all, "list"] as const,
+    list: (filters: FilterValues, page: number) =>
+      [...queryKeys.manga.lists(), { filters, page }] as const,
+    details: () => [...queryKeys.manga.all, "detail"] as const,
+    detail: (slug: string) => [...queryKeys.manga.details(), slug] as const,
+  },
+
+  // Singular entity: flat structure
+  genres: {
+    all: ["genres"] as const,
+    list: () => [...queryKeys.genres.all, "list"] as const,
+  },
+} as const;
+```
+
+### Stale Time Guidelines
+
+Configure stale times based on data volatility:
+
+| Data Type                   | Stale Time | gcTime     | Reason               |
+| --------------------------- | ---------- | ---------- | -------------------- |
+| Static (genres, artists)    | 1 hour     | 24 hours   | Rarely changes       |
+| Semi-static (manga info)    | 5 minutes  | 30 minutes | Updates occasionally |
+| Dynamic (comments, ratings) | 30 seconds | 5 minutes  | Changes frequently   |
+| Real-time (notifications)   | 0          | 1 minute   | Always fresh         |
+
+```typescript
+// Static data
+useQuery({
+  queryKey: queryKeys.genres.list(),
+  queryFn: () => genreApi.getList(),
+  staleTime: 60 * 60 * 1000, // 1 hour
+  gcTime: 24 * 60 * 60 * 1000, // 24 hours
+});
+
+// Dynamic data
+useQuery({
+  queryKey: queryKeys.comments.list(mangaSlug, page),
+  queryFn: () => commentApi.getList(mangaSlug, page),
+  staleTime: 30 * 1000, // 30 seconds
+  gcTime: 5 * 60 * 1000, // 5 minutes
+});
+```
+
+### Mutation Patterns
+
+Always implement optimistic updates with rollback:
+
+```typescript
+// ✅ CORRECT - Optimistic update with rollback
+export function useToggleBookmark() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ mangaId, isBookmarked }) =>
+      bookmarkApi.toggle(mangaId, isBookmarked),
+
+    onMutate: async ({ mangaId, isBookmarked }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: queryKeys.manga.all });
+
+      // Snapshot previous value
+      const previousData = queryClient.getQueryData(
+        queryKeys.manga.list(filters, page)
+      );
+
+      // Optimistically update
+      queryClient.setQueriesData(
+        { queryKey: queryKeys.manga.lists() },
+        (oldData: any) => {
+          if (!oldData?.data) return oldData;
+
+          return {
+            ...oldData,
+            data: oldData.data.map((manga: Manga) =>
+              manga.id === mangaId
+                ? { ...manga, is_bookmarked: !isBookmarked }
+                : manga
+            ),
+          };
+        }
+      );
+
+      return { previousData };
+    },
+
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          queryKeys.manga.list(filters, page),
+          context.previousData
+        );
+      }
+    },
+
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: queryKeys.manga.lists() });
+    },
+  });
+}
+```
+
+### Prefetching Patterns
+
+Prefetch data based on user behavior:
+
+```typescript
+// Hover prefetching
+export function MangaCard({ manga }: MangaCardProps) {
+  const queryClient = useQueryClient();
+
+  const handleMouseEnter = () => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.manga.detail(manga.slug),
+      queryFn: () => mangaApi.getDetail(manga.slug),
+      staleTime: 60_000,
+    });
+  };
+
+  return <Link onMouseEnter={handleMouseEnter}>{/* ... */}</Link>;
+}
+
+// Pagination prefetching
+export function useBrowseManga(filters: FilterValues, page: number) {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: queryKeys.manga.list(filters, page),
+    queryFn: () => mangaApi.getList(buildApiParams(filters, page)),
+  });
+
+  // Prefetch next page
+  useEffect(() => {
+    if (query.data && page < query.data.meta.pagination.last_page) {
+      setTimeout(() => {
+        queryClient.prefetchQuery({
+          queryKey: queryKeys.manga.list(filters, page + 1),
+          queryFn: () => mangaApi.getList(buildApiParams(filters, page + 1)),
+        });
+      }, 500);
+    }
+  }, [query.data, page, filters]);
+
+  return query;
+}
+```
+
+### Error Handling
+
+Use ErrorBoundary for query errors:
+
+```typescript
+// ✅ CORRECT - With error boundary
+function MangaPage() {
+  return (
+    <QueryErrorBoundary fallback={<ErrorComponent />}>
+      <MangaContent />
+    </QueryErrorBoundary>
+  );
+}
+
+// ❌ WRONG - No error boundary
+function MangaPage() {
+  const { data, error } = useQuery({
+    queryKey: queryKeys.manga.detail(slug),
+    queryFn: () => mangaApi.getDetail(slug),
+  });
+
+  if (error) return <div>Error!</div>; // Handled inline
+  return <MangaContent manga={data} />;
+}
+```
+
+### Custom Hooks
+
+Encapsulate query logic in custom hooks:
+
+```typescript
+// ✅ CORRECT - Reusable custom hook
+export function useMangaDetail(slug: string) {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: queryKeys.manga.detail(slug),
+    queryFn: () => mangaApi.getDetail(slug),
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const invalidate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.manga.detail(slug) });
+  }, [queryClient, slug]);
+
+  return { ...query, invalidate };
+}
+
+// Usage in component
+export function MangaDetailPage({ slug }: { slug: string }) {
+  const { data: manga, isLoading, error, invalidate } = useMangaDetail(slug);
+
+  // Component logic...
+}
 ```
 
 ### Bundle Optimization
@@ -565,7 +819,10 @@ Before committing:
 - [ ] **State**: Use useReducer for complex state (3+ related values)
 - [ ] **Bundle**: Import only what's needed, use tree shaking
 - [ ] **Lazy Loading**: Dynamic imports for heavy components
-- [ ] **Cache**: React Query configured with appropriate cache times
+- [ ] **React Query**: Using centralized query keys from `lib/api/query-keys`
+- [ ] **React Query**: Appropriate stale times based on data type
+- [ ] **React Query**: Optimistic updates with rollback for mutations
+- [ ] **React Query**: Proper error boundaries for query errors
 
 ---
 
