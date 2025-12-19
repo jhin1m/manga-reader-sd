@@ -113,7 +113,6 @@ Created comprehensive React Query hooks for user library data management:
 - `useFavorites()` - Fetch user's favorite manga with pagination
 - `useHistory()` - Fetch user's reading history with pagination
 - `useContinueReading()` - Get first 5 items from history
-- `useCompletedManga()` - Filter favorites for completed manga
 - `useRemoveFromHistory()` - Remove items from reading history
 - `useRemoveBookmark()` - Remove items from favorites
 - `useLibraryPrefetch()` - Prefetch data for smooth UX
@@ -139,17 +138,15 @@ Implemented responsive tab-based library page with:
 
 Completed implementation of all library components:
 
-- `LibraryMangaCard` - Reusable card with progress tracking & remove actions
+- `LibraryMangaCard` - Reusable card with remove actions
 - `LibraryPagination` - Custom pagination for library grids
 - `EmptyState` - Contextual empty states for each tab
 - `ContinueReadingSection` - Progress tracking with "View All" link
 - `BookmarksTab` - Paginated favorites with remove functionality
 - `HistoryTab` - Chronological reading list with remove actions
-- `CompletedTab` - Filtered view of completed manga
 
 **Key Features:**
 
-- Progress bars showing reading percentage
 - Time ago display for history items
 - Internationalized text throughout
 - Mobile-responsive design

@@ -23,7 +23,6 @@ components/library/
 ├── continue-reading-section.tsx  # Fully implemented continue reading
 ├── bookmarks-tab.tsx            # Fully implemented bookmarks tab
 ├── history-tab.tsx              # Fully implemented history tab
-├── completed-tab.tsx            # Fully implemented completed tab
 └── library-skeleton.tsx         # Updated with grid skeleton
 
 lib/hooks/
@@ -66,21 +65,16 @@ const handleRemoveBookmark = (mangaId: number) => {
 
 ## 🎴 LibraryMangaCard Component
 
-A versatile card component that adapts to different library contexts with features like progress tracking, remove actions, and hover effects.
+A versatile card component that adapts to different library contexts with features like remove actions and hover effects.
 
 ### Key Features
 
-1. **Progress Visualization**
-   - Progress bar for continue reading items
-   - Chapter count display
-   - Visual percentage indicator
-
-2. **Interactive Actions**
+1. **Interactive Actions**
    - Remove button with hover effect
    - Continue/start reading overlay
    - Responsive hover states
 
-3. **Information Display**
+2. **Information Display**
    - Cover image with lazy loading
    - Title and chapter information
    - Time ago for history items
@@ -205,7 +199,6 @@ Versatile empty state component with contextual messages and actions for differe
 1. **continue** - No items in continue reading
 2. **bookmarks** - No bookmarked manga
 3. **history** - No reading history
-4. **completed** - No completed manga
 
 ### Features
 
@@ -454,10 +447,6 @@ New translation keys added for Phase 3:
         "history": {
           "title": "Chưa có lịch sử đọc",
           "description": "Truyện bạn đọc sẽ xuất hiện ở đây"
-        },
-        "completed": {
-          "title": "Chưa có truyện hoàn thành",
-          "description": "Các truyện bạn đọc hết sẽ xuất hiện ở đây"
         }
       },
       "removed": "Đã xóa khỏi thư viện",

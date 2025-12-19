@@ -1,18 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import {
-  BookOpen,
-  Bookmark,
-  History,
-  CheckCircle2,
-  type LucideIcon,
-} from "lucide-react";
+import { BookOpen, Bookmark, History, type LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type EmptyStateVariant = "continue" | "bookmarks" | "history" | "completed";
+type EmptyStateVariant = "continue" | "bookmarks" | "history";
 
 interface EmptyStateProps {
   variant: EmptyStateVariant;
@@ -38,10 +32,6 @@ const variantConfig: Record<
   history: {
     icon: History,
     iconColor: "text-purple-500",
-  },
-  completed: {
-    icon: CheckCircle2,
-    iconColor: "text-green-500",
   },
 };
 

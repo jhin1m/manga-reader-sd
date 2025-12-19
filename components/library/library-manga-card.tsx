@@ -39,14 +39,6 @@ export function LibraryMangaCard({
   const t = useTranslations("user.library.card");
   const tCommon = useTranslations("homepage.mangaCard");
 
-  // Calculate reading progress if we have chapter info
-  const progress = lastReadChapter
-    ? calculateProgress(
-        lastReadChapter.chapter_number,
-        manga.latest_chapter?.order
-      )
-    : null;
-
   // Build continue reading URL
   const continueUrl = lastReadChapter
     ? `/manga/${manga.slug}/${lastReadChapter.slug}`
@@ -77,21 +69,6 @@ export function LibraryMangaCard({
             <Badge className="bg-orange-500 text-white border-0 text-xs">
               {tCommon("hot")}
             </Badge>
-          </div>
-        )}
-
-        {/* Progress Bar (for Continue Reading) */}
-        {progress !== null && (
-          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
-            <div className="w-full bg-gray-600 rounded-full h-1.5 overflow-hidden">
-              <div
-                className="bg-primary h-full transition-all"
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-white/80 mt-1">
-              {t("progress", { current: lastReadChapter?.chapter_number || 0 })}
-            </p>
           </div>
         )}
 
@@ -158,15 +135,6 @@ export function LibraryMangaCard({
       </div>
     </div>
   );
-}
-
-// Helper: Calculate reading progress percentage
-function calculateProgress(
-  currentChapter: number,
-  totalChapters?: number
-): number {
-  if (!totalChapters || totalChapters === 0) return 0;
-  return Math.round((currentChapter / totalChapters) * 100);
 }
 
 // Helper: Format time ago string

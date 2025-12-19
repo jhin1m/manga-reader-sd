@@ -7,7 +7,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { userFavoritesApi, userHistoryApi } from "@/lib/api/endpoints/user";
-import { MangaStatus } from "@/types/manga";
 import type { PaginatedResponse } from "@/types/api";
 import type { FavoriteManga } from "@/types/manga";
 import type { ReadingHistoryItem } from "@/types/chapter";
@@ -40,11 +39,6 @@ interface UseHistoryParams {
   page?: number;
   per_page?: number;
   enabled?: boolean;
-}
-
-interface UseCompletedMangaParams {
-  page?: number;
-  per_page?: number;
 }
 
 interface LibraryData<T> {
@@ -126,68 +120,149 @@ export function useContinueReading() {
   });
 }
 
-/**
- * Completed Manga: Filter favorites by status
- * Client-side filtering since no dedicated API
- */
-export function useCompletedManga({
-  page = 1,
-  per_page = 20,
-}: UseCompletedMangaParams = {}) {
-  const favoritesQuery = useFavorites({ page, per_page, enabled: true });
-
-  return {
-    ...favoritesQuery,
-    data: favoritesQuery.data
-      ? {
-          items: favoritesQuery.data.items.filter(
-            (manga) => manga.status === MangaStatus.COMPLETED
-          ),
-          pagination: favoritesQuery.data.pagination,
-        }
-      : undefined,
-  };
-}
-
 // === Mutation Hooks ===
 
 /**
  * Hook for removing manga from reading history
+ * Uses optimistic update for instant UI feedback
  */
 export function useRemoveFromHistory() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (mangaId: number) => userHistoryApi.remove(mangaId),
-    onSuccess: () => {
-      // Invalidate history queries
-      queryClient.invalidateQueries({ queryKey: libraryKeys.history() });
+
+    onMutate: async (mangaId: number) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: libraryKeys.all });
+
+      // Snapshot all history queries for rollback
+      const previousHistoryQueries = queryClient.getQueriesData<
+        PaginatedResponse<ReadingHistoryItem>
+      >({
+        queryKey: ["library", "history"],
+      });
+
+      const previousContinueReading = queryClient.getQueryData<
+        PaginatedResponse<ReadingHistoryItem>
+      >(libraryKeys.continueReading());
+
+      // Optimistically remove from all history caches
+      queryClient.setQueriesData<PaginatedResponse<ReadingHistoryItem>>(
+        { queryKey: ["library", "history"] },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: oldData.data.filter((item) => item.manga.id !== mangaId),
+            meta: {
+              ...oldData.meta,
+              pagination: {
+                ...oldData.meta.pagination,
+                total: oldData.meta.pagination.total - 1,
+              },
+            },
+          };
+        }
+      );
+
+      // Also update continue reading cache
+      queryClient.setQueryData<PaginatedResponse<ReadingHistoryItem>>(
+        libraryKeys.continueReading(),
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: oldData.data.filter((item) => item.manga.id !== mangaId),
+          };
+        }
+      );
+
+      return { previousHistoryQueries, previousContinueReading };
+    },
+
+    onError: (_err, _mangaId, context) => {
+      // Rollback on error
+      if (context?.previousHistoryQueries) {
+        context.previousHistoryQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      if (context?.previousContinueReading) {
+        queryClient.setQueryData(
+          libraryKeys.continueReading(),
+          context.previousContinueReading
+        );
+      }
+      console.error("Failed to remove from history:", _err);
+    },
+
+    onSettled: () => {
+      // Always refetch to sync with server
+      queryClient.invalidateQueries({ queryKey: ["library", "history"] });
       queryClient.invalidateQueries({
         queryKey: libraryKeys.continueReading(),
       });
-    },
-    onError: (error) => {
-      // Error toast handled by component
-      console.error("Failed to remove from history:", error);
     },
   });
 }
 
 /**
  * Hook for removing manga from favorites/bookmarks
+ * Uses optimistic update for instant UI feedback
  */
 export function useRemoveBookmark() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (mangaId: number) => userFavoritesApi.remove(mangaId),
-    onSuccess: () => {
-      // Invalidate favorites queries
-      queryClient.invalidateQueries({ queryKey: libraryKeys.favorites() });
+
+    onMutate: async (mangaId: number) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: libraryKeys.all });
+
+      // Snapshot all favorites queries for rollback (use partial key match)
+      const previousQueries = queryClient.getQueriesData<
+        PaginatedResponse<FavoriteManga>
+      >({
+        queryKey: ["library", "favorites"],
+      });
+
+      // Optimistically remove from all favorites caches (use partial key match)
+      queryClient.setQueriesData<PaginatedResponse<FavoriteManga>>(
+        { queryKey: ["library", "favorites"] },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: oldData.data.filter((manga) => manga.id !== mangaId),
+            meta: {
+              ...oldData.meta,
+              pagination: {
+                ...oldData.meta.pagination,
+                total: oldData.meta.pagination.total - 1,
+              },
+            },
+          };
+        }
+      );
+
+      return { previousQueries };
     },
-    onError: (error) => {
-      // Error toast handled by component
-      console.error("Failed to remove bookmark:", error);
+
+    onError: (_err, _mangaId, context) => {
+      // Rollback on error
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      console.error("Failed to remove bookmark:", _err);
+    },
+
+    onSettled: () => {
+      // Always refetch to sync with server
+      queryClient.invalidateQueries({ queryKey: ["library", "favorites"] });
     },
   });
 }

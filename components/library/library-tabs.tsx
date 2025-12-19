@@ -7,8 +7,7 @@ import { useLibraryPrefetch } from "@/lib/hooks/use-library";
 import { ContinueReadingSection } from "./continue-reading-section";
 import { BookmarksTab } from "./bookmarks-tab";
 import { HistoryTab } from "./history-tab";
-import { CompletedTab } from "./completed-tab";
-import { BookOpen, Bookmark, History, CheckCircle2 } from "lucide-react";
+import { BookOpen, Bookmark, History } from "lucide-react";
 
 interface LibraryTabsProps {
   activeTab: string;
@@ -16,7 +15,7 @@ interface LibraryTabsProps {
 }
 
 // Valid tab values for type safety
-const TAB_VALUES = ["continue", "bookmarks", "history", "completed"] as const;
+const TAB_VALUES = ["continue", "bookmarks", "history"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
 
 export function LibraryTabs({ activeTab, onTabChange }: LibraryTabsProps) {
@@ -43,7 +42,7 @@ export function LibraryTabs({ activeTab, onTabChange }: LibraryTabsProps) {
 
   return (
     <Tabs value={validTab} onValueChange={onTabChange}>
-      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto p-1">
+      <TabsList className="grid w-full grid-cols-3 h-auto p-1">
         <TabsTrigger
           value="continue"
           className="h-10 gap-2"
@@ -73,16 +72,6 @@ export function LibraryTabs({ activeTab, onTabChange }: LibraryTabsProps) {
           <span className="hidden sm:inline">{t("history")}</span>
           <span className="sm:hidden">{t("historyShort")}</span>
         </TabsTrigger>
-
-        <TabsTrigger
-          value="completed"
-          className="h-10 gap-2"
-          onMouseEnter={handleBookmarksHover}
-        >
-          <CheckCircle2 className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("completed")}</span>
-          <span className="sm:hidden">{t("completedShort")}</span>
-        </TabsTrigger>
       </TabsList>
 
       <div className="mt-6">
@@ -96,10 +85,6 @@ export function LibraryTabs({ activeTab, onTabChange }: LibraryTabsProps) {
 
         <TabsContent value="history" className="mt-0">
           <HistoryTab />
-        </TabsContent>
-
-        <TabsContent value="completed" className="mt-0">
-          <CompletedTab />
         </TabsContent>
       </div>
     </Tabs>

@@ -75,8 +75,7 @@ LibraryPage (Server)
             └── TabsContent
                 ├── ContinueReadingSection
                 ├── BookmarksTab
-                ├── HistoryTab
-                └── CompletedTab
+                └── HistoryTab
 ```
 
 ---
@@ -225,7 +224,7 @@ Tab values are typed for compile-time safety:
 
 ```tsx
 // Valid tab values
-const TAB_VALUES = ["continue", "bookmarks", "history", "completed"] as const;
+const TAB_VALUES = ["continue", "bookmarks", "history"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
 
 // Validation with fallback
@@ -301,9 +300,7 @@ All text uses `next-intl` with proper namespacing:
         "bookmarks": "Đánh dấu",
         "bookmarksShort": "DM",
         "history": "Lịch sử",
-        "historyShort": "LS",
-        "completed": "Hoàn thành",
-        "completedShort": "HT"
+        "historyShort": "LS"
       }
     }
   }
@@ -375,10 +372,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContinueReadingSection } from "./continue-reading-section";
 import { BookmarksTab } from "./bookmarks-tab";
 import { HistoryTab } from "./history-tab";
-import { CompletedTab } from "./completed-tab";
 
 // 5. Icons
-import { BookOpen, Bookmark, History, CheckCircle2 } from "lucide-react";
+import { BookOpen, Bookmark, History } from "lucide-react";
 
 // 6. Hooks
 import { useLibraryPrefetch } from "@/lib/hooks/use-library";

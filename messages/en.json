@@ -220,14 +220,11 @@
         "bookmarks": "Bookmarks",
         "bookmarksShort": "Bookmarks",
         "history": "History",
-        "historyShort": "History",
-        "completed": "Completed",
-        "completedShort": "Completed"
+        "historyShort": "History"
       },
       "stats": {
         "totalBookmarks": "{count} bookmarked manga",
-        "totalHistory": "{count} manga in history",
-        "totalCompleted": "{count} completed manga"
+        "totalHistory": "{count} manga in history"
       },
       "emptyStates": {
         "continue": {
@@ -244,11 +241,6 @@
           "title": "History is empty",
           "description": "Manga you've read will appear here",
           "action": "Start Reading"
-        },
-        "completed": {
-          "title": "No completed manga",
-          "description": "Bookmarked manga with completed status will show here",
-          "action": "View Bookmarked Manga"
         }
       },
       "card": {
@@ -388,6 +380,7 @@
       "chapterTooltip": "Comment about this chapter",
       "mangaTooltip": "Comment about the entire manga"
     },
+    "unknownTime": "Unknown time",
     "errors": {
       "contentRequired": "Please enter content",
       "contentTooLong": "Comment too long (max 2000 characters)"

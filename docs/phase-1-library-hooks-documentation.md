@@ -116,22 +116,7 @@ const { data, isLoading } = useContinueReading();
 }
 ```
 
-### 4. useCompletedManga
-
-Filters user's favorites to show only completed manga. This is a client-side filter since there's no dedicated API for completed manga.
-
-```typescript
-import { useCompletedManga } from "@/lib/hooks/use-library";
-
-const { data, isLoading } = useCompletedManga({
-  page: 1,
-  per_page: 20,
-});
-```
-
-**Note**: This hook internally uses `useFavorites` and filters the results based on `manga.status === MangaStatus.COMPLETED`.
-
-### 5. useRemoveFromHistory
+### 4. useRemoveFromHistory
 
 Mutation hook to remove manga from reading history.
 
@@ -160,7 +145,7 @@ const handleRemove = (mangaId: number) => {
 - Error handling with console logging
 - Loading state via `isPending`
 
-### 6. useRemoveBookmark
+### 5. useRemoveBookmark
 
 Mutation hook to remove manga from favorites/bookmarks.
 
@@ -190,7 +175,7 @@ const handleRemoveBookmark = (mangaId: number) => {
 - Loading state via `isPending`
 - Optimized for single and batch removal operations
 
-### 7. useLibraryPrefetch
+### 6. useLibraryPrefetch
 
 Provides prefetching functions for smooth tab switching experience.
 
@@ -281,7 +266,6 @@ export function LibraryPage() {
   const { data: continueData, isLoading: continueLoading } = useContinueReading();
   const { data: favoritesData, isLoading: favoritesLoading } = useFavorites();
   const { data: historyData, isLoading: historyLoading } = useHistory();
-  const { data: completedData, isLoading: completedLoading } = useCompletedManga();
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -289,7 +273,6 @@ export function LibraryPage() {
         <TabsTrigger value="continue">{t("tabs.continue")}</TabsTrigger>
         <TabsTrigger value="favorites">{t("tabs.favorites")}</TabsTrigger>
         <TabsTrigger value="history">{t("tabs.history")}</TabsTrigger>
-        <TabsTrigger value="completed">{t("tabs.completed")}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="continue">
