@@ -23,8 +23,8 @@ export function ChapterReaderComments({
   const tTabs = useTranslations("tabs");
   const queryClient = useQueryClient();
 
-  // State for active tab
-  const [activeTab, setActiveTab] = useState("chapter");
+  // State for active tab (tracked for onTabChange callback but not used in logic)
+  const [, setActiveTab] = useState("chapter");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Fetch chapter comments
@@ -114,12 +114,18 @@ export function ChapterReaderComments({
   }, []);
 
   // Handle adding comments
+  // In "all" tab, new top-level comments default to chapter type
+  // Replies inherit parent's type (handled by backend)
   const handleAddComment = useCallback(
     async (content: string, parentId?: string | null) => {
-      const type = activeTab === "chapter" ? "chapter" : "manga";
-      await addCommentMutation.mutateAsync({ content, parentId, type });
+      // Always use "chapter" type - chapter tab and "all" tab both default to chapter
+      await addCommentMutation.mutateAsync({
+        content,
+        parentId,
+        type: "chapter",
+      });
     },
-    [activeTab, addCommentMutation]
+    [addCommentMutation]
   );
 
   // Handle load more (simplified for now, can be enhanced later)
@@ -133,7 +139,17 @@ export function ChapterReaderComments({
   //   console.log("Load more manga comments");
   // }, []);
 
-  // Prepare tabs data
+  // Combine all comments for "All Comments" tab (sorted by date)
+  const allComments = [
+    ...(chapterCommentsData?.comments || []),
+    ...(mangaCommentsData?.comments || []),
+  ].sort((a, b) => {
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+  });
+
+  // Prepare tabs data - 2 tabs only: Chapter Comments and All Comments
   const tabs = [
     {
       id: "chapter",
@@ -157,41 +173,6 @@ export function ChapterReaderComments({
       ),
     },
     {
-      id: "manga",
-      label: tTabs("mangaComments"),
-      count: mangaCommentsData?.totalCount || 0,
-      content: (
-        <TabContent isLoading={isLoadingMangaComments} tabId="manga-comments">
-          <CommentSection
-            comments={mangaCommentsData?.comments || []}
-            totalCount={mangaCommentsData?.totalCount || 0}
-            isLoading={isLoadingMangaComments}
-            sort={sortOrder}
-            onSortChange={handleSortChange}
-            onAddComment={handleAddComment}
-            hasMore={mangaCommentsData?.hasMore || false}
-          />
-        </TabContent>
-      ),
-    },
-  ];
-
-  // Combine all comments for "All Comments" tab
-  const allComments = [
-    ...(chapterCommentsData?.comments || []),
-    ...(mangaCommentsData?.comments || []),
-  ].sort((a, b) => {
-    const dateA = new Date(a.created_at).getTime();
-    const dateB = new Date(b.created_at).getTime();
-    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
-  });
-
-  // Add "All Comments" tab if there are any comments
-  if (
-    (chapterCommentsData?.totalCount || 0) > 0 ||
-    (mangaCommentsData?.totalCount || 0) > 0
-  ) {
-    tabs.push({
       id: "all",
       label: tTabs("allComments"),
       count:
@@ -202,20 +183,18 @@ export function ChapterReaderComments({
           isLoading={isLoadingChapterComments || isLoadingMangaComments}
           tabId="all-comments"
         >
-          <div className="space-y-6">
-            <CommentSection
-              comments={allComments}
-              totalCount={allComments.length}
-              isLoading={false}
-              sort={sortOrder}
-              onSortChange={handleSortChange}
-              onAddComment={handleAddComment}
-            />
-          </div>
+          <CommentSection
+            comments={allComments}
+            totalCount={allComments.length}
+            isLoading={false}
+            sort={sortOrder}
+            onSortChange={handleSortChange}
+            onAddComment={handleAddComment}
+          />
         </TabContent>
       ),
-    });
-  }
+    },
+  ];
 
   return (
     <div className={className}>

@@ -155,13 +155,13 @@ function MangaDetail({
     return result;
   }, [chapters, sortOrder, searchTerm]);
 
-  // Comments hooks
+  // Comments hooks - fetch all comments (manga + chapter) for manga detail page
   const { data: commentsData, isLoading: isCommentsLoading } = useMangaComments(
     manga.slug,
     {
       page: commentPage,
       sort: commentSort,
-      type: "manga",
+      type: "all",
     }
   );
 

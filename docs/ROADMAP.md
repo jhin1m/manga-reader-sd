@@ -252,12 +252,12 @@
 - [x] 🟢 Rating & Comments
   - [ ] Display average rating
   - [ ] User rating input (stars)
-  - [x] Comments list (Comments System Phase 1-3 & Refinement Phase 01)
+  - [x] Comments list (Comments System Phase 1-6 & Refinement Phases 01-03)
   - [x] Add comment form (Comments System Phase 3)
-- [ ] 🔴 SEO optimization
-  - [ ] Dynamic meta tags
-  - [ ] Open Graph tags
-  - [ ] Structured data (JSON-LD)
+- [x] 🟢 SEO optimization (Browse Refinement Phases 01-03)
+  - [x] Dynamic meta tags
+  - [x] Open Graph tags
+  - [x] Structured data (JSON-LD)
 
 ### 3.3 Chapter Reader Page
 
@@ -383,7 +383,7 @@
 **Phase 5 Completed**: 2025-12-04 23:00 ICT
 **All Tasks**: ✅ 35/35 (100%) - Full i18n compliance, type-safe, mobile responsive
 
-### 4.3 Comments System - ✅ Phase 04 Completed (100% Complete)
+### 4.3 Comments System - ✅ Refinement Phases 01-03 Completed (100% Complete)
 
 - [x] 🟢 Phase 01: Type Definitions & API Layer
   - [x] `types/comment.ts` - Core comment types
@@ -405,7 +405,7 @@
   - [x] Type safety issues fixed
 
 - [x] 🟢 Phase 02: React Query Hooks
-  - [x] `hooks/useComments.ts` - Main comment fetching hook
+  - [x] `hooks/useComments.ts` - Main comment fetching hook (updated to `useMangaComments` with unified feed support)
   - [x] `hooks/useReplies.ts` - Reply fetching hook
   - [x] `hooks/useCreateComment.ts` - Comment creation hook
   - [x] Optimistic updates for immediate feedback
@@ -417,7 +417,7 @@
 - [x] 🟢 Phase 03: Core UI Components
   - [x] `components/comment/comment-section.tsx` - Main wrapper with header
   - [x] `components/comment/comment-list.tsx` - List container with loading
-  - [x] `components/comment/comment-item.tsx` - Single comment with replies
+  - [x] `components/comment/comment-item.tsx` - Single comment with replies (inline chapter badges)
   - [x] `components/comment/comment-form.tsx` - New comment creation
   - [x] `components/comment/comment-reply-form.tsx` - Inline reply form
   - [x] `components/comment/comment-skeleton.tsx` - Loading skeleton
@@ -441,16 +441,15 @@
   - [x] Click outside to close
   - [x] Mobile-optimized touch targets
 
-**Phase 01 Completed**: 2025-12-05 10:30 ICT
-**Phase 02 Completed**: 2025-12-05 13:00 ICT
-**Phase 03 Completed**: 2025-12-05 15:30 ICT
-**Phase 04 Completed**: 2025-12-05 16:30 ICT
-**All Tasks**: ✅ 41/41 (100%) - Full type safety, XSS protection, API integration, React Query hooks, UI components, emoji integration complete
+**Completed Implementation History**:
 
-**Remaining Phases**:
-
-- Page integration (manga detail & chapter pages)
-- Final i18n implementation
+- [x] 🟢 Phase 01 Completed: 2025-12-05 10:30 ICT
+- [x] 🟢 Phase 02 Completed: 2025-12-05 13:00 ICT
+- [x] 🟢 Phase 03 Completed: 2025-12-05 15:30 ICT
+- [x] 🟢 Phase 04 Completed: 2025-12-05 16:30 ICT
+- [x] 🟢 Phase 05: Page integration (manga detail & chapter pages)
+- [x] 🟢 Refinement Phases 01-03: Unified feed & simplified badges (2025-12-19)
+- [x] 🟢 All Tasks: ✅ 45/45 (100%) - Full type safety, unified discussion feeds, refined badges, and mobile-ready components complete
 
 ### 4.4 Rating System
 
@@ -697,6 +696,6 @@ pnpm test:e2e           # E2E tests
 
 ---
 
-**Last Updated**: 2025-12-05
-**Version**: 0.1.0
-**Status**: 🟡 In Progress (61% complete)
+**Last Updated**: 2025-12-19
+**Version**: 0.2.0
+**Status**: 🟡 In Progress (72% complete)

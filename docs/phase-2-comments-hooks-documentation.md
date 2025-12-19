@@ -44,81 +44,38 @@ export {
 
 ## 🪝 Hook Details
 
-### 1. useComments Hook
+### 1. useMangaComments Hook
 
-**Purpose**: Main hook for fetching and managing manga comments.
+**Purpose**: Main hook for fetching and managing manga comments (including unified feeds).
 
 **Signature**:
 
 ```typescript
-function useComments(
-  mangaSlug: string,
-  params?: UseCommentsParams
-): CommentsData;
+function useMangaComments(
+  slug: string,
+  params?: UseMangaCommentsParams
+): QueryResult<CommentsData>;
 ```
 
 **Parameters**:
 
 ```typescript
-interface UseCommentsParams {
-  page?: number; // Default: 1
-  per_page?: number; // Default: 20
-  sort?: "asc" | "desc"; // Default: "desc" (newest first)
-  enabled?: boolean; // Default: true
+interface UseMangaCommentsParams {
+  page?: number;
+  per_page?: number;
+  sort?: "asc" | "desc";
+  type?: "all" | "manga" | "chapter"; // Default: "manga"
+  enabled?: boolean;
 }
 ```
 
-**Returns**:
-
-```typescript
-interface CommentsData {
-  comments: Comment[]; // Array of comments
-  totalCount: number; // Total number of comments
-  isLoading: boolean; // Initial loading state
-  isLoadingMore: boolean; // Pagination loading state
-  error: Error | null; // Any error that occurred
-  hasMore: boolean; // Whether more pages exist
-  sort: "asc" | "desc"; // Current sort order
-  setSort: (sort: "asc" | "desc") => void;
-  loadMore: () => void; // Load next page
-  addComment: (content: string, parentId?: number) => Promise<void>;
-  refetch: () => void; // Manual refetch
-}
-```
-
-**Usage Example**:
+**Usage (Manga Detail Page - Unified View)**:
 
 ```tsx
-function CommentsSection({ mangaSlug }: { mangaSlug: string }) {
-  const {
-    comments,
-    totalCount,
-    isLoading,
-    isLoadingMore,
-    hasMore,
-    sort,
-    setSort,
-    loadMore,
-    addComment,
-  } = useComments(mangaSlug, {
-    page: 1,
-    per_page: 20,
-    sort: "desc",
-  });
-
-  return (
-    <div>
-      <CommentCount count={totalCount} />
-      <SortToggle value={sort} onChange={setSort} />
-      <CommentForm onSubmit={addComment} />
-      <CommentList
-        comments={comments}
-        onLoadMore={hasMore ? loadMore : undefined}
-        isLoadingMore={isLoadingMore}
-      />
-    </div>
-  );
-}
+const { data: comments } = useMangaComments(slug, {
+  type: "all", // Fetch both manga and chapter comments
+  sort: "desc",
+});
 ```
 
 ---

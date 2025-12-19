@@ -384,8 +384,10 @@ pnpm lint             # ESLint
 - Phase 4: User profile UI components
 - Phase 5: Profile display page implementation
 - Phase 6: User library implementation (favorites, history, continue reading)
-- Phase 7: Comments system (reading, posting, emoji reactions & Refinement Phase 01)
+- Phase 7: Comments system (reading, posting, emoji reactions & Refinement Phases 01-03)
 - Phase 01: SSR prefetch pattern implementation
+- Phase 02: Browse page caching & prefetching
+- Phase 03: Image priority loading & optimization
 
 **In Progress:**
 
