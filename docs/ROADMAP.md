@@ -241,9 +241,11 @@
   - [x] Artist/Author info
   - [x] Translation group
   - [x] Stats (views, rating, status)
-- [x] 🟢 Chapter list
-  - [x] Fetch chapters (API: `GET /mangas/{slug}/chapters`)
-  - [x] Sorting (asc/desc)
+- [x] 🟢 Chapter list pagination & UX enhancements (Phases 01-05)
+  - [x] Fetch chapters with pagination (API: `GET /mangas/{slug}/chapters`)
+  - [x] Server-side sorting (asc/desc)
+  - [x] Chapter list skeleton loading
+  - [x] Smooth scroll to chapter list on page change
   - [x] Chapter card with date, views
 - [x] 🟢 Actions
   - [x] Bookmark button (add to library)

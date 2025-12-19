@@ -14,7 +14,14 @@ import {
   User,
   PawPrint,
 } from "lucide-react";
-import { useState, useMemo, useCallback, type ComponentType } from "react";
+import {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  type ComponentType,
+} from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +29,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Pagination } from "@/components/ui/pagination";
 import { MangaDetailSkeleton } from "@/components/layout/loading/detail-skeleton";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
 import { CommentSection } from "@/components/comments";
@@ -32,6 +41,7 @@ import { cn, formatNumber } from "@/lib/utils";
 import { useMangaComments, useAddMangaComment } from "@/lib/hooks/use-comments";
 import type { Manga } from "@/types/manga";
 import type { ChapterListItem } from "@/types/chapter";
+import type { PaginationMeta } from "@/types/api";
 import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 
 // --- Sub-components ---
@@ -116,12 +126,24 @@ const ExpandableDescription = ({ content }: { content: string }) => {
 interface MangaDetailProps {
   manga: Manga;
   chapters: ChapterListItem[];
+  chapterPagination?: PaginationMeta;
+  isChaptersLoading?: boolean;
+  chapterPage: number;
+  setChapterPage: (page: number) => void;
+  sortOrder: "newest" | "oldest";
+  setSortOrder: (order: "newest" | "oldest") => void;
   isBookmarked?: boolean;
 }
 
 function MangaDetail({
   manga,
   chapters,
+  chapterPagination,
+  isChaptersLoading = false,
+  chapterPage,
+  setChapterPage,
+  sortOrder,
+  setSortOrder,
   isBookmarked = false,
 }: MangaDetailProps) {
   const t = useTranslations("manga");
@@ -129,31 +151,57 @@ function MangaDetail({
   const tChapter = useTranslations("chapter");
   const tComment = useTranslations("comment");
 
-  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [searchTerm, setSearchTerm] = useState("");
   const [commentSort, setCommentSort] = useState<"asc" | "desc">("desc");
   const [commentPage, setCommentPage] = useState(1);
+
+  // Ref for chapter section scroll target
+  const chapterListRef = useRef<HTMLDivElement>(null);
 
   const firstChapterSlug =
     manga.first_chapter?.slug || manga.latest_chapter?.slug;
 
   const filteredChapters = useMemo(() => {
-    let result = [...chapters];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (c) =>
-          c.name.toLowerCase().includes(lower) ||
-          c.chapter_number.toString().includes(lower)
-      );
-    }
-    result.sort((a, b) =>
-      sortOrder === "newest"
-        ? b.chapter_number - a.chapter_number
-        : a.chapter_number - b.chapter_number
+    // If no search term, return all chapters (already sorted by server)
+    if (!searchTerm) return chapters;
+
+    // Apply client-side search filter only
+    const lower = searchTerm.toLowerCase();
+    return chapters.filter(
+      (c) =>
+        c.name.toLowerCase().includes(lower) ||
+        c.chapter_number.toString().includes(lower)
     );
-    return result;
-  }, [chapters, sortOrder, searchTerm]);
+  }, [chapters, searchTerm]);
+
+  // Handler for sort change - resets to page 1
+  const handleSortChange = useCallback(() => {
+    setSortOrder(sortOrder === "newest" ? "oldest" : "newest");
+    setChapterPage(1); // Reset to page 1 when sort changes
+  }, [sortOrder, setSortOrder, setChapterPage]);
+
+  // Scroll to chapter section when page changes (not on initial load)
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    // Skip first render to avoid scrolling on initial page load
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Scroll to chapter section when page changes
+    if (chapterListRef.current && !isChaptersLoading) {
+      const behavior: ScrollBehavior =
+        typeof window !== "undefined" && window.innerWidth >= 768
+          ? "smooth"
+          : "auto"; // Prevent animation janky on mobile
+
+      chapterListRef.current.scrollIntoView({
+        behavior,
+        block: "start",
+      });
+    }
+  }, [chapterPage, isChaptersLoading]);
 
   // Comments hooks - fetch all comments (manga + chapter) for manga detail page
   const { data: commentsData, isLoading: isCommentsLoading } = useMangaComments(
@@ -363,7 +411,7 @@ function MangaDetail({
       <Card>
         <CardContent className="px-4 sm:px-6">
           {/* --- CHAPTER LIST --- */}
-          <div className="space-y-4">
+          <div ref={chapterListRef} className="space-y-4 scroll-mt-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold flex items-center gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -376,7 +424,7 @@ function MangaDetail({
                 />
                 {tChapter("chapterList")}
                 <span className="text-xs font-normal text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-                  {chapters.length}
+                  {chapterPagination?.total ?? chapters.length}
                 </span>
               </h2>
               <div className="flex items-center gap-2">
@@ -393,18 +441,33 @@ function MangaDetail({
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 rounded-full"
-                  onClick={() =>
-                    setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
-                  }
+                  onClick={handleSortChange}
                 >
                   <ArrowUpDown className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1">
-              {filteredChapters.length > 0 ? (
-                filteredChapters.map((chapter) => (
+            {/* Chapter Grid with Skeleton Loading */}
+            {isChaptersLoading ? (
+              // Skeleton loading state
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between py-2.5 border-b border-border/40"
+                  >
+                    <div className="min-w-0 pr-2 flex-1">
+                      <Skeleton className="h-4 w-24 mb-1" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                    <Skeleton className="h-3 w-12 flex-shrink-0" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredChapters.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1 transition-opacity duration-200">
+                {filteredChapters.map((chapter) => (
                   <Link
                     key={chapter.id}
                     href={`/manga/${manga.slug}/${chapter.slug}`}
@@ -432,13 +495,25 @@ function MangaDetail({
                       )}
                     </div>
                   </Link>
-                ))
-              ) : (
-                <div className="col-span-full py-10 text-center text-sm text-muted-foreground">
-                  {t("detail.noChapters")}
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="col-span-full py-10 text-center text-sm text-muted-foreground">
+                {t("detail.noChapters")}
+              </div>
+            )}
+
+            {/* Pagination - shown when more than 1 page of chapters */}
+            {chapterPagination && chapterPagination.last_page > 1 && (
+              <div className="mt-6 pt-4 border-t animate-in fade-in slide-in-from-bottom-3 duration-300">
+                <Pagination
+                  currentPage={chapterPagination.current_page}
+                  totalPages={chapterPagination.last_page}
+                  onPageChange={setChapterPage}
+                  className="justify-center"
+                />
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -461,14 +536,20 @@ function MangaDetail({
   );
 }
 
-// --- Container wrapper remains same but cleaner imports ---
+// --- Container wrapper with pagination state ---
 interface MangaDetailContentProps {
   slug: string;
 }
 
+const CHAPTERS_PER_PAGE = 50;
+
 export function MangaDetailContent({ slug }: MangaDetailContentProps) {
   const { isAuthenticated } = useAuthStore();
   const tErrors = useTranslations("errors");
+
+  // Chapter pagination state - kept here for queryKey
+  const [chapterPage, setChapterPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
   const {
     data: manga,
@@ -479,11 +560,22 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
     queryFn: () => mangaApi.getDetail(slug),
   });
 
-  const { data: chapters, isLoading: isChaptersLoading } = useQuery({
-    queryKey: ["manga", slug, "chapters"],
-    queryFn: () => mangaApi.getChapters(slug),
+  // Chapters query with pagination
+  const { data: chaptersResponse, isLoading: isChaptersLoading } = useQuery({
+    queryKey: ["manga", slug, "chapters", chapterPage, sortOrder],
+    queryFn: () =>
+      mangaApi.getChapters(slug, {
+        page: chapterPage,
+        per_page: CHAPTERS_PER_PAGE,
+        sort: sortOrder === "newest" ? "desc" : "asc",
+      }),
     enabled: !!manga,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
   });
+
+  // Extract typed data
+  const chapters = chaptersResponse?.data || [];
+  const chapterPagination = chaptersResponse?.meta?.pagination;
 
   const { data: favoritesData } = useQuery({
     queryKey: ["user", "favorites"],
@@ -499,7 +591,17 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
     [manga, favoritesData]
   );
 
-  if (isMangaLoading || isChaptersLoading) {
+  // Handler to update chapter page - passed to MangaDetail
+  const handleChapterPageChange = useCallback((page: number) => {
+    setChapterPage(page);
+  }, []);
+
+  // Handler to update sort order - passed to MangaDetail
+  const handleSortOrderChange = useCallback((order: "newest" | "oldest") => {
+    setSortOrder(order);
+  }, []);
+
+  if (isMangaLoading) {
     return <MangaDetailSkeleton />;
   }
 
@@ -512,7 +614,13 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
       <Breadcrumb name={manga.name} />
       <MangaDetail
         manga={manga}
-        chapters={chapters?.data || []}
+        chapters={chapters}
+        chapterPagination={chapterPagination}
+        isChaptersLoading={isChaptersLoading}
+        chapterPage={chapterPage}
+        setChapterPage={handleChapterPageChange}
+        sortOrder={sortOrder}
+        setSortOrder={handleSortOrderChange}
         isBookmarked={isBookmarked}
       />
     </div>

@@ -236,7 +236,7 @@ export const mangaApi = {
   },
 
   /**
-   * Get manga chapters
+   * Get manga chapters with pagination and sorting
    * GET /mangas/{slug}/chapters
    */
   getChapters: async (slug: string, params?: PaginationParams) => {
@@ -603,6 +603,33 @@ export function MangaList() {
     </div>
   );
 }
+```
+
+### Manga Detail Chapter Pagination (Example)
+
+```tsx
+// app/(manga)/manga/[slug]/manga-detail-content.tsx
+const [chapterPage, setChapterPage] = useState(1);
+const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+
+// Hierarchical query keys include pagination and sort state
+const { data: chaptersResponse, isLoading } = useQuery({
+  queryKey: ["manga", slug, "chapters", chapterPage, sortOrder],
+  queryFn: () =>
+    mangaApi.getChapters(slug, {
+      page: chapterPage,
+      per_page: 50,
+      sort: sortOrder === "newest" ? "desc" : "asc", // Server-side sorting
+    }),
+  enabled: !!manga,
+});
+
+// Scroll to top on page change (UX enhancement)
+useEffect(() => {
+  if (chapterPage > 1) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}, [chapterPage]);
 ```
 
 ---

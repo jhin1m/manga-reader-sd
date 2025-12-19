@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Chapter List Pagination & UX Enhancements (Phases 01-05):
+  - Server-side pagination for chapter lists (50 items/page).
+  - Skeleton loading states for chapter grid.
+  - Smooth scroll animation to chapter section on page navigation.
+  - Server-side sorting integration with pagination.
+  - Refined total chapter count display from API metadata.
 - Phase 01: SSR prefetch and streaming for manga browsing.
 - Phase 02: Caching and prefetching for manga browsing.
 - Phase 03: Image priority loading for manga browsing.
