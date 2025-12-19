@@ -252,7 +252,7 @@
 - [x] 🟢 Rating & Comments
   - [ ] Display average rating
   - [ ] User rating input (stars)
-  - [x] Comments list (Comments System Phase 1-3)
+  - [x] Comments list (Comments System Phase 1-3 & Refinement Phase 01)
   - [x] Add comment form (Comments System Phase 3)
 - [ ] 🔴 SEO optimization
   - [ ] Dynamic meta tags

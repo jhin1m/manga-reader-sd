@@ -12,6 +12,17 @@ import type { UserBasic } from "./user";
 export type CommentableType = "manga" | "chapter";
 
 /**
+ * Chapter info attached to chapter comments
+ * Returned by API for chapter comments when fetching all comments
+ */
+export interface ChapterInfo {
+  id: number;
+  name: string;
+  number: number | null;
+  slug: string;
+}
+
+/**
  * Comment entity
  */
 export interface Comment {
@@ -28,6 +39,7 @@ export interface Comment {
   replies_count: number;
   can_edit: boolean;
   can_delete: boolean;
+  chapter_info?: ChapterInfo; // Only for chapter comments
 }
 
 /**

@@ -151,7 +151,7 @@ interface CommentItemProps {
 - Depth limit to prevent layout issues (max 3 levels)
 - XSS-protected content rendering
 - User avatar display with fallback
-- Relative time display
+- Inline chapter badge: Shows full chapter name (e.g., "Chapter 1095") for chapter-level comments (Refinement Phase 01)
 - Interactive reply button
 - Delete functionality for own comments
 - Depth-based styling (indentation for replies)

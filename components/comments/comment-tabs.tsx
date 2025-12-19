@@ -5,13 +5,11 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { CommentBadge } from "./comment-badge";
 
 interface CommentTab {
   id: string;
   label: string;
   count: number;
-  type?: "chapter" | "manga";
   content: React.ReactNode;
   disabled?: boolean;
 }
@@ -118,14 +116,6 @@ export function CommentTabs({
                   "sm:min-h-[40px] px-2 sm:px-3"
                 )}
               >
-                {tab.type && (
-                  <CommentBadge
-                    type={tab.type}
-                    variant="compact"
-                    showTooltip={false}
-                    className="scale-75"
-                  />
-                )}
                 <span className="truncate">{tab.label}</span>
               </TabsTrigger>
             ))}

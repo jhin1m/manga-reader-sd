@@ -20,18 +20,18 @@
 
 ### Core Guides (Read in Order)
 
-| #   | Guide                                                              | Description                                  |
-| --- | ------------------------------------------------------------------ | -------------------------------------------- |
-| 00  | **[Getting Started](./guides/00-GETTING-STARTED.md)**              | Installation, tech stack, workflow           |
-| 01  | **[Project Architecture](./guides/01-PROJECT-ARCHITECTURE.md)**    | Folder structure, routing, conventions       |
-| 02  | **[Component Patterns](./guides/02-COMPONENT-PATTERNS.md)**        | Server/Client split, import order, structure |
-| 03  | **[State Management](./guides/03-STATE-MANAGEMENT.md)**            | useState, React Query, Zustand               |
-| 04  | **[API Integration](./guides/04-API-INTEGRATION.md)**              | Backend integration, React Query             |
-| 05  | **[Forms & Validation](./guides/05-FORMS-VALIDATION.md)**          | React Hook Form + Zod                        |
-| 06  | **[i18n Guide](./guides/06-I18N-GUIDE.md)**                        | ⚠️ **CRITICAL** - Translations (MANDATORY)   |
-| 07  | **[SEO & Metadata](./guides/07-SEO-METADATA.md)**                  | Centralized SEO, JSON-LD schemas             |
-| 08  | **[UI Components](./guides/08-UI-COMPONENTS.md)**                  | shadcn/ui usage, styling                     |
-| 09  | **[Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)** | Image, Link, optimization                    |
+| #   | Guide                                                                   | Description                                  |
+| --- | ----------------------------------------------------------------------- | -------------------------------------------- |
+| 00  | **[Getting Started](./guides/00-GETTING-STARTED.md)**                   | Installation, tech stack, workflow           |
+| 01  | **[Project Architecture](./guides/01-PROJECT-ARCHITECTURE.md)**         | Folder structure, routing, conventions       |
+| 02  | **[Component Patterns](./guides/02-COMPONENT-PATTERNS.md)**             | Server/Client split, import order, structure |
+| 03  | **[State Management](./guides/03-STATE-MANAGEMENT.md)**                 | useState, React Query, Zustand               |
+| 04  | **[API Integration](./guides/04-API-INTEGRATION.md)**                   | Backend integration, React Query             |
+| 05  | **[Forms & Validation](./guides/05-FORMS-VALIDATION.md)**               | React Hook Form + Zod                        |
+| 06  | **[i18n Guide](./guides/06-I18N-GUIDE.md)**                             | ⚠️ **CRITICAL** - Translations (MANDATORY)   |
+| 07  | **[SEO & Metadata](./guides/07-SEO-METADATA.md)**                       | Centralized SEO, JSON-LD schemas             |
+| 08  | **[UI Components](./guides/08-UI-COMPONENTS.md)**                       | shadcn/ui usage, styling                     |
+| 09  | **[Next.js Best Practices](./guides/09-NEXTJS-BEST-PRACTICES.md)**      | Image, Link, optimization                    |
 | 10  | **[Performance Optimization](./guides/10-PERFORMANCE-OPTIMIZATION.md)** | useReducer, memoization, bundle optimization |
 
 ---
@@ -156,6 +156,7 @@ Documentation for major feature implementations:
 - **[Phase 5 - Profile Display](./phase-5-profile-display-documentation.md)** - User profile page
 - **[Phase 6 - Profile Edit](./phase-6-profile-edit-documentation.md)** - Profile editing functionality
 - **[Phase 7 - i18n Completion](./phase-7-i18n-completion-documentation.md)** - Translation fixes and SSR compatibility
+- **[Comment Badge Refinement](./docs-manager-251219-comment-badge-refinement.md)** - Simplified chapter badges logic (NEW)
 
 ---
 

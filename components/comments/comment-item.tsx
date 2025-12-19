@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 import { sanitizeText } from "@/lib/utils/sanitize";
 import { useRelativeTime } from "@/hooks/use-relative-time";
 import { CommentReplyForm } from "./comment-reply-form";
-import { CommentBadge } from "./comment-badge";
 import type { Comment } from "@/types/comment";
 
 const MAX_DEPTH = 1; // API only supports comment (depth 0) and reply (depth 1)
@@ -44,6 +43,10 @@ export function CommentItem({ comment, depth, onReply }: CommentItemProps) {
       locale: "vi",
     }) || t("unknownTime");
 
+  // Determine if this is a chapter comment and get chapter name
+  const isChapterComment = comment.commentable_type.includes("Chapter");
+  const chapterName = comment.chapter_info?.name;
+
   return (
     <li
       className={cn(
@@ -66,10 +69,11 @@ export function CommentItem({ comment, depth, onReply }: CommentItemProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-sm">{comment.user.name}</span>
-            <CommentBadge
-              type={comment.commentable_type as "manga" | "chapter"}
-              variant="compact"
-            />
+            {isChapterComment && chapterName && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium text-white bg-blue-500">
+                {chapterName}
+              </span>
+            )}
             <span className="text-xs text-muted-foreground">{timeAgo}</span>
           </div>
 

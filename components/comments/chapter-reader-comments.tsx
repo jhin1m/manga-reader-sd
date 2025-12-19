@@ -139,7 +139,6 @@ export function ChapterReaderComments({
       id: "chapter",
       label: tTabs("chapterComments"),
       count: chapterCommentsData?.totalCount || 0,
-      type: "chapter" as const,
       content: (
         <TabContent
           isLoading={isLoadingChapterComments}
@@ -161,7 +160,6 @@ export function ChapterReaderComments({
       id: "manga",
       label: tTabs("mangaComments"),
       count: mangaCommentsData?.totalCount || 0,
-      type: "manga" as const,
       content: (
         <TabContent isLoading={isLoadingMangaComments} tabId="manga-comments">
           <CommentSection
@@ -199,7 +197,6 @@ export function ChapterReaderComments({
       count:
         (chapterCommentsData?.totalCount || 0) +
         (mangaCommentsData?.totalCount || 0),
-      type: "chapter", // Default type for badge
       content: (
         <TabContent
           isLoading={isLoadingChapterComments || isLoadingMangaComments}

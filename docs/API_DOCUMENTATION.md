@@ -2475,6 +2475,7 @@ Add a new comment to a manga.
 **`types/comment.ts`:**
 
 - `Comment` - Core comment type with user relationships
+- `ChapterInfo` - Chapter information for chapter-level comments (Refinement Phase 01)
 - `CreateCommentRequest` - Type for creating new comments
 - `MangaCommentParams` - Query parameters for fetching manga comments
 
