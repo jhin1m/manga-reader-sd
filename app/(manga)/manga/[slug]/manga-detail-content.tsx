@@ -246,8 +246,8 @@ function MangaDetail({
                   </span>
                   <span className="font-medium text-foreground">
                     {manga.status === 1
-                      ? t("status.ongoing")
-                      : t("status.completed")}
+                      ? t("status.completed")
+                      : t("status.ongoing")}
                   </span>
                 </div>
                 {manga.average_rating > 0 && (
