@@ -181,15 +181,15 @@ function MangaDetail({
   }, [sortOrder, setSortOrder, setChapterPage]);
 
   // Scroll to chapter section when page changes (not on initial load)
-  const isFirstRender = useRef(true);
+  const prevChapterPage = useRef(chapterPage);
   useEffect(() => {
-    // Skip first render to avoid scrolling on initial page load
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    // Only scroll if page actually changed (not on initial load or loading state change)
+    if (prevChapterPage.current === chapterPage) {
       return;
     }
+    prevChapterPage.current = chapterPage;
 
-    // Scroll to chapter section when page changes
+    // Scroll to chapter section when page changes and loading is done
     if (chapterListRef.current && !isChaptersLoading) {
       const behavior: ScrollBehavior =
         typeof window !== "undefined" && window.innerWidth >= 768
