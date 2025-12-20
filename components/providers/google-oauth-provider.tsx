@@ -3,9 +3,23 @@
 /**
  * Google OAuth Provider Wrapper
  * Client component wrapper for GoogleOAuthProvider
+ * Provides context to check OAuth availability before rendering OAuth components
  */
 
+import { createContext, useContext } from "react";
 import { GoogleOAuthProvider as GoogleProvider } from "@react-oauth/google";
+
+// Context to track if Google OAuth is available (client ID configured)
+const GoogleOAuthAvailabilityContext = createContext<boolean>(false);
+
+/**
+ * Hook to check if Google OAuth is available
+ * Use this before rendering any Google OAuth components to prevent
+ * "must be used within GoogleOAuthProvider" errors
+ */
+export function useGoogleOAuthAvailable(): boolean {
+  return useContext(GoogleOAuthAvailabilityContext);
+}
 
 interface GoogleOAuthProviderProps {
   children: React.ReactNode;
@@ -15,13 +29,18 @@ export function GoogleOAuthProvider({ children }: GoogleOAuthProviderProps) {
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   // If no client ID is provided, render children without OAuth provider
-  // This allows the app to work even if Google OAuth is not configured
+  // but still provide availability context as false
   if (!clientId) {
-    console.warn(
-      "NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set. Google OAuth will not be available."
+    return (
+      <GoogleOAuthAvailabilityContext.Provider value={false}>
+        {children}
+      </GoogleOAuthAvailabilityContext.Provider>
     );
-    return <>{children}</>;
   }
 
-  return <GoogleProvider clientId={clientId}>{children}</GoogleProvider>;
+  return (
+    <GoogleOAuthAvailabilityContext.Provider value={true}>
+      <GoogleProvider clientId={clientId}>{children}</GoogleProvider>
+    </GoogleOAuthAvailabilityContext.Provider>
+  );
 }

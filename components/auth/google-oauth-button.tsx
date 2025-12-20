@@ -3,10 +3,12 @@
 /**
  * Google OAuth Button Component
  * Handles Google Sign-In with OAuth 2.0
+ * Only renders when Google OAuth is configured (NEXT_PUBLIC_GOOGLE_CLIENT_ID is set)
  */
 
 import { useGoogleLogin } from "@react-oauth/google";
 import { useGoogleAuth } from "@/lib/hooks/use-auth";
+import { useGoogleOAuthAvailable } from "@/components/providers/google-oauth-provider";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
@@ -19,6 +21,22 @@ interface GoogleOAuthButtonProps {
 }
 
 export function GoogleOAuthButton({
+  onSuccess,
+  disabled = false,
+}: GoogleOAuthButtonProps) {
+  const isGoogleOAuthAvailable = useGoogleOAuthAvailable();
+
+  // Don't render if Google OAuth is not configured
+  if (!isGoogleOAuthAvailable) {
+    return null;
+  }
+
+  return <GoogleOAuthButtonInner onSuccess={onSuccess} disabled={disabled} />;
+}
+
+// Inner component that uses useGoogleLogin hook
+// Only rendered when GoogleOAuthProvider context is available
+function GoogleOAuthButtonInner({
   onSuccess,
   disabled = false,
 }: GoogleOAuthButtonProps) {
