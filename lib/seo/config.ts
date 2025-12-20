@@ -62,7 +62,7 @@ export const siteConfig = {
  */
 export const defaultMetadata: Metadata = {
   title: {
-    default: siteConfig.name,
+    default: siteConfig.name + " - HentaiVN Tiếng Việt Miễn Phí",
     template: `%s | Động Hentai`, // ví dụ: "Netorare no Gakuen | Động Hentai"
   },
 
