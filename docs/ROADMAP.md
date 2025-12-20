@@ -18,7 +18,7 @@
 | **Phase 2** | Authentication & User Management | Week 1-2 | 🟢 Completed   | 100%     |
 | **Phase 3** | Manga Features (Core)            | Week 2-3 | 🔴 Not Started | 0%       |
 | **Phase 4** | User Features & Interactions     | Week 3-4 | 🟡 In Progress | 58%      |
-| **Phase 5** | Polish & Optimization            | Week 4-5 | 🔴 Not Started | 0%       |
+| **Phase 5** | Polish & Optimization            | Week 4-5 | 🟡 In Progress | 15%      |
 
 **Status Legend:**
 
@@ -517,6 +517,11 @@
 
 ### 5.2 SEO & Meta Tags
 
+- [x] 🟢 Phase 1-4: SEO Improvements (Canonical Tags, Meta Descriptions & Headings)
+  - [x] Add canonical tags to home page
+  - [x] Refactor manga metadata (title limit, description format)
+  - [x] Add H1 heading to home page
+  - [x] Completed: 2025-12-20
 - [ ] 🔴 Dynamic meta tags for all pages
   - [ ] Title, description
   - [ ] Keywords
@@ -698,6 +703,6 @@ pnpm test:e2e           # E2E tests
 
 ---
 
-**Last Updated**: 2025-12-19
-**Version**: 0.2.0
-**Status**: 🟡 In Progress (72% complete)
+**Last Updated**: 2025-12-20
+**Version**: 0.2.1
+**Status**: 🟡 In Progress (73% complete)

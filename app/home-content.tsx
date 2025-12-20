@@ -21,8 +21,13 @@ import { PopularGenresSection } from "@/components/manga/popular-genres-section"
  * Homepage main content component
  */
 export function HomePageContent() {
+  const t = useTranslations("homepage");
+
   return (
     <div className="min-h-screen">
+      {/* SEO: Primary H1 for page hierarchy (screen-reader accessible) */}
+      <h1 className="sr-only">{t("h1")}</h1>
+
       <div className="container mx-auto px-4 py-8 max-w-7xl space-y-12">
         {/* Manga Carousel - Full Width */}
         <MangaCarouselSection />

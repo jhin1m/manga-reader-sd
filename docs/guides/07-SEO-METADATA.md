@@ -585,20 +585,26 @@ export const defaultMetadata = {
     default: "Manga Reader",
     template: "%s | Manga Reader", // Page Title | Site Name
   },
-};
-```
-
-### 2. Include Canonical URLs
-
-```typescript
-return {
   alternates: {
-    canonical: `${siteConfig.url}/manga/${manga.slug}`,
+    canonical: siteConfig.url,
   },
 };
 ```
 
-### 3. Optimize Images for OG
+### 2. Add H1 for Accessibility & SEO
+
+Each page should have a primary H1 heading. If the design doesn't require a visible H1, use the `sr-only` class to make it available for screen readers and search engines.
+
+```tsx
+// app/home-content.tsx
+<h1 className="sr-only">{t("h1")}</h1>
+```
+
+### 3. Optimize Manga Metadata Descriptions
+
+Descriptions should be concise and match user search patterns. Avoid including dynamic stats (like views/ratings) in the meta description to prevent it from becoming outdated in search snippets.
+
+### 4. Optimize Image for OG
 
 - **Size**: 1200x630px (ideal for Open Graph)
 - **Format**: JPEG or PNG

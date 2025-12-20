@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SEO Improvements (Canonical Tags, Meta Descriptions & Headings):
+  - Added canonical URL to home page metadata.
+  - Refactored manga metadata generator with 70-char title limit and standardized description format.
+  - Added semantic H1 heading to home page for improved SEO and accessibility.
 - Chapter List Pagination & UX Enhancements (Phases 01-05):
   - Server-side pagination for chapter lists (50 items/page).
   - Skeleton loading states for chapter grid.

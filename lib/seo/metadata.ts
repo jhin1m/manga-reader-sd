@@ -128,27 +128,23 @@ export function generateMangaMetadata(manga: {
   status?: number;
   genres?: Array<{ name: string }>;
 }): Metadata {
-  // Clean HTML from pilot description
-  const cleanDescription = manga.pilot
-    .replace(/<[^>]*>/g, "")
-    .substring(0, 160);
-
   // Build keywords from genres
   const genreKeywords = manga.genres?.map((g) => g.name) || [];
 
-  // Build title with alternative name if available
-  const title = manga.name_alt
-    ? `${manga.name} (${manga.name_alt})`
-    : manga.name;
+  // Build title with alternative name if available (max 70 chars)
+  let title = manga.name;
+  if (manga.name_alt) {
+    const withAlt = `${manga.name} (${manga.name_alt})`;
+    title = withAlt.length <= 70 ? withAlt : manga.name;
+  }
+  title = truncateText(title, 70);
 
-  // Build description with stats
-  let description = cleanDescription;
-  if (manga.average_rating) {
-    description += ` | Đánh giá: ${manga.average_rating}/5`;
-  }
-  if (manga.views) {
-    description += ` | ${manga.views.toLocaleString("vi-VN")} lượt xem`;
-  }
+  // Build description matching chapter reader pattern (no stats)
+  const pilotSnippet = manga.pilot.replace(/<[^>]*>/g, "").substring(0, 100);
+  const description = truncateText(
+    `Đọc ${manga.name} tiếng Việt. ${pilotSnippet}`.trim(),
+    160
+  );
 
   return generatePageMetadata({
     title,

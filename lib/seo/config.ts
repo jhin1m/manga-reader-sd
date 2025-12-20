@@ -67,6 +67,11 @@ export const defaultMetadata: Metadata = {
   },
 
   description: siteConfig.description,
+
+  // Canonical URL for home page
+  alternates: {
+    canonical: siteConfig.url,
+  },
   keywords: Array.from(siteConfig.keywords),
   authors: [...siteConfig.authors],
   creator: siteConfig.creator,
