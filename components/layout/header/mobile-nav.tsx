@@ -26,8 +26,10 @@ import {
   Settings,
   LogOut,
   LogIn,
-  Layers,
+  Loader2,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { genreApi } from "@/lib/api/endpoints/manga";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -35,6 +37,15 @@ export function MobileNav() {
   const { logout } = useLogout();
   const router = useRouter();
   const t = useTranslations();
+
+  // Fetch genres for the mobile nav
+  const { data: genresData, isLoading: isLoadingGenres } = useQuery({
+    queryKey: ["genres-mobile-nav", { per_page: 500 }],
+    queryFn: () => genreApi.getList({ per_page: 500 }),
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+  });
+
+  const genres = genresData?.data || [];
 
   const handleLogout = async () => {
     const result = await logout();
@@ -56,7 +67,6 @@ export function MobileNav() {
 
   const navLinks = [
     { href: "/", label: t("navigation.home"), icon: Home },
-    { href: "/genres", label: t("navigation.genres"), icon: Layers },
     { href: "/browse?sort=-views", label: t("navigation.hot"), icon: Flame },
     { href: "/browse", label: t("navigation.recent"), icon: Clock },
   ];
@@ -126,6 +136,46 @@ export function MobileNav() {
               </Link>
             ))}
           </nav>
+
+          <Separator />
+
+          {/* Genres Section */}
+          <div className="space-y-2">
+            <h3 className="px-3 text-sm font-semibold text-muted-foreground">
+              {t("navigation.allGenres")}
+            </h3>
+
+            {isLoadingGenres ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : genres.length > 0 ? (
+              <div className="max-h-[300px] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-2">
+                  {genres.map((genre) => (
+                    <Link
+                      key={genre.id}
+                      href={`/browse?genre=${genre.id}`}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center justify-between rounded-lg border bg-card px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                    >
+                      <span className="truncate font-medium">{genre.name}</span>
+                      {genre.mangas_count !== undefined &&
+                        genre.mangas_count > 0 && (
+                          <span className="ml-1 text-xs text-muted-foreground">
+                            {genre.mangas_count}
+                          </span>
+                        )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="px-3 py-4 text-center text-sm text-muted-foreground">
+                {t("manga.noResults")}
+              </p>
+            )}
+          </div>
 
           {/* User Actions (if authenticated) */}
           {isAuthenticated && (
