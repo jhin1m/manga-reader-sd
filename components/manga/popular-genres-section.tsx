@@ -67,14 +67,19 @@ export function PopularGenresSection() {
                 genre.bgClass,
                 genre.glowClass
               )}
-              style={{
-                backgroundImage: `url('${genre.bgImage}')`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundBlendMode: "overlay",
-              }}
             >
-              <div className="absolute inset-0 flex items-center px-6">
+              {/* Optimized background image */}
+              <Image
+                src={genre.bgImage}
+                alt=""
+                fill
+                className="object-cover object-center opacity-40 transition-opacity duration-300 group-hover:opacity-30"
+                style={{ mixBlendMode: "overlay" }}
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 25vw"
+                priority={false}
+              />
+
+              <div className="absolute inset-0 flex items-center px-6 z-10">
                 <div className="z-10">
                   <h3
                     className={cn(
