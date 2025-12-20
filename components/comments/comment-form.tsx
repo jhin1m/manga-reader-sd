@@ -52,7 +52,11 @@ export function CommentForm({ onSubmit, placeholder }: CommentFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-2"
+      data-testid="comment-form"
+    >
       <Textarea
         ref={textareaRef}
         value={content}

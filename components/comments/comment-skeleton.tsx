@@ -7,7 +7,7 @@ interface CommentSkeletonProps {
 
 export function CommentSkeleton({ count = 3 }: CommentSkeletonProps) {
   return (
-    <Card>
+    <Card data-testid="comment-skeleton">
       <CardHeader className="pb-3">
         <Skeleton className="h-6 w-32" />
       </CardHeader>

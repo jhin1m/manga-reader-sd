@@ -169,7 +169,10 @@ describe("CommentSection", () => {
         <CommentSection {...defaultProps} onAddComment={mockOnAddComment} />
       );
 
-      const submitButton = screen.getByText("Submit Comment");
+      const textarea = screen.getByPlaceholderText(/Write your comment/i);
+      fireEvent.change(textarea, { target: { value: "Test comment" } });
+
+      const submitButton = screen.getByRole("button", { name: /Submit/i });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -185,6 +188,12 @@ describe("CommentSection", () => {
 
       const replyButtons = screen.getAllByText("Reply to Comment");
       fireEvent.click(replyButtons[0]);
+
+      const textarea = screen.getByPlaceholderText(/Reply to/i);
+      fireEvent.change(textarea, { target: { value: "Test reply" } });
+
+      const submitButton = screen.getByRole("button", { name: /Reply/i });
+      fireEvent.click(submitButton);
 
       await waitFor(() => {
         expect(mockOnAddComment).toHaveBeenCalledWith("Test reply", 1);
