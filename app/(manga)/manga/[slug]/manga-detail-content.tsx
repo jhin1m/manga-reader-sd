@@ -189,15 +189,10 @@ function MangaDetail({
     }
     prevChapterPage.current = chapterPage;
 
-    // Scroll to chapter section when page changes and loading is done
+    // Scroll to chapter card when page changes and loading is done
     if (chapterListRef.current && !isChaptersLoading) {
-      const behavior: ScrollBehavior =
-        typeof window !== "undefined" && window.innerWidth >= 768
-          ? "smooth"
-          : "auto"; // Prevent animation janky on mobile
-
       chapterListRef.current.scrollIntoView({
-        behavior,
+        behavior: "smooth",
         block: "start",
       });
     }
@@ -408,10 +403,10 @@ function MangaDetail({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card ref={chapterListRef} className="scroll-mt-4">
         <CardContent className="px-4 sm:px-6">
           {/* --- CHAPTER LIST --- */}
-          <div ref={chapterListRef} className="space-y-4 scroll-mt-4">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold flex items-center gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
