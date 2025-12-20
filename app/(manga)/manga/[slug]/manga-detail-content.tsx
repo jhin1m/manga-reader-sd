@@ -403,7 +403,7 @@ function MangaDetail({
         </CardContent>
       </Card>
 
-      <Card ref={chapterListRef} className="scroll-mt-4">
+      <Card ref={chapterListRef} className="scroll-mt-20">
         <CardContent className="px-4 sm:px-6">
           {/* --- CHAPTER LIST --- */}
           <div className="space-y-4">
