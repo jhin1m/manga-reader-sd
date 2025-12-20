@@ -1,0 +1,53 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Development
+.git
+.gitignore
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment (keep .env.example)
+.env
+.env.local
+.env.development
+.env.production
+
+# Testing
+coverage
+.nyc_output
+playwright-report
+
+# Documentation
+docs
+plans
+
+# Analysis
+analyze
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
