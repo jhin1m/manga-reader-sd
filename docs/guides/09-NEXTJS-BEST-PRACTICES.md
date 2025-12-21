@@ -259,13 +259,13 @@ import Link from "next/link";
 
 <Link
   href={{
-    pathname: "/search",
+    pathname: "/browse",
     query: { q: searchQuery, genre: "action" },
   }}
 >
   Search Results
 </Link>;
-// URL: /search?q=naruto&genre=action
+// URL: /browse?q=naruto&genre=action
 ```
 
 ### Prefetching

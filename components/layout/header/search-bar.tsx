@@ -107,7 +107,7 @@ export function SearchBar({ className, placeholder }: SearchBarProps) {
         inputRef.current?.blur();
       } else if (query.trim()) {
         // Navigate to search page
-        router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+        router.push(`/browse?q=${encodeURIComponent(query.trim())}`);
         setManuallyClosedDropdown(true);
         inputRef.current?.blur();
       }

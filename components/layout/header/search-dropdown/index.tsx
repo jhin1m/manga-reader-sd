@@ -129,7 +129,7 @@ export function SearchDropdown({
           {/* View all results link */}
           {showViewAll && (
             <Link
-              href={`/search?q=${encodeURIComponent(query)}`}
+              href={`/browse?q=${encodeURIComponent(query)}`}
               className={cn(
                 "block p-3 text-center text-sm font-medium",
                 "text-primary hover:bg-accent/50",
