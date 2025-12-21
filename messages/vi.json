@@ -417,6 +417,13 @@
     "pageNotFound": "Không tìm thấy trang",
     "pageNotFoundDescription": "Trang bạn đang tìm kiếm không tồn tại hoặc đã bị xóa."
   },
+  "notFoundPage": {
+    "title": "404 - Lạc trôi rồi",
+    "heading": "Oy? Lạc đường rồi sao?",
+    "description": "Trang bạn tìm kiếm có vẻ như đã bị isekai sang một thế giới khác...",
+    "backButton": "Quay lại",
+    "homeButton": "Về trang chủ"
+  },
   "footer": {
     "copyright": "© {year} Manga Reader CMS. All rights reserved.",
     "about": "Giới thiệu",
