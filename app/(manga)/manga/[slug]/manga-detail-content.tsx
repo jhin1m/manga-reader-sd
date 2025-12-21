@@ -368,6 +368,31 @@ function MangaDetail({
             </div>
           </div>
 
+          {/* Genres Section - Mobile Only */}
+          {manga.genres && manga.genres.length > 0 && (
+            <div className="mt-4 sm:hidden">
+              <div className="flex flex-wrap gap-1.5">
+                {manga.genres.slice(0, 5).map((g) => (
+                  <Badge
+                    key={g.id}
+                    variant="secondary"
+                    className="text-[10px] px-1.5 h-5 font-normal hover:bg-secondary-foreground/10 cursor-pointer"
+                  >
+                    {g.name}
+                  </Badge>
+                ))}
+                {manga.genres.length > 5 && (
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] px-1.5 h-5 font-normal"
+                  >
+                    + {manga.genres.length - 5}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Description Section (Full Width below header) - Mobile Only */}
           {manga.pilot && (
             <div className="mt-6 sm:hidden">

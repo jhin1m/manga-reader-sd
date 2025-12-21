@@ -85,7 +85,7 @@ export const mangaApi = {
    * GET /mangas/{slug}
    */
   getDetail: async (slug: string): Promise<Manga> => {
-    return apiClient.get<Manga>(`/mangas/${slug}?include=first_chapter`);
+    return apiClient.get<Manga>(`/mangas/${slug}?include=first_chapter,genres`);
   },
 
   /**
