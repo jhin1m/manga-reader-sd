@@ -17,7 +17,26 @@ import type { SortOption } from "@/components/browse/sort-select";
 /**
  * Generate metadata for browse page
  */
-export async function generateMetadata(): Promise<Metadata> {
+interface BrowsePageProps {
+  searchParams: Promise<{
+    page?: string;
+    status?: string;
+    sort?: string;
+    q?: string;
+    genre?: string;
+  }>;
+}
+
+/**
+ * Generate metadata for browse page
+ */
+export async function generateMetadata({
+  searchParams,
+}: BrowsePageProps): Promise<Metadata> {
+  const params = await searchParams;
+  // If there are search params (filters, pagination, etc.), deindex the page
+  const hasParams = Object.keys(params).length > 0;
+
   const title = "Duyệt Manga";
   const description =
     "Duyệt và tìm kiếm manga theo thể loại, trạng thái, và sắp xếp. Khám phá hàng ngàn bộ manga hot nhất.";
@@ -37,17 +56,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `${title} | ${siteConfig.name}`,
       description,
     },
+    ...(hasParams && {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }),
   };
-}
-
-interface BrowsePageProps {
-  searchParams: Promise<{
-    page?: string;
-    status?: string;
-    sort?: string;
-    q?: string;
-    genre?: string;
-  }>;
 }
 
 /**

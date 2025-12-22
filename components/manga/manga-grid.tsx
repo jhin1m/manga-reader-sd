@@ -70,7 +70,7 @@ export function MangaGrid({
   );
 
   if (isLoading) {
-    return <MangaGridSkeleton className={gridClasses} count={12} />;
+    return <MangaGridSkeleton className={gridClasses} count={10} />;
   }
 
   if (mangas.length === 0) {

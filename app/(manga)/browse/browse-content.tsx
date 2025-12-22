@@ -137,6 +137,13 @@ export function BrowseContent({ searchParams }: BrowseContentProps) {
           <MangaGrid
             mangas={mangas}
             isLoading={isLoading}
+            columns={{
+              default: 2,
+              sm: 3,
+              md: 4,
+              lg: 6,
+              xl: 6,
+            }}
             emptyMessage={
               <div className="text-center">
                 <p className="text-lg font-medium">{t("noResults")}</p>

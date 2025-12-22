@@ -19,7 +19,7 @@ export interface MangaGridSkeletonProps {
  */
 export function MangaGridSkeleton({
   className,
-  count = 12,
+  count = 10,
 }: MangaGridSkeletonProps) {
   return (
     <div
@@ -29,7 +29,10 @@ export function MangaGridSkeleton({
       )}
     >
       {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="space-y-3">
+        <div
+          key={index}
+          className={cn("space-y-3", index >= 6 && "hidden sm:block")}
+        >
           <Skeleton className="aspect-[3/4] w-full rounded-lg" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-3 w-2/3" />

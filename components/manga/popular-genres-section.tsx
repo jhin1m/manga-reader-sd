@@ -75,7 +75,8 @@ export function PopularGenresSection() {
                 fill
                 className="object-cover object-center opacity-40 transition-opacity duration-300 group-hover:opacity-30"
                 style={{ mixBlendMode: "overlay" }}
-                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 25vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                quality={75}
                 priority={false}
               />
 
@@ -102,7 +103,7 @@ export function PopularGenresSection() {
                   alt={t(genre.key)}
                   fill
                   className="object-contain object-bottom drop-shadow-xl transition-transform duration-300 group-hover:scale-110 z-10"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 640px) 280px, 160px"
                 />
               </div>
             </Card>
