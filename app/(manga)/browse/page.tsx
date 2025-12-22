@@ -13,6 +13,7 @@ import { mangaKeys, genreKeys } from "@/lib/api/query-keys";
 import { BrowseContent } from "./browse-content";
 import { BrowseSkeleton } from "@/components/browse/browse-skeleton";
 import type { SortOption } from "@/components/browse/sort-select";
+import { API_BASE_URL } from "@/lib/api/config";
 
 /**
  * Generate metadata for browse page
@@ -108,9 +109,7 @@ async function prefetchBrowseData(
     queryClient.prefetchQuery({
       queryKey: mangaKeys.list(filters, page),
       queryFn: () =>
-        fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/mangas?${mangaParams.toString()}`
-        ).then((r) => {
+        fetch(`${API_BASE_URL}/mangas?${mangaParams.toString()}`).then((r) => {
           if (!r.ok) {
             throw new Error("Failed to fetch manga list");
           }
@@ -120,14 +119,12 @@ async function prefetchBrowseData(
     queryClient.prefetchQuery({
       queryKey: genreKeys.all,
       queryFn: () =>
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/genres?per_page=100`).then(
-          (r) => {
-            if (!r.ok) {
-              throw new Error("Failed to fetch genres");
-            }
-            return r.json();
+        fetch(`${API_BASE_URL}/genres?per_page=100`).then((r) => {
+          if (!r.ok) {
+            throw new Error("Failed to fetch genres");
           }
-        ),
+          return r.json();
+        }),
     }),
   ]);
 

@@ -17,6 +17,7 @@ import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 export interface MangaCarouselCardProps {
   manga: MangaListItem;
   className?: string;
+  priority?: boolean;
 }
 
 /**
@@ -29,6 +30,7 @@ export interface MangaCarouselCardProps {
 export function MangaCarouselCard({
   manga,
   className,
+  priority,
 }: MangaCarouselCardProps) {
   const t = useTranslations("homepage.mangaCard");
 
@@ -49,10 +51,11 @@ export function MangaCarouselCard({
           src={manga.cover_full_url}
           alt={manga.name}
           fill
-          sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, (max-width: 1280px) 20vw, 16vw"
           style={{ objectFit: "cover" }}
           placeholder="blur"
           blurDataURL={getShimmerPlaceholder()}
+          priority={priority}
         />
 
         {/* Gradient Overlay at Bottom */}

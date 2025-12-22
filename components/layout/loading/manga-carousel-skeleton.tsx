@@ -19,7 +19,7 @@ export interface MangaCarouselSkeletonProps {
  */
 export function MangaCarouselSkeleton({
   className,
-  count = 8,
+  count = 6,
 }: MangaCarouselSkeletonProps) {
   return (
     <div className={cn("space-y-4", className)}>
@@ -36,9 +36,12 @@ export function MangaCarouselSkeleton({
       </div>
 
       {/* Carousel items skeleton */}
-      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 md:gap-4">
         {Array.from({ length: count }).map((_, index) => (
-          <div key={index} className="space-y-3">
+          <div
+            key={index}
+            className={cn("space-y-3", index >= 2 && "hidden md:block")}
+          >
             <Skeleton className="aspect-[3/4] w-full rounded-lg" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-3 w-2/3" />

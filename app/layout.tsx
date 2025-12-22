@@ -42,6 +42,21 @@ export default async function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
+        {/* Resource Hints */}
+        <link
+          rel="preconnect"
+          href={(
+            process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
+          ).replace(/\/api\/v1\/?$/, "")}
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href={(
+            process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
+          ).replace(/\/api\/v1\/?$/, "")}
+        />
+
         {/* JSON-LD Structured Data for SEO */}
         <script
           type="application/ld+json"
