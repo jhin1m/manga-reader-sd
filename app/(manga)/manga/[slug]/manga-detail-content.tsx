@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   ChevronRight,
   Star,
@@ -25,7 +26,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MangaDetailSkeleton } from "@/components/layout/loading/detail-skeleton";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
-import { CommentSection } from "@/components/comments";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { userFavoritesApi } from "@/lib/api/endpoints/user";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -34,6 +34,19 @@ import { useMangaComments, useAddMangaComment } from "@/lib/hooks/use-comments";
 import type { Manga } from "@/types/manga";
 import type { ChapterListItem } from "@/types/chapter";
 import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
+import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+
+// Dynamic import for CommentSection - reduces initial bundle size
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false,
+  }
+);
 
 // --- Sub-components ---
 

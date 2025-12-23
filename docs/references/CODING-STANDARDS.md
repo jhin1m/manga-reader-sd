@@ -457,16 +457,38 @@ export default memo(ExpensiveComponent);
 
 #### Dynamic Imports for Code Splitting
 
+**Pattern 1: Named Exports (Most common in this project)**
+
 ```typescript
-// ✅ Lazy load heavy components
+// ✅ For components with named exports
+import dynamic from "next/dynamic";
+
 const CommentSection = dynamic(
-  () => import("@/components/comments/comment-section"),
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
   {
-    loading: () => <CommentSkeleton />,
+    loading: () => <CommentsSkeleton />,
     ssr: false,
   }
 );
 ```
+
+**Pattern 2: Default Exports**
+
+```typescript
+// ✅ For components with default exports
+const HeavyComponent = dynamic(
+  () => import("@/components/heavy-component"),
+  {
+    loading: () => <HeavySkeleton />,
+    ssr: false,
+  }
+);
+```
+
+**Why two patterns?** Next.js `dynamic()` expects default exports. Named exports must be transformed via `.then()` callback.
 
 #### Optimize Renders
 

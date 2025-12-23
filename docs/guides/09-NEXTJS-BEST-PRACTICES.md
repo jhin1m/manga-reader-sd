@@ -708,6 +708,8 @@ export default function Page() {
 
 Use dynamic imports to reduce initial bundle size by loading components on-demand.
 
+#### Standard Pattern
+
 ```tsx
 import dynamic from "next/dynamic";
 
@@ -716,17 +718,6 @@ const HeavyComponent = dynamic(() => import("@/components/heavy-component"), {
   loading: () => <Skeleton className="h-48" />,
   ssr: false, // Disable SSR for this component
 });
-
-// Pattern for components with default export
-const ComponentWithDefault = dynamic(
-  () =>
-    import("@/components/component").then((mod) => ({
-      default: mod.Component,
-    })),
-  {
-    loading: () => <ComponentSkeleton />,
-  }
-);
 
 export function Page() {
   return (
@@ -737,12 +728,81 @@ export function Page() {
 }
 ```
 
+#### Named Export Pattern (Required for re-exported components)
+
+**Use this pattern when component exports a named export:**
+
+```tsx
+import dynamic from "next/dynamic";
+
+// For components with named exports (e.g., export function CommentSection {})
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false,
+  }
+);
+```
+
+**Why?** Next.js `dynamic()` expects default exports. Named exports must be transformed via `.then()` callback to convert them to default exports.
+
+#### Default Export Pattern
+
+```tsx
+// Pattern for components with default export
+const ComponentWithDefault = dynamic(() => import("@/components/component"), {
+  loading: () => <ComponentSkeleton />,
+});
+```
+
 ### When to Use Dynamic Imports
 
 1. **Below-the-fold content**: Components not visible on initial render
 2. **User-triggered UI**: Modals, panels, or settings dialogs
-3. **Heavy components**: Components with many dependencies
+3. **Heavy components**: Components with many dependencies (>10KB)
 4. **Client-side only**: Components that don't need SSR
+5. **Isolated features**: Self-contained modules loaded on-demand
+
+#### Real-world Example: Comment Sections
+
+```tsx
+// app/(manga)/manga/[slug]/manga-detail-content.tsx
+"use client";
+
+import dynamic from "next/dynamic";
+import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+
+// Lazy load comments - deferred until user scrolls to section
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false, // Comments are interactive, no benefit from SSR
+  }
+);
+
+export function MangaDetailContent({ slug }: { slug: string }) {
+  return (
+    <div>
+      {/* Primary content loads immediately */}
+      <MangaHeader />
+      <ChapterList />
+
+      {/* Comments load only when needed (below-the-fold) */}
+      <CommentSection comments={comments} />
+    </div>
+  );
+}
+```
+
+**Bundle Impact**: ~5-8KB reduction in initial JS chunk
 
 ### Package Optimization
 

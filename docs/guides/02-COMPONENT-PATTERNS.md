@@ -14,6 +14,7 @@
 - [Component Structure](#component-structure)
 - [Standard Import Order](#standard-import-order)
 - [Component File Template](#component-file-template)
+- [Dynamic Imports & Lazy Loading](#dynamic-imports--lazy-loading)
 - [Best Practices](#best-practices)
 
 ---
@@ -404,6 +405,156 @@ export function FormName() {
 
 ---
 
+## Dynamic Imports & Lazy Loading
+
+### What are Dynamic Imports?
+
+Dynamic imports defer component loading until needed, reducing initial bundle size. Next.js `dynamic()` function converts dynamic imports into separate code chunks loaded on-demand.
+
+### When to Lazy Load
+
+1. **Below-the-fold components** - Components not visible on initial page load
+2. **User-triggered UI** - Modals, dialogs, accordion panels
+3. **Heavy features** - Complex interactive modules (>5KB)
+4. **Alternative content** - Multi-tab interfaces, conditional sections
+5. **Interactive sections** - Comments, forms, nested features
+
+### Lazy Loading Pattern with Named Exports
+
+**Most components in the project use named exports.** Use this pattern:
+
+```tsx
+import dynamic from "next/dynamic";
+import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+
+// For named exports, transform via .then() to default export
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false, // Interactive component, no SSR benefit
+  }
+);
+```
+
+**Why `.then()`?** Next.js `dynamic()` expects a default export. Named exports must be transformed to default exports.
+
+### Lazy Loading Pattern with Default Exports
+
+For components that use `export default`:
+
+```tsx
+const HeavyComponent = dynamic(() => import("@/components/heavy"), {
+  loading: () => <Skeleton className="h-48" />,
+  ssr: false,
+});
+```
+
+### Loading Skeleton Best Practices
+
+Always provide a loading component that matches dimensions:
+
+```tsx
+// ✅ CORRECT - Skeleton dimensions match component
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />, // Shows skeleton while loading
+    ssr: false,
+  }
+);
+
+// ❌ AVOID - Generic loading state
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <div>Loading...</div>, // Bad UX, unexpected layout shift
+  }
+);
+```
+
+### Real-world Example: Manga Detail Page
+
+```tsx
+// app/(manga)/manga/[slug]/manga-detail-content.tsx
+"use client";
+
+import dynamic from "next/dynamic";
+import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+
+// Defer comment section loading - only load when user scrolls to it
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false,
+  }
+);
+
+export function MangaDetailContent({ slug }: { slug: string }) {
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Critical content loads immediately */}
+      <MangaHeader manga={manga} />
+      <ChapterList chapters={chapters} />
+
+      {/* Comments load only when needed (user scrolls down) */}
+      <CommentSection comments={comments} onAddComment={handleAddComment} />
+    </div>
+  );
+}
+```
+
+**Performance Impact:**
+
+- Initial JS bundle: ~5-8KB reduction
+- LCP: Faster (comments JS not blocking render)
+- User experience: Faster perceived load time
+
+### Handling Dynamic Import Errors
+
+```tsx
+// With error boundary
+import dynamic from "next/dynamic";
+import { ErrorFallback } from "@/components/error-fallback";
+
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false,
+  }
+);
+
+// Component automatically handles errors gracefully
+// Failed imports show loading state, not white screen of death
+```
+
+### Performance Checklist
+
+- [ ] Skeleton matches component height/width
+- [ ] Component is below-the-fold or user-triggered
+- [ ] `ssr: false` for interactive-only components
+- [ ] Named exports use `.then()` pattern
+- [ ] Loading state has proper styling
+
+---
+
 ## Best Practices
 
 ### Props Interface
@@ -638,6 +789,7 @@ export function SimpleComponent() {
 For complex, related state (3+ properties):
 
 **When to use useReducer:**
+
 - Multiple state values that change together
 - Complex state logic that depends on previous state
 - Need to optimize performance (reduce re-renders)
@@ -710,7 +862,10 @@ export type ReaderAction =
   | { type: "SET_IMAGE_SPACING"; payload: number }
   | { type: "RESET_TO_DEFAULTS" };
 
-export function readerReducer(state: ReaderState, action: ReaderAction): ReaderState {
+export function readerReducer(
+  state: ReaderState,
+  action: ReaderAction
+): ReaderState {
   switch (action.type) {
     case "SET_READING_MODE":
       return {
@@ -821,4 +976,4 @@ See [Examples Reference](../references/EXAMPLES.md#components) for complete list
 
 ---
 
-**Last updated**: 2025-12-16 (Phase 04 - useReducer patterns added)
+**Last updated**: 2025-12-23 (Phase 01 - Dynamic imports & lazy loading patterns added)
