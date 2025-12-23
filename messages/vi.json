@@ -510,5 +510,86 @@
     },
     "noResults": "Thật đáng tiếc khi không tìm thấy gì 😭",
     "noResultsDescription": "Thử thay đổi bộ lọc hoặc tìm kiếm cái khác"
+  },
+  "seo": {
+    "default": {
+      "title": "{siteName} - Đọc Hentai Tiếng Việt Miễn Phí",
+      "template": "%s | {siteName}",
+      "description": "Web đọc truyện hentai, doujinshi tiếng Việt miễn phí nhanh nhất. Hàng ngàn bộ hentai full color, không che, uncensored, cập nhật liên tục 24/7."
+    },
+    "browse": {
+      "title": "Danh Sách Hentai - HentaiVN",
+      "description": "Duyệt và tìm kiếm manga theo thể loại, trạng thái, và sắp xếp. Khám phá hàng ngàn bộ manga hot nhất."
+    },
+    "manga": {
+      "description": "Đọc {name} tiếng Việt. {pilot}"
+    },
+    "chapter": {
+      "description": "Đọc {mangaName} {chapterName} tiếng Việt. Cập nhật nhanh nhất, chất lượng cao.",
+      "keywords": {
+        "read": "đọc manga",
+        "chapter": "chapter"
+      }
+    },
+    "genre": {
+      "title": "Thể loại {name}",
+      "description": "Khám phá các manga thể loại {name}. Đọc truyện tranh {name} miễn phí, cập nhật liên tục.",
+      "keywords": {
+        "genre": "thể loại",
+        "manga": "manga",
+        "comic": "truyện tranh"
+      }
+    },
+    "search": {
+      "title": "Tìm kiếm: {query}",
+      "description": "Kết quả tìm kiếm cho \"{query}\". Tìm kiếm manga, tác giả, thể loại và nhiều hơn nữa.",
+      "keywords": {
+        "search": "tìm kiếm"
+      }
+    },
+    "profile": {
+      "title": "Trang cá nhân - {name}",
+      "description": "Thư viện manga và lịch sử đọc của {name}"
+    },
+    "library": {
+      "title": "Thư viện của tôi",
+      "description": "Quản lý manga đã lưu, lịch sử đọc và tiến độ đọc truyện của bạn."
+    },
+    "artist": {
+      "title": "Tác giả {name}",
+      "description": "Xem tất cả manga của tác giả {name}. Đọc truyện tranh tiếng Việt miễn phí.",
+      "keywords": {
+        "artist": "tác giả"
+      }
+    },
+    "og": {
+      "siteName": "{siteName}",
+      "alt": "{siteName} - HentaiVN lớn nhất Việt Nam"
+    },
+    "twitter": {
+      "title": "{siteName} - HentaiVN #1 Việt Nam",
+      "description": "Đọc hentai tiếng Việt, doujinshi không che, full color, cập nhật hàng giờ!"
+    },
+    "keywords": [
+      "HentaiVN",
+      "hentai",
+      "đọc hentai",
+      "truyện hentai",
+      "hentai vn",
+      "hentaivn",
+      "động hentai",
+      "doujinshi tiếng việt",
+      "hentai không che",
+      "hentai uncensored",
+      "truyện sex hentai",
+      "hentai full color",
+      "hentai online",
+      "netorare",
+      "milf hentai",
+      "loli hentai",
+      "ahegao",
+      "hentai mới nhất",
+      "hentai hay"
+    ]
   }
 }

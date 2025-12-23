@@ -41,7 +41,8 @@ export function generateWebsiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
-    description: siteConfig.description,
+    // Note: description is not in siteConfig anymore (moved to i18n)
+    // We can use a default or omit it here if we don't have access to i18n
     url: siteConfig.url,
     potentialAction: {
       "@type": "SearchAction",
@@ -298,6 +299,7 @@ export function generateReviewSchema(
   manga: {
     name: string;
     slug: string;
+    total_ratings?: number;
   }
 ) {
   return {
@@ -314,6 +316,7 @@ export function generateReviewSchema(
       ratingValue: review.rating,
       bestRating: 5,
       worstRating: 1,
+      ratingCount: manga.total_ratings,
     },
     itemReviewed: {
       "@type": "Book",

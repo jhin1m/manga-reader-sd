@@ -1,21 +1,19 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { siteConfig, buildUrl, buildImageUrl } from "./config";
 
 /**
  * Metadata Generators
  *
  * This file contains reusable functions to generate metadata for different page types.
- * All functions automatically use the centralized siteConfig, ensuring consistency.
- *
- * These generators help avoid repetitive code and maintain SEO consistency
- * across the entire application.
+ * All functions automatically use the centralized siteConfig and next-intl for localization.
  */
 
 /**
  * Interface for generic page metadata parameters
  */
 interface PageMetadataParams {
-  title: string;
+  title: string | { default: string; template: string };
   description: string;
   path?: string;
   image?: string;
@@ -26,19 +24,8 @@ interface PageMetadataParams {
 
 /**
  * Generate metadata for a generic page
- *
- * This is the most flexible generator that can be used for any page type.
- *
- * @example
- * ```typescript
- * export const metadata = generatePageMetadata({
- *   title: "Thể loại Action",
- *   description: "Khám phá các manga thể loại hành động...",
- *   path: "/genres/action",
- * });
- * ```
  */
-export function generatePageMetadata({
+export async function generatePageMetadata({
   title,
   description,
   path = "",
@@ -46,18 +33,34 @@ export function generatePageMetadata({
   keywords = [],
   type = "website",
   noindex = false,
-}: PageMetadataParams): Metadata {
+}: PageMetadataParams): Promise<Metadata> {
+  const t = await getTranslations("seo");
   const url = buildUrl(path);
   const ogImage = image
     ? buildImageUrl(image)
     : buildImageUrl(siteConfig.ogImage);
 
+  // Get default keywords from translations
+  const defaultKeywords = t.raw("keywords") as unknown as string[];
+
   // Combine provided keywords with default site keywords
-  const allKeywords = [...siteConfig.keywords, ...keywords];
+  const allKeywords = [...defaultKeywords, ...keywords];
+
+  // Replace {siteName} placeholder if present in title/desc
+  // Handle both string and title template object
+  const finalTitle =
+    typeof title === "string"
+      ? title.replace(/{siteName}/g, siteConfig.name)
+      : title;
+  const finalDescription = description.replace(/{siteName}/g, siteConfig.name);
+
+  // Extract string title for OpenGraph (which doesn't support template objects)
+  const ogTitle =
+    typeof finalTitle === "string" ? finalTitle : finalTitle.default;
 
   return {
-    title,
-    description,
+    title: finalTitle,
+    description: finalDescription,
     keywords: allKeywords,
 
     // Canonical URL
@@ -78,8 +81,8 @@ export function generatePageMetadata({
 
     // Open Graph
     openGraph: {
-      title,
-      description,
+      title: ogTitle,
+      description: finalDescription,
       url,
       siteName: siteConfig.name,
       images: [
@@ -87,37 +90,65 @@ export function generatePageMetadata({
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: ogTitle,
         },
       ],
-      locale: "vi_VN",
+      locale: "vi_VN", // This could also be dynamic if needed
       type,
     },
 
     // Twitter Card
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: ogTitle,
+      description: finalDescription,
       images: [ogImage],
+      creator: siteConfig.links.twitter,
+      site: siteConfig.links.twitter,
     },
+
+    metadataBase: new URL(siteConfig.url),
+  };
+}
+
+/**
+ * Generate Default Metadata (for Root Layout)
+ * Call this in app/layout.tsx
+ */
+export async function generateDefaultMetadata(): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
+  const title = t("default.title", { siteName: siteConfig.name });
+  const description = t("default.description", { siteName: siteConfig.name });
+  const template = t("default.template", { siteName: siteConfig.name });
+
+  const baseMetadata = await generatePageMetadata({
+    title: {
+      default: title,
+      template: template,
+    },
+    description,
+  });
+
+  return {
+    ...baseMetadata,
+    applicationName: siteConfig.name,
+    authors: [{ name: siteConfig.creator }],
+    creator: siteConfig.creator,
+    publisher: siteConfig.publisher,
+    icons: {
+      icon: siteConfig.favicon,
+      apple: "/apple-touch-icon.png",
+    },
+    manifest: "/manifest.json",
+    verification: siteConfig.verification,
   };
 }
 
 /**
  * Generate metadata for manga detail pages
- *
- * Optimized for manga detail pages with rich information.
- *
- * @example
- * ```typescript
- * export async function generateMetadata({ params }) {
- *   const manga = await fetchMangaBySlug(params.slug);
- *   return generateMangaMetadata(manga);
- * }
- * ```
  */
-export function generateMangaMetadata(manga: {
+export async function generateMangaMetadata(manga: {
   name: string;
   name_alt?: string;
   pilot: string;
@@ -127,7 +158,9 @@ export function generateMangaMetadata(manga: {
   views?: number;
   status?: number;
   genres?: Array<{ name: string }>;
-}): Metadata {
+}): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
   // Build keywords from genres
   const genreKeywords = manga.genres?.map((g) => g.name) || [];
 
@@ -139,10 +172,10 @@ export function generateMangaMetadata(manga: {
   }
   title = truncateText(title, 70);
 
-  // Build description matching chapter reader pattern (no stats)
+  // Build description from translation template
   const pilotSnippet = manga.pilot.replace(/<[^>]*>/g, "").substring(0, 100);
   const description = truncateText(
-    `Đọc ${manga.name} tiếng Việt. ${pilotSnippet}`.trim(),
+    t("manga.description", { name: manga.name, pilot: pilotSnippet }),
     160
   );
 
@@ -158,18 +191,8 @@ export function generateMangaMetadata(manga: {
 
 /**
  * Generate metadata for chapter reader pages
- *
- * Optimized for chapter reader pages.
- *
- * @example
- * ```typescript
- * export async function generateMetadata({ params }) {
- *   const chapter = await fetchChapter(params.chapterSlug);
- *   return generateChapterMetadata(chapter);
- * }
- * ```
  */
-export function generateChapterMetadata(chapter: {
+export async function generateChapterMetadata(chapter: {
   name: string;
   slug: string;
   order?: number;
@@ -178,89 +201,86 @@ export function generateChapterMetadata(chapter: {
     slug: string;
     cover_full_url?: string;
   };
-}): Metadata {
+}): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
   const title = `${chapter.manga.name} - ${chapter.name}`;
-  const description = `Đọc ${chapter.manga.name} ${chapter.name} tiếng Việt. Cập nhật nhanh nhất, chất lượng cao.`;
+  const description = t("chapter.description", {
+    mangaName: chapter.manga.name,
+    chapterName: chapter.name,
+  });
 
   return generatePageMetadata({
     title,
     description,
     path: `/manga/${chapter.manga.slug}/${chapter.slug}`,
     image: chapter.manga.cover_full_url,
-    keywords: [chapter.manga.name, chapter.name, "đọc manga", "chapter"],
+    keywords: [
+      chapter.manga.name,
+      chapter.name,
+      t("chapter.keywords.read"),
+      t("chapter.keywords.chapter"),
+    ],
     type: "article",
   });
 }
 
 /**
  * Generate metadata for genre pages
- *
- * @example
- * ```typescript
- * export async function generateMetadata({ params }) {
- *   const genre = await fetchGenre(params.slug);
- *   return generateGenreMetadata(genre);
- * }
- * ```
  */
-export function generateGenreMetadata(genre: {
+export async function generateGenreMetadata(genre: {
   name: string;
   slug: string;
   description?: string;
-}): Metadata {
-  const title = `Thể loại ${genre.name}`;
+}): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
+  const title = t("genre.title", { name: genre.name });
   const description =
-    genre.description ||
-    `Khám phá các manga thể loại ${genre.name}. Đọc truyện tranh ${genre.name} miễn phí, cập nhật liên tục.`;
+    genre.description || t("genre.description", { name: genre.name });
 
   return generatePageMetadata({
     title,
     description,
     path: `/genres/${genre.slug}`,
-    keywords: [genre.name, "thể loại", "manga", "truyện tranh"],
+    keywords: [
+      genre.name,
+      t("genre.keywords.genre"),
+      t("genre.keywords.manga"),
+      t("genre.keywords.comic"),
+    ],
   });
 }
 
 /**
  * Generate metadata for search results pages
- *
- * @example
- * ```typescript
- * export function generateMetadata({ searchParams }) {
- *   return generateSearchMetadata(searchParams.q);
- * }
- * ```
  */
-export function generateSearchMetadata(query: string): Metadata {
-  const title = `Tìm kiếm: ${query}`;
-  const description = `Kết quả tìm kiếm cho "${query}". Tìm kiếm manga, tác giả, thể loại và nhiều hơn nữa.`;
+export async function generateSearchMetadata(query: string): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
+  const title = t("search.title", { query });
+  const description = t("search.description", { query });
 
   return generatePageMetadata({
     title,
     description,
     path: `/search?q=${encodeURIComponent(query)}`,
-    keywords: [query, "tìm kiếm", "search"],
+    keywords: [query, t("search.keywords.search")],
     noindex: true, // Search result pages typically shouldn't be indexed
   });
 }
 
 /**
  * Generate metadata for user profile pages
- *
- * @example
- * ```typescript
- * export async function generateMetadata() {
- *   const user = await getCurrentUser();
- *   return generateProfileMetadata(user);
- * }
- * ```
  */
-export function generateProfileMetadata(user: {
+export async function generateProfileMetadata(user: {
   name: string;
   avatar_full_url?: string;
-}): Metadata {
-  const title = `Trang cá nhân - ${user.name}`;
-  const description = `Thư viện manga và lịch sử đọc của ${user.name}`;
+}): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
+  const title = t("profile.title", { name: user.name });
+  const description = t("profile.description", { name: user.name });
 
   return generatePageMetadata({
     title,
@@ -274,17 +294,13 @@ export function generateProfileMetadata(user: {
 
 /**
  * Generate metadata for library/history pages
- *
- * @example
- * ```typescript
- * export const metadata = generateLibraryMetadata();
- * ```
  */
-export function generateLibraryMetadata(): Metadata {
+export async function generateLibraryMetadata(): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
   return generatePageMetadata({
-    title: "Thư viện của tôi",
-    description:
-      "Quản lý manga đã lưu, lịch sử đọc và tiến độ đọc truyện của bạn.",
+    title: t("library.title"),
+    description: t("library.description"),
     path: "/library",
     noindex: true, // Private pages shouldn't be indexed
   });
@@ -292,38 +308,28 @@ export function generateLibraryMetadata(): Metadata {
 
 /**
  * Generate metadata for artist pages
- *
- * @example
- * ```typescript
- * export async function generateMetadata({ params }) {
- *   const artist = await fetchArtist(params.slug);
- *   return generateArtistMetadata(artist);
- * }
- * ```
  */
-export function generateArtistMetadata(artist: {
+export async function generateArtistMetadata(artist: {
   name: string;
   slug: string;
   description?: string;
-}): Metadata {
-  const title = `Tác giả ${artist.name}`;
+}): Promise<Metadata> {
+  const t = await getTranslations("seo");
+
+  const title = t("artist.title", { name: artist.name });
   const description =
-    artist.description ||
-    `Xem tất cả manga của tác giả ${artist.name}. Đọc truyện tranh tiếng Việt miễn phí.`;
+    artist.description || t("artist.description", { name: artist.name });
 
   return generatePageMetadata({
     title,
     description,
     path: `/artists/${artist.slug}`,
-    keywords: [artist.name, "tác giả", "artist", "manga"],
+    keywords: [artist.name, t("artist.keywords.artist"), "manga"],
   });
 }
 
 /**
  * Helper: Strip HTML tags from string
- *
- * @param html - HTML string
- * @returns Clean text without HTML tags
  */
 export function stripHtmlTags(html: string): string {
   return html.replace(/<[^>]*>/g, "");
@@ -331,10 +337,6 @@ export function stripHtmlTags(html: string): string {
 
 /**
  * Helper: Truncate text to specified length
- *
- * @param text - Text to truncate
- * @param maxLength - Maximum length (default: 160 for meta descriptions)
- * @returns Truncated text with ellipsis if needed
  */
 export function truncateText(text: string, maxLength: number = 160): string {
   if (text.length <= maxLength) return text;

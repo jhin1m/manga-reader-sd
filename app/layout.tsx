@@ -9,7 +9,7 @@ import { Navbar } from "@/components/layout/header/navbar";
 import { Footer } from "@/components/layout/footer";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { defaultMetadata } from "@/lib/seo/config";
+import { generateDefaultMetadata } from "@/lib/seo/metadata";
 import { generateWebsiteSchema } from "@/lib/seo/json-ld";
 
 const notoSans = Noto_Sans({
@@ -29,7 +29,9 @@ const roadRage = Road_Rage({
  * Using centralized SEO configuration from lib/seo/config.ts
  * To update site-wide SEO, edit the siteConfig in that file.
  */
-export const metadata: Metadata = defaultMetadata;
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDefaultMetadata();
+}
 
 export default async function RootLayout({
   children,

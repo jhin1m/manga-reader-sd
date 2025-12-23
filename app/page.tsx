@@ -1,13 +1,16 @@
-import { defaultMetadata } from "@/lib/seo/config";
+import { generateDefaultMetadata } from "@/lib/seo/metadata";
 import { generateWebsiteSchema } from "@/lib/seo/json-ld";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { HomePageContent } from "./home-content";
+import type { Metadata } from "next";
 
 /**
  * Homepage Metadata
  * Uses centralized SEO configuration from lib/seo/config.ts
  */
-export const metadata = defaultMetadata;
+export async function generateMetadata(): Promise<Metadata> {
+  return generateDefaultMetadata();
+}
 
 /**
  * Homepage (Server Component)

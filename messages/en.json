@@ -503,5 +503,75 @@
     },
     "noResults": "Nothing found 😭",
     "noResultsDescription": "Try changing filters or search for something else"
+  },
+  "seo": {
+    "default": {
+      "title": "{siteName} - Read Manga Online Free",
+      "template": "%s | {siteName}",
+      "description": "Read manga online for free in high quality. Thousands of manga updated daily. Fast, free, and no popup ads."
+    },
+    "browse": {
+      "title": "Browse Manga",
+      "description": "Browse and search manga by genre, status, and sort. Discover thousands of the hottest manga."
+    },
+    "manga": {
+      "description": "Read {name} online. {pilot}"
+    },
+    "chapter": {
+      "description": "Read {mangaName} {chapterName} online. Updated fastest, high quality.",
+      "keywords": {
+        "read": "read manga",
+        "chapter": "chapter"
+      }
+    },
+    "genre": {
+      "title": "Genre {name}",
+      "description": "Discover {name} manga. Read {name} comics free, updated continuously.",
+      "keywords": {
+        "genre": "genre",
+        "manga": "manga",
+        "comic": "comic"
+      }
+    },
+    "search": {
+      "title": "Search: {query}",
+      "description": "Search results for \"{query}\". Find manga, authors, genres and more.",
+      "keywords": {
+        "search": "search"
+      }
+    },
+    "profile": {
+      "title": "Profile - {name}",
+      "description": "Manga library and reading history of {name}"
+    },
+    "library": {
+      "title": "My Library",
+      "description": "Manage saved manga, reading history and reading progress."
+    },
+    "artist": {
+      "title": "Author {name}",
+      "description": "View all manga by author {name}. Read comics online free.",
+      "keywords": {
+        "artist": "author"
+      }
+    },
+    "og": {
+      "siteName": "{siteName}",
+      "alt": "{siteName} - Read Manga Online"
+    },
+    "twitter": {
+      "title": "{siteName} - Read Manga Online",
+      "description": "Read manga online for free in high quality. Thousands of manga updated daily."
+    },
+    "keywords": [
+      "manga",
+      "read manga",
+      "manga online",
+      "free manga",
+      "manga reader",
+      "comics",
+      "graphic novels",
+      "webtoons"
+    ]
   }
 }

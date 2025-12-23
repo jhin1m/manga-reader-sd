@@ -1,152 +1,49 @@
-import type { Metadata } from "next";
-
 /**
- * SEO Config cho Động Hentai – Web đọc truyện hentai tiếng Việt lớn nhất
+ * SEO Configuration
+ *
+ * This file acts as the bridge between environment variables and the application.
+ * It contains NO hardcoded user-facing strings (which are now in messages/*.json).
  */
 
-export const siteConfig = {
-  // Site identity
-  name: "Động Hentai",
-  shortName: "Động H",
-  description:
-    "Động Hentai - Web đọc truyện hentai, doujinshi tiếng Việt miễn phí nhanh nhất. Hàng ngàn bộ hentai full color, không che, uncensored, cập nhật liên tục 24/7.",
-
-  // URLs
-  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000", // thay bằng domain thật của bạn
-
-  // Images
-  ogImage: "/og-donghentai.jpg", // chuẩn bị 1 ảnh OG 1200x630 sexy nhưng không lộ hàng quá
-  favicon: "/favicon.ico",
-
-  // Keywords chính (tập trung từ khóa dài + từ khóa nóng của dân hentai VN)
-  keywords: [
-    "hentai",
-    "đọc hentai",
-    "truyện hentai",
-    "hentai vn",
-    "hentaivn",
-    "động hentai",
-    "doujinshi tiếng việt",
-    "hentai không che",
-    "hentai uncensored",
-    "truyện sex hentai",
-    "hentai full color",
-    "hentai online",
-    "netorare",
-    "milf hentai",
-    "loli hentai",
-    "ahegao",
-    "hentai mới nhất",
-    "hentai hay",
-  ],
-
-  // Social (nếu có fanpage 18+ hoặc twitter 18+ thì điền vào)
-  links: {
-    twitter: "https://twitter.com/donghentaivn",
-    telegram: "https://t.me/donghentai", // thường dân 18+ dùng Telegram nhiều hơn FB
-  },
-
-  // Author & publisher
-  authors: [
-    {
-      name: "Team Động Hentai",
-      url: "https://donghentai.xxx",
-    },
-  ],
-  creator: "Team Động Hentai",
-  publisher: "Động Hentai",
-} as const;
-
-/**
- * Default Metadata – áp dụng toàn site
- */
-export const defaultMetadata: Metadata = {
-  title: {
-    default: siteConfig.name + " - HentaiVN Tiếng Việt Miễn Phí",
-    template: `%s | Động Hentai`, // ví dụ: "Netorare no Gakuen | Động Hentai"
-  },
-
-  description: siteConfig.description,
-
-  // Canonical URL for home page
-  alternates: {
-    canonical: siteConfig.url,
-  },
-  keywords: Array.from(siteConfig.keywords),
-  authors: [...siteConfig.authors],
-  creator: siteConfig.creator,
-
-  applicationName: siteConfig.name,
-
-  icons: {
-    icon: siteConfig.favicon,
-    apple: "/apple-touch-icon.png",
-  },
-
-  manifest: "/manifest.json",
-
-  openGraph: {
-    type: "website",
-    locale: "vi_VN",
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    title: siteConfig.name + " - Đọc Hentai Tiếng Việt Miễn Phí, Không Che",
-    description: siteConfig.description,
-    images: [
-      {
-        url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
-        alt: "Động Hentai - HentaiVN lớn nhất Việt Nam",
-        type: "image/jpeg",
-      },
-    ],
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Động Hentai - HentaiVN #1 Việt Nam",
-    description:
-      "Đọc hentai tiếng Việt, doujinshi không che, full color, cập nhật hàng giờ!",
-    images: [siteConfig.ogImage],
-    creator: "@donghentaivn",
-    site: "@donghentaivn",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-    nocache: false,
-    googleBot: {
-      index: true,
-      follow: true,
-      noimageindex: false,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-
-  category: "adult",
-  classification: "adult",
-  metadataBase: new URL(siteConfig.url),
+// Basic helper to ensure trailing slash
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  }
+  return "http://localhost:3000";
 };
 
-/**
- * Page types (dùng cho schema JSON-LD nếu cần sau này)
- */
-export const pageTypes = {
-  home: "website",
-  comic: "article",
-  chapter: "article",
-  tag: "collection",
-  artist: "profile",
-  search: "website",
+export const siteConfig = {
+  // Site identity (from Env)
+  name: process.env.NEXT_PUBLIC_SITE_NAME || "Manga Reader CMS",
+
+  // URLs
+  url: getBaseUrl(),
+
+  // Images
+  ogImage: "/og-donghentai.jpg", // Kept as default resource path
+  favicon: "/favicon.ico",
+
+  // Social (from Env)
+  links: {
+    twitter: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@manga-reader",
+    telegram: "https://t.me/donghentai", // Could be moved to env if needed
+  },
+
+  // Author & publisher (Infrastructure level)
+  creator: process.env.NEXT_PUBLIC_SITE_NAME || "Team Manga Reader",
+  publisher: process.env.NEXT_PUBLIC_SITE_NAME || "Manga Reader CMS",
+
+  // Verification codes
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
+  },
 } as const;
 
-// Các hàm helper giữ nguyên
+// Helper to build absolute URLs
 export function buildUrl(path: string): string {
-  return `${siteConfig.url}${path.startsWith("/") ? "" : "/"}${path}`;
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  return `${siteConfig.url}/${cleanPath}`;
 }
 
 export function buildImageUrl(imagePath: string): string {

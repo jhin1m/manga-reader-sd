@@ -7,13 +7,18 @@
 import { Suspense } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import type { Metadata } from "next";
-import { defaultMetadata, siteConfig } from "@/lib/seo/config";
+import {
+  generatePageMetadata,
+  generateDefaultMetadata,
+} from "@/lib/seo/metadata";
+import { siteConfig } from "@/lib/seo/config";
 import { getQueryClient } from "@/lib/api/query-client";
 import { mangaKeys, genreKeys } from "@/lib/api/query-keys";
 import { BrowseContent } from "./browse-content";
 import { BrowseSkeleton } from "@/components/browse/browse-skeleton";
 import type { SortOption } from "@/components/browse/sort-select";
 import { API_BASE_URL } from "@/lib/api/config";
+import { getTranslations } from "next-intl/server";
 
 /**
  * Generate metadata for browse page
@@ -35,25 +40,35 @@ export async function generateMetadata({
   searchParams,
 }: BrowsePageProps): Promise<Metadata> {
   const params = await searchParams;
+  const t = await getTranslations("seo");
+
   // If there are search params (filters, pagination, etc.), deindex the page
   const hasParams = Object.keys(params).length > 0;
 
-  const title = "Duyệt Manga";
-  const description =
-    "Duyệt và tìm kiếm manga theo thể loại, trạng thái, và sắp xếp. Khám phá hàng ngàn bộ manga hot nhất.";
+  const title = t("browse.title");
+  const description = t("browse.description");
 
-  return {
-    ...defaultMetadata,
+  // Get base metadata to inherit from
+  const baseMetadata = await generateDefaultMetadata();
+  const pageMetadata = await generatePageMetadata({
     title,
     description,
+  });
+
+  return {
+    ...baseMetadata,
+    ...pageMetadata,
+    title: `${title} | ${siteConfig.name}`, // Override title template if needed
     openGraph: {
-      ...defaultMetadata.openGraph,
+      ...baseMetadata.openGraph,
+      ...pageMetadata.openGraph,
       title: `${title} | ${siteConfig.name}`,
       description,
       url: `${siteConfig.url}/browse`,
     },
     twitter: {
-      ...defaultMetadata.twitter,
+      ...baseMetadata.twitter,
+      ...pageMetadata.twitter,
       title: `${title} | ${siteConfig.name}`,
       description,
     },
