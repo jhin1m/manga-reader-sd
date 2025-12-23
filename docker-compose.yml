@@ -7,6 +7,8 @@ services:
         - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
         - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
         - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
+        - NEXT_PUBLIC_SITE_NAME=${NEXT_PUBLIC_SITE_NAME}
+        - NEXT_PUBLIC_TWITTER_HANDLE=${NEXT_PUBLIC_TWITTER_HANDLE}
     container_name: manga-reader
     restart: unless-stopped
     expose:
