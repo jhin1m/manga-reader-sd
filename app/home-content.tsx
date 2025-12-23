@@ -16,11 +16,19 @@ import { RecentlyUpdatedSection } from "@/components/manga/recently-updated-sect
 import { HotMangaSidebar } from "@/components/manga/hot-manga-sidebar";
 import { MangaCarouselSkeleton } from "@/components/layout/loading";
 import { PopularGenresSection } from "@/components/manga/popular-genres-section";
+import { MangaListItem } from "@/types/manga";
+import { PaginatedResponse } from "@/types/api";
+
+interface HomePageContentProps {
+  initialCarouselMangas?: MangaListItem[];
+}
 
 /**
  * Homepage main content component
  */
-export function HomePageContent() {
+export function HomePageContent({
+  initialCarouselMangas,
+}: HomePageContentProps) {
   const t = useTranslations("homepage");
 
   return (
@@ -30,7 +38,7 @@ export function HomePageContent() {
 
       <div className="container mx-auto px-4 py-8 max-w-7xl space-y-12">
         {/* Manga Carousel - Full Width */}
-        <MangaCarouselSection />
+        <MangaCarouselSection initialMangas={initialCarouselMangas} />
 
         {/* Popular Genres Section */}
         <PopularGenresSection />
@@ -56,7 +64,11 @@ export function HomePageContent() {
  * Manga Carousel Section
  * Displays featured/hot manga in a carousel
  */
-function MangaCarouselSection() {
+function MangaCarouselSection({
+  initialMangas,
+}: {
+  initialMangas?: MangaListItem[];
+}) {
   const t = useTranslations("homepage.sections");
 
   const { data, isLoading } = useQuery({
@@ -66,6 +78,23 @@ function MangaCarouselSection() {
         per_page: 8,
         include: "genres,artist,latest_chapter",
       }),
+    initialData: initialMangas
+      ? {
+          success: true,
+          message: "Initial data",
+          data: initialMangas,
+          meta: {
+            pagination: {
+              current_page: 1,
+              last_page: 1,
+              per_page: initialMangas.length,
+              total: initialMangas.length,
+              from: 1,
+              to: initialMangas.length,
+            },
+          },
+        }
+      : undefined,
   });
 
   if (isLoading) {
