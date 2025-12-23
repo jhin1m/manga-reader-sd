@@ -35,6 +35,7 @@ import type { Manga } from "@/types/manga";
 import type { ChapterListItem } from "@/types/chapter";
 import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
 
 // Dynamic import for CommentSection - reduces initial bundle size
 const CommentSection = dynamic(
@@ -519,19 +520,21 @@ function MangaDetail({
       </Card>
 
       {/* Comments Section */}
-      <CommentSection
-        comments={commentsData?.items || []}
-        totalCount={commentsData?.pagination.total || 0}
-        isLoading={isCommentsLoading}
-        sort={commentSort}
-        onSortChange={setCommentSort}
-        onAddComment={handleAddComment}
-        hasMore={
-          (commentsData?.pagination.current_page || 1) <
-          (commentsData?.pagination.last_page || 1)
-        }
-        onLoadMore={() => setCommentPage((p) => p + 1)}
-      />
+      <LazyCommentWrapper>
+        <CommentSection
+          comments={commentsData?.items || []}
+          totalCount={commentsData?.pagination.total || 0}
+          isLoading={isCommentsLoading}
+          sort={commentSort}
+          onSortChange={setCommentSort}
+          onAddComment={handleAddComment}
+          hasMore={
+            (commentsData?.pagination.current_page || 1) <
+            (commentsData?.pagination.last_page || 1)
+          }
+          onLoadMore={() => setCommentPage((p) => p + 1)}
+        />
+      </LazyCommentWrapper>
     </div>
   );
 }

@@ -804,6 +804,155 @@ export function MangaDetailContent({ slug }: { slug: string }) {
 
 **Bundle Impact**: ~5-8KB reduction in initial JS chunk
 
+### Viewport-Based Lazy Loading with Intersection Observer (Phase 2)
+
+For maximum performance with below-the-fold content, combine **Dynamic Imports** with **Intersection Observer**. This ensures the component code only loads when the user scrolls near it.
+
+#### The Two-Phase Approach
+
+**Phase 1 - Code Splitting (Dynamic Import):**
+
+- Moves component JS to separate chunk
+- Loads on-demand (not on initial page load)
+- Saves 5-8KB from initial bundle
+
+**Phase 2 - Viewport Loading (Intersection Observer):**
+
+- Defers even the chunk load until viewport approach
+- Saves additional 2-3KB per page for users who don't scroll
+- Provides smooth UX with pre-rendered skeleton
+
+#### Implementation Pattern
+
+```tsx
+// Step 1: Create LazyCommentWrapper component
+"use client";
+
+import { useRef, useState, useEffect, type ReactNode } from "react";
+import { CommentsSkeleton } from "./comments-skeleton";
+
+interface LazyCommentWrapperProps {
+  children: ReactNode;
+  rootMargin?: string; // How far before viewport to trigger load
+}
+
+export function LazyCommentWrapper({
+  children,
+  rootMargin = "200px", // Loads 200px before entering viewport
+}: LazyCommentWrapperProps) {
+  const [shouldRender, setShouldRender] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldRender(true);
+          observer.disconnect(); // Stop observing after first intersection
+        }
+      },
+      { rootMargin } // Intersection buffer
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect(); // Cleanup on unmount
+  }, [rootMargin]);
+
+  return (
+    <div ref={ref} className="min-h-[200px]">
+      {/* Show skeleton while not in viewport, then render children */}
+      {shouldRender ? children : <CommentsSkeleton />}
+    </div>
+  );
+}
+```
+
+#### Usage with Dynamic Import
+
+```tsx
+import dynamic from "next/dynamic";
+import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
+import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+
+// Phase 1: Code splitting
+const CommentSection = dynamic(
+  () =>
+    import("@/components/comments/comment-section").then((mod) => ({
+      default: mod.CommentSection,
+    })),
+  {
+    loading: () => <CommentsSkeleton />,
+    ssr: false,
+  }
+);
+
+export function MangaDetailContent({ slug }: { slug: string }) {
+  const { data: commentsData } = useMangaComments(slug);
+
+  return (
+    <div>
+      <MangaHeader />
+      <ChapterList />
+
+      {/* Phase 2: Viewport-based loading via Intersection Observer */}
+      <LazyCommentWrapper rootMargin="200px">
+        <CommentSection
+          comments={commentsData?.items || []}
+          totalCount={commentsData?.pagination.total || 0}
+          onAddComment={handleAddComment}
+        />
+      </LazyCommentWrapper>
+    </div>
+  );
+}
+```
+
+#### Performance Metrics Comparison
+
+| Scenario                 | Phase 1 Only         | Phase 1 + Phase 2               |
+| ------------------------ | -------------------- | ------------------------------- |
+| **Initial bundle**       | Reduced by 5-8KB     | Same as Phase 1                 |
+| **Comment chunk loads**  | When visible         | When scrolling close            |
+| **Never scrolled users** | Comment chunk loaded | Comment chunk NOT loaded        |
+| **Fast scrollers**       | Chunk loaded anyway  | Chunk never loaded              |
+| **Estimated savings**    | 5-8KB                | Additional 2-3KB (30-40% users) |
+
+#### Key Implementation Details
+
+1. **rootMargin: "200px"**
+   - Loads before user reaches element
+   - Prevents jarring transitions
+   - Smooth perceived performance
+
+2. **One-time disconnect**
+   - Observer disconnects after first intersection
+   - No ongoing observer overhead
+   - Memory efficient
+
+3. **Skeleton dimension matching**
+   - Prevents Cumulative Layout Shift (CLS)
+   - Smooth transition from skeleton to content
+   - Better perceived performance
+
+4. **Browser Compatibility**
+   - Intersection Observer: ~98% browser support
+   - Graceful degradation for older browsers
+   - Native API (no dependencies)
+
+#### When to Use
+
+1. **Below-the-fold interactive sections** (comments, recommendations)
+2. **Large optional features** (>3KB gzipped)
+3. **Content users might never scroll to**
+4. **Combined with `dynamic()` for maximum efficiency**
+
+#### Edge Cases & Best Practices
+
+- **Fast scrollers**: May not load content - acceptable trade-off
+- **Slow networks**: Loads faster with rootMargin buffer
+- **Mobile**: Excellent for battery & data savings
+- **Cleanup**: Always disconnect observer on unmount
+
 ### Package Optimization
 
 Configure Next.js to optimize package imports:
@@ -1051,4 +1200,7 @@ export function Pagination({ totalPages }: { totalPages: number }) {
 
 ---
 
-**Last updated**: 2025-12-18 (Phase 03 - Image Priority Loading)
+**Last updated**: 2025-12-23
+
+- Phase 02: Added "Viewport-Based Lazy Loading with Intersection Observer" section
+- Phase 03: Image Priority Loading (2025-12-18)

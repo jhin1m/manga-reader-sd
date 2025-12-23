@@ -11,9 +11,13 @@ import { ChapterWithNavigation } from "@/types/chapter";
 import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
+import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
 
 const ChapterReaderComments = dynamic(
-  () => import("@/components/comments/chapter-reader-comments").then(mod => ({ default: mod.ChapterReaderComments })),
+  () =>
+    import("@/components/comments/chapter-reader-comments").then((mod) => ({
+      default: mod.ChapterReaderComments,
+    })),
   {
     loading: () => <CommentsSkeleton />,
     ssr: false, // Comments don't need SSR
@@ -327,11 +331,13 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
 
       {/* Comments Section */}
       <div className="relative z-0 mx-auto w-full max-w-4xl bg-background px-4 py-8">
-        <ChapterReaderComments
-          mangaSlug={mangaSlug}
-          chapterSlug={chapterSlug}
-          className="w-full"
-        />
+        <LazyCommentWrapper>
+          <ChapterReaderComments
+            mangaSlug={mangaSlug}
+            chapterSlug={chapterSlug}
+            className="w-full"
+          />
+        </LazyCommentWrapper>
       </div>
 
       {/* Single Mode Pagination Info */}

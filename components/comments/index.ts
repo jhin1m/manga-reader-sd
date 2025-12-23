@@ -5,3 +5,4 @@ export { CommentForm } from "./comment-form";
 export { CommentReplyForm } from "./comment-reply-form";
 export { CommentSkeleton } from "./comment-skeleton";
 export { CommentEmpty } from "./comment-empty";
+export { LazyCommentWrapper } from "./lazy-comment-wrapper";
