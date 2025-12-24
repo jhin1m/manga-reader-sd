@@ -84,7 +84,9 @@
       "showMore": "Read More",
       "showLess": "Show Less",
       "noChapters": "No chapters found",
-      "searchChapterPlaceholder": "Search chapter number..."
+      "searchChapterPlaceholder": "Search chapter number...",
+      "continueReading": "Continue",
+      "reading": "Reading"
     }
   },
   "chapter": {

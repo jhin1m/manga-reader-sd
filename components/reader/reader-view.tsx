@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
 import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
 import { useReaderStore } from "@/lib/store/readerStore";
+import { useReadingProgressStore } from "@/lib/store/readingProgressStore";
 
 const ChapterReaderComments = dynamic(
   () =>
@@ -44,6 +45,9 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   // Store for persistent settings
   const { preferences, updatePreference } = useReaderStore();
   const { zoom, backgroundColor, imageSpacing } = preferences;
+
+  // Reading progress store
+  const setReadingProgress = useReadingProgressStore((s) => s.setProgress);
 
   const setZoom = useCallback(
     (value: number) => {
@@ -176,6 +180,13 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
       chapterApi.trackView(mangaSlug, chapterSlug).catch(console.error);
     }
   }, [mangaSlug, chapterSlug]);
+
+  // Save reading progress when chapter loads
+  useEffect(() => {
+    if (chapter && mangaSlug) {
+      setReadingProgress(mangaSlug, chapterSlug, chapter.chapter_number);
+    }
+  }, [chapter, mangaSlug, chapterSlug, setReadingProgress]);
 
   // Prefetch adjacent chapters when current chapter loads
   useEffect(() => {

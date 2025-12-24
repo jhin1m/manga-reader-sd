@@ -84,7 +84,9 @@
       "showMore": "Đọc thêm",
       "showLess": "Thu gọn",
       "noChapters": "Không tìm thấy chương nào",
-      "searchChapterPlaceholder": "Tìm số chương..."
+      "searchChapterPlaceholder": "Tìm số chương...",
+      "continueReading": "Đọc tiếp",
+      "reading": "Đang đọc"
     }
   },
   "chapter": {

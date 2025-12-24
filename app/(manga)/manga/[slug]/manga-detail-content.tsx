@@ -14,6 +14,7 @@ import {
   CalendarDays,
   User,
   PawPrint,
+  BookOpen,
 } from "lucide-react";
 import { useState, useMemo, useCallback, type ComponentType } from "react";
 import { toast } from "sonner";
@@ -36,6 +37,7 @@ import type { ChapterListItem } from "@/types/chapter";
 import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
 import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
+import { useReadingProgressStore } from "@/lib/store/readingProgressStore";
 
 // Dynamic import for CommentSection - reduces initial bundle size
 const CommentSection = dynamic(
@@ -153,6 +155,11 @@ function MangaDetail({
   const [searchTerm, setSearchTerm] = useState("");
   const [commentSort, setCommentSort] = useState<"asc" | "desc">("desc");
   const [commentPage, setCommentPage] = useState(1);
+
+  // Reading progress from localStorage
+  const readingProgress = useReadingProgressStore((s) =>
+    s.getProgress(manga.slug)
+  );
 
   // Find first chapter slug: prioritize manga.first_chapter, then find from chapters array
   const firstChapterSlug = useMemo(() => {
@@ -345,12 +352,36 @@ function MangaDetail({
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2 mt-auto pt-2">
-                {/* Read Button */}
-                {firstChapterSlug ? (
+                {/* Continue Reading - only if progress exists */}
+                {readingProgress && (
                   <Button
                     asChild
                     size="sm"
                     className="flex-1 sm:flex-none sm:w-32 md:w-40 h-9 font-semibold rounded-full shadow-sm"
+                  >
+                    <Link
+                      href={`/manga/${manga.slug}/${readingProgress.chapterSlug}`}
+                    >
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      <span className="text-xs sm:text-sm">
+                        {t("detail.continueReading")}
+                      </span>
+                    </Link>
+                  </Button>
+                )}
+
+                {/* Read Now Button */}
+                {firstChapterSlug ? (
+                  <Button
+                    asChild
+                    size="sm"
+                    variant={readingProgress ? "outline" : "default"}
+                    className={cn(
+                      "flex-1 sm:flex-none h-9 font-semibold rounded-full",
+                      readingProgress
+                        ? "sm:w-auto"
+                        : "sm:w-32 md:w-40 shadow-sm"
+                    )}
                   >
                     <Link href={`/manga/${manga.slug}/${firstChapterSlug}`}>
                       <PawPrint className="mr-2 h-4 w-4" />
@@ -485,19 +516,30 @@ function MangaDetail({
                       href={`/manga/${manga.slug}/${chapter.slug}`}
                       className="flex justify-between py-2.5 border-b border-border/40 hover:bg-secondary/20 hover:pl-2 transition-all duration-200 rounded-sm"
                     >
-                      <div className="min-w-0 pr-2">
-                        <div className="text-sm font-medium text-foreground/90 group-hover:text-primary truncate">
-                          {tChapter("chapter")} {chapter.chapter_number}
+                      <div className="min-w-0 pr-2 flex items-center gap-2">
+                        <div>
+                          <div className="text-sm font-medium text-foreground/90 group-hover:text-primary truncate">
+                            {tChapter("chapter")} {chapter.chapter_number}
+                          </div>
+                          {chapter.name &&
+                            chapter.name !==
+                              `Chapter ${chapter.chapter_number}` && (
+                              <div className="text-[11px] text-muted-foreground truncate">
+                                {chapter.name}
+                              </div>
+                            )}
                         </div>
-                        {chapter.name &&
-                          chapter.name !==
-                            `Chapter ${chapter.chapter_number}` && (
-                            <div className="text-[11px] text-muted-foreground truncate">
-                              {chapter.name}
-                            </div>
-                          )}
+                        {/* Reading badge */}
+                        {readingProgress?.chapterSlug === chapter.slug && (
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] px-1.5 h-4 bg-primary/10 text-primary flex-shrink-0"
+                          >
+                            {t("detail.reading")}
+                          </Badge>
+                        )}
                       </div>
-                      <div className="text-[10px] text-muted-foreground whitespace-nowrap font-mono">
+                      <div className="text-[10px] text-muted-foreground whitespace-nowrap font-mono flex-shrink-0">
                         {new Date(chapter.created_at).toLocaleDateString(
                           "vi-VN",
                           {
