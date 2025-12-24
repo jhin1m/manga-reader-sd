@@ -15,7 +15,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowLeft, ArrowRight, ChevronLeft, Settings } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ChevronLeft,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { ChapterNavigation } from "@/types/chapter";
 import { cn } from "@/lib/utils";
@@ -67,7 +73,7 @@ export function ReaderControls({
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
-    <>
+    <TooltipProvider>
       {/* Top Bar */}
       <div
         className={cn(
@@ -97,20 +103,18 @@ export function ReaderControls({
         </div>
 
         <div className="flex items-center gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSettingsOpen(true)}
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Settings</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSettingsOpen(true)}
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Settings</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -170,6 +174,19 @@ export function ReaderControls({
           >
             <ArrowRight className="h-4 w-4" />
           </Button>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
+                <ArrowUp className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Back to Top</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -184,6 +201,6 @@ export function ReaderControls({
         imageSpacing={imageSpacing}
         onImageSpacingChange={onImageSpacingChange}
       />
-    </>
+    </TooltipProvider>
   );
 }

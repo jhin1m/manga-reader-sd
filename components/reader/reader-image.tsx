@@ -36,7 +36,11 @@ export function ReaderImage({
 
   return (
     <div
-      className={cn("relative min-h-[50vh] w-full", className)}
+      className={cn(
+        "relative w-full",
+        isLoading ? "min-h-[50vh]" : "min-h-0",
+        className
+      )}
       style={style}
     >
       {isLoading && (
@@ -67,7 +71,7 @@ export function ReaderImage({
           alt={alt}
           loading="lazy"
           className={cn(
-            "h-auto w-full transition-opacity duration-300",
+            "h-auto w-full block transition-opacity duration-300",
             isLoading ? "opacity-0" : "opacity-100"
           )}
           onLoad={handleLoad}

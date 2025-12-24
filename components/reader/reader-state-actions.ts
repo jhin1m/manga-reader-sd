@@ -6,22 +6,6 @@
 import type { ReaderAction, ReadingMode } from "./reader-state-reducer";
 
 export const readerActions = {
-  // Mode actions
-  setReadingMode: (mode: ReadingMode): ReaderAction => ({
-    type: "SET_READING_MODE",
-    payload: mode,
-  }),
-
-  setSingleMode: (): ReaderAction => ({
-    type: "SET_READING_MODE",
-    payload: "single",
-  }),
-
-  setLongStripMode: (): ReaderAction => ({
-    type: "SET_READING_MODE",
-    payload: "long-strip",
-  }),
-
   // Zoom actions
   setZoom: (zoom: number): ReaderAction => ({
     type: "SET_ZOOM",
@@ -56,12 +40,6 @@ export const readerActions = {
   hideControls: (): ReaderAction => ({
     type: "SET_CONTROLS",
     payload: false,
-  }),
-
-  // Page navigation (for single mode)
-  setPage: (page: number): ReaderAction => ({
-    type: "SET_PAGE",
-    payload: page,
   }),
 
   nextPage: (totalPages: number): ReaderAction => ({

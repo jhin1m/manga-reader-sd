@@ -168,7 +168,7 @@ export function ReaderSettingsPanel({
                   className={cn(
                     "h-12 rounded-md border-2 transition-all hover:scale-105",
                     backgroundColor === color.value
-                      ? "border-primary ring-2 ring-primary ring-offset-2"
+                      ? "border-primary ring-primary"
                       : "border-muted"
                   )}
                   style={{ backgroundColor: color.value }}

@@ -190,18 +190,6 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
     }
   }, [mangaSlug, navigation, queryClient]);
 
-  // Keyboard Shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setShowControls((prev) => !prev);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
   // Navigation Handler
   const handleNavigateChapter = useCallback(
     (slug: string) => {
@@ -209,6 +197,26 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
     },
     [router, mangaSlug]
   );
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowControls((prev) => !prev);
+      } else if (e.key === "ArrowLeft") {
+        if (navigation?.previous?.slug) {
+          handleNavigateChapter(navigation.previous.slug);
+        }
+      } else if (e.key === "ArrowRight") {
+        if (navigation?.next?.slug) {
+          handleNavigateChapter(navigation.next.slug);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [navigation, handleNavigateChapter]);
 
   if (isLoading) {
     return (
