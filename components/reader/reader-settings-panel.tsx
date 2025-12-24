@@ -23,11 +23,11 @@ interface ReaderSettingsPanelProps {
 }
 
 const BACKGROUND_COLORS = [
-  { value: "#000000", label: "Đen" },
-  { value: "#1a1a1a", label: "Xám đậm" },
-  { value: "#2d2d2d", label: "Xám" },
-  { value: "#ffffff", label: "Trắng" },
-  { value: "#f5f5f5", label: "Xám nhạt" },
+  { value: "#000000", label: "Black" },
+  { value: "#1a1a1a", label: "Dark" },
+  { value: "#2d2d2d", label: "Gray" },
+  { value: "#ffffff", label: "White" },
+  { value: "#f5f5f5", label: "Light" },
 ];
 
 export function ReaderSettingsPanel({

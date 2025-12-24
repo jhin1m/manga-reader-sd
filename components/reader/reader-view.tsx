@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
 import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
+import { useReaderStore } from "@/lib/store/readerStore";
 
 const ChapterReaderComments = dynamic(
   () =>
@@ -36,12 +37,34 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   const queryClient = useQueryClient();
 
   // State
+  // State
   const readingMode = "long-strip";
-  const [zoom, setZoom] = useState(100);
   const [showControls, setShowControls] = useState(true);
 
-  const [backgroundColor, setBackgroundColor] = useState("#000000");
-  const [imageSpacing, setImageSpacing] = useState(0);
+  // Store for persistent settings
+  const { preferences, updatePreference } = useReaderStore();
+  const { zoom, backgroundColor, imageSpacing } = preferences;
+
+  const setZoom = useCallback(
+    (value: number) => {
+      updatePreference("zoom", value);
+    },
+    [updatePreference]
+  );
+
+  const setBackgroundColor = useCallback(
+    (value: string) => {
+      updatePreference("backgroundColor", value);
+    },
+    [updatePreference]
+  );
+
+  const setImageSpacing = useCallback(
+    (value: number) => {
+      updatePreference("imageSpacing", value);
+    },
+    [updatePreference]
+  );
 
   // Fetch Chapter Details
   const {
