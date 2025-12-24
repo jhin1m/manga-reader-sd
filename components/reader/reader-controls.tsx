@@ -22,10 +22,13 @@ import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
 const ReaderSettingsPanel = dynamic(
-  () => import("./reader-settings-panel").then(mod => ({ default: mod.ReaderSettingsPanel })),
+  () =>
+    import("./reader-settings-panel").then((mod) => ({
+      default: mod.ReaderSettingsPanel,
+    })),
   {
     ssr: false,
-    loading: () => null
+    loading: () => null,
   }
 );
 
@@ -34,14 +37,14 @@ interface ReaderControlsProps {
   currentChapterSlug: string;
   chapterList?: { slug: string; name: string; chapter_number: number }[];
   navigation?: ChapterNavigation;
-  readingMode: "single" | "long-strip";
-  onReadingModeChange: (mode: "single" | "long-strip") => void;
+
   zoom: number;
   onZoomChange: (zoom: number) => void;
   backgroundColor: string;
   onBackgroundColorChange: (color: string) => void;
   imageSpacing: number;
   onImageSpacingChange: (spacing: number) => void;
+  currentChapterNumber?: number;
   showControls: boolean;
   onNavigateChapter: (slug: string) => void;
 }
@@ -51,14 +54,13 @@ export function ReaderControls({
   currentChapterSlug,
   chapterList,
   navigation,
-  readingMode,
-  onReadingModeChange,
   zoom,
   onZoomChange,
   backgroundColor,
   onBackgroundColorChange,
   imageSpacing,
   onImageSpacingChange,
+  currentChapterNumber,
   showControls,
   onNavigateChapter,
 }: ReaderControlsProps) {
@@ -81,7 +83,9 @@ export function ReaderControls({
           </Link>
           <div className="flex flex-col">
             <h1 className="text-sm font-medium line-clamp-1">
-              {navigation?.next?.name || "Chapter Reader"}
+              {currentChapterNumber
+                ? `Chapter ${currentChapterNumber}`
+                : "Chapter Reader"}
             </h1>
             <Link
               href={`/manga/${mangaSlug}`}
@@ -140,9 +144,17 @@ export function ReaderControls({
                 <SelectItem key={chapter.slug} value={chapter.slug}>
                   Chapter {chapter.chapter_number}
                 </SelectItem>
-              )) || (
+              ))}
+              {/* Fallback for current chapter if not in list (e.g. due to pagination) */}
+              {chapterList &&
+                !chapterList.some((c) => c.slug === currentChapterSlug) && (
+                  <SelectItem value={currentChapterSlug}>
+                    Chapter {currentChapterNumber || "..."}
+                  </SelectItem>
+                )}
+              {!chapterList && (
                 <SelectItem value={currentChapterSlug}>
-                  Current Chapter
+                  Chapter {currentChapterNumber || "..."}
                 </SelectItem>
               )}
             </SelectContent>
@@ -165,8 +177,6 @@ export function ReaderControls({
       <ReaderSettingsPanel
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
-        readingMode={readingMode}
-        onReadingModeChange={onReadingModeChange}
         zoom={zoom}
         onZoomChange={onZoomChange}
         backgroundColor={backgroundColor}

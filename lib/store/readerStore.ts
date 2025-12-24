@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 interface ReaderPreferences {
   disableSpacebarNav: boolean;
-  readingMode: "single" | "long-strip";
+
   backgroundColor: string;
   imageSpacing: number;
   zoom: number;
@@ -20,7 +20,7 @@ interface ReaderStore {
 
 const defaultPreferences: ReaderPreferences = {
   disableSpacebarNav: true, // Default to disabled
-  readingMode: "long-strip",
+
   backgroundColor: "#000000",
   imageSpacing: 0,
   zoom: 100,

@@ -36,12 +36,10 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   const queryClient = useQueryClient();
 
   // State
-  const [readingMode, setReadingMode] = useState<"single" | "long-strip">(
-    "long-strip"
-  );
+  const readingMode = "long-strip";
   const [zoom, setZoom] = useState(100);
   const [showControls, setShowControls] = useState(true);
-  const [currentPage, setCurrentPage] = useState(0);
+
   const [backgroundColor, setBackgroundColor] = useState("#000000");
   const [imageSpacing, setImageSpacing] = useState(0);
 
@@ -68,7 +66,39 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   // Fetch Chapter List (for dropdown and navigation)
   const { data: chapterList } = useQuery({
     queryKey: ["manga-chapters", mangaSlug],
-    queryFn: () => mangaApi.getChapters(mangaSlug),
+
+    queryFn: async () => {
+      const perPage = 100; // Safe limit
+      const initial = await mangaApi.getChapters(mangaSlug, {
+        page: 1,
+        per_page: perPage,
+      });
+
+      let allData = [...initial.data];
+      const lastPage = initial.meta?.pagination?.last_page || 1;
+
+      if (lastPage > 1) {
+        const promises = [];
+        for (let i = 2; i <= lastPage; i++) {
+          promises.push(
+            mangaApi.getChapters(mangaSlug, { page: i, per_page: perPage })
+          );
+        }
+
+        const results = await Promise.all(promises);
+        results.forEach((res) => {
+          allData = [...allData, ...res.data];
+        });
+      }
+
+      // Sort by chapter number (descending for list usually, but navigation uses ascending)
+      // The navigation Memo sorts it ascending.
+      // Let's just return the full data.
+      return {
+        ...initial,
+        data: allData,
+      };
+    },
     enabled: !!mangaSlug,
   });
 
@@ -163,24 +193,14 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") {
-        if (readingMode === "single") {
-          setCurrentPage((prev) =>
-            Math.min(prev + 1, (chapter?.content?.length || 1) - 1)
-          );
-        }
-      } else if (e.key === "ArrowLeft") {
-        if (readingMode === "single") {
-          setCurrentPage((prev) => Math.max(prev - 1, 0));
-        }
-      } else if (e.key === "Escape") {
+      if (e.key === "Escape") {
         setShowControls((prev) => !prev);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [readingMode, chapter]);
+  }, []);
 
   // Navigation Handler
   const handleNavigateChapter = useCallback(
@@ -189,41 +209,6 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
     },
     [router, mangaSlug]
   );
-
-  // Touch Swipe for Single Mode
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (readingMode === "single") {
-      if (isLeftSwipe) {
-        // Next page
-        setCurrentPage((prev) =>
-          Math.min(prev + 1, (chapter?.content?.length || 1) - 1)
-        );
-      }
-      if (isRightSwipe) {
-        // Prev page
-        setCurrentPage((prev) => Math.max(prev - 1, 0));
-      }
-    }
-  };
 
   if (isLoading) {
     return (
@@ -254,10 +239,9 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
       <ReaderControls
         mangaSlug={mangaSlug}
         currentChapterSlug={chapterSlug}
+        currentChapterNumber={chapter.chapter_number}
         chapterList={chapterList?.data}
         navigation={navigation}
-        readingMode={readingMode}
-        onReadingModeChange={setReadingMode}
         zoom={zoom}
         onZoomChange={setZoom}
         backgroundColor={backgroundColor}
@@ -286,9 +270,6 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
           showControls ? "pt-16 pb-16" : "py-0"
         )}
         onClick={() => setShowControls(!showControls)}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
         style={{
           width: "100%",
           maxWidth: "100%",
@@ -296,36 +277,22 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
         }}
       >
         <div
-          className={cn(
-            "mx-auto flex justify-center",
-            readingMode === "long-strip"
-              ? "flex-col items-center"
-              : "items-center"
-          )}
+          className="mx-auto flex flex-col items-center justify-center"
           style={{
             transform: `scale(${zoom / 100})`,
             transformOrigin: "top center",
           }}
         >
-          {readingMode === "single" ? (
+          {images.map((src, index) => (
             <ReaderImage
-              src={images[currentPage]}
-              alt={`Page ${currentPage + 1}`}
-              index={currentPage}
-              className="max-h-screen w-full object-contain"
+              key={index}
+              src={src}
+              alt={`Page ${index + 1}`}
+              index={index}
+              className="w-full max-w-4xl"
+              style={{ marginBottom: `${imageSpacing}px` }}
             />
-          ) : (
-            images.map((src, index) => (
-              <ReaderImage
-                key={index}
-                src={src}
-                alt={`Page ${index + 1}`}
-                index={index}
-                className="w-full max-w-4xl"
-                style={{ marginBottom: `${imageSpacing}px` }}
-              />
-            ))
-          )}
+          ))}
         </div>
       </main>
 
@@ -339,13 +306,6 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
           />
         </LazyCommentWrapper>
       </div>
-
-      {/* Single Mode Pagination Info */}
-      {readingMode === "single" && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-4 py-1 text-sm text-white backdrop-blur">
-          {currentPage + 1} / {images.length}
-        </div>
-      )}
     </div>
   );
 }

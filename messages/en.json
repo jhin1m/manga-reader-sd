@@ -94,11 +94,7 @@
     "nextChapter": "Next Chapter",
     "chapterList": "Chapter List",
     "selectChapter": "Select Chapter",
-    "readingMode": {
-      "label": "Reading Mode",
-      "singlePage": "Single Page",
-      "longStrip": "Long Strip"
-    },
+
     "controls": {
       "zoomIn": "Zoom In",
       "zoomOut": "Zoom Out",
@@ -115,13 +111,7 @@
     "settings": {
       "title": "Reader Settings",
       "description": "Customize your reading experience",
-      "readingMode": {
-        "label": "Reading Mode",
-        "single": "Single Page",
-        "singleDesc": "Display one page at a time",
-        "longStrip": "Long Strip",
-        "longStripDesc": "Continuous vertical scrolling"
-      },
+
       "readingDirection": {
         "label": "Reading Direction",
         "ltr": "Left to Right",

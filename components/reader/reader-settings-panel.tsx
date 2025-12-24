@@ -3,7 +3,7 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
-import { FileText, ScrollText, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button";
 interface ReaderSettingsPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  readingMode: "single" | "long-strip";
-  onReadingModeChange: (mode: "single" | "long-strip") => void;
+
   zoom: number;
   onZoomChange: (zoom: number) => void;
   backgroundColor: string;
@@ -34,8 +33,6 @@ const BACKGROUND_COLORS = [
 export function ReaderSettingsPanel({
   open,
   onOpenChange,
-  readingMode,
-  onReadingModeChange,
   zoom,
   onZoomChange,
   backgroundColor,
@@ -81,60 +78,6 @@ export function ReaderSettingsPanel({
 
         {/* Content */}
         <div className="space-y-6 p-6">
-          {/* Reading Mode */}
-          <div className="space-y-3">
-            <Label className="text-base font-semibold">
-              {t("readingMode.label")}
-            </Label>
-            <RadioGroup
-              value={readingMode}
-              onValueChange={(value) =>
-                onReadingModeChange(value as "single" | "long-strip")
-              }
-              className="grid grid-cols-2 gap-4"
-            >
-              <div>
-                <RadioGroupItem
-                  value="single"
-                  id="single"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="single"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                >
-                  <FileText className="mb-3 h-6 w-6" />
-                  <span className="text-sm font-medium">
-                    {t("readingMode.single")}
-                  </span>
-                  <span className="text-xs text-muted-foreground text-center mt-1">
-                    {t("readingMode.singleDesc")}
-                  </span>
-                </Label>
-              </div>
-
-              <div>
-                <RadioGroupItem
-                  value="long-strip"
-                  id="long-strip"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="long-strip"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                >
-                  <ScrollText className="mb-3 h-6 w-6" />
-                  <span className="text-sm font-medium">
-                    {t("readingMode.longStrip")}
-                  </span>
-                  <span className="text-xs text-muted-foreground text-center mt-1">
-                    {t("readingMode.longStripDesc")}
-                  </span>
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
-
           {/* Reading Direction */}
           {onReadingDirectionChange && (
             <div className="space-y-3">
@@ -238,35 +181,33 @@ export function ReaderSettingsPanel({
             </p>
           </div>
 
-          {/* Image Spacing (only for long-strip mode) */}
-          {readingMode === "long-strip" && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-base font-semibold">
-                  {t("imageSpacing.label")}
-                </Label>
-                <span className="text-sm text-muted-foreground">
-                  {imageSpacing}px
-                </span>
-              </div>
-              <Slider
-                value={[imageSpacing]}
-                onValueChange={(value) => onImageSpacingChange(value[0])}
-                min={0}
-                max={32}
-                step={2}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>0px</span>
-                <span>16px</span>
-                <span>32px</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("imageSpacing.description")}
-              </p>
+          {/* Image Spacing */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold">
+                {t("imageSpacing.label")}
+              </Label>
+              <span className="text-sm text-muted-foreground">
+                {imageSpacing}px
+              </span>
             </div>
-          )}
+            <Slider
+              value={[imageSpacing]}
+              onValueChange={(value) => onImageSpacingChange(value[0])}
+              min={0}
+              max={32}
+              step={2}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>0px</span>
+              <span>16px</span>
+              <span>32px</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("imageSpacing.description")}
+            </p>
+          </div>
         </div>
       </div>
     </>
