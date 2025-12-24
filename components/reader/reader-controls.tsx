@@ -40,6 +40,7 @@ const ReaderSettingsPanel = dynamic(
 
 interface ReaderControlsProps {
   mangaSlug: string;
+  mangaName?: string;
   currentChapterSlug: string;
   chapterList?: { slug: string; name: string; chapter_number: number }[];
   navigation?: ChapterNavigation;
@@ -57,6 +58,7 @@ interface ReaderControlsProps {
 
 export function ReaderControls({
   mangaSlug,
+  mangaName,
   currentChapterSlug,
   chapterList,
   navigation,
@@ -97,7 +99,7 @@ export function ReaderControls({
               href={`/manga/${mangaSlug}`}
               className="text-xs text-muted-foreground hover:underline"
             >
-              Back to Manga
+              {mangaName || "Back to Manga"}
             </Link>
           </div>
         </div>

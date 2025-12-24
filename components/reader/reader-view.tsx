@@ -269,6 +269,7 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
     <div className="relative min-h-screen" style={{ backgroundColor }}>
       <ReaderControls
         mangaSlug={mangaSlug}
+        mangaName={chapter.manga.name}
         currentChapterSlug={chapterSlug}
         currentChapterNumber={chapter.chapter_number}
         chapterList={chapterList?.data}
