@@ -1,12 +1,14 @@
 import { getRequestConfig } from "next-intl/server";
 
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+
 /**
  * i18n Request Configuration
  *
  * This configuration is called once per request and provides the messages
  * for the current locale to Server Components.
  *
- * Currently configured with Vietnamese (vi) as the default locale.
+ * Default locale is configured via NEXT_PUBLIC_DEFAULT_LOCALE environment variable.
  * To add more locales in the future, replace the hardcoded locale
  * with dynamic locale detection.
  *
@@ -21,12 +23,12 @@ import { getRequestConfig } from "next-intl/server";
  * ```
  */
 export default getRequestConfig(async () => {
-  // Default locale is Vietnamese (vi)
+  // Default locale from environment configuration
   // In the future, this can be made dynamic:
   // - From URL parameter (e.g., /vi/home, /en/home)
   // - From cookies (user preference)
   // - From browser Accept-Language header
-  const locale = "vi";
+  const locale = DEFAULT_LOCALE;
 
   return {
     locale,

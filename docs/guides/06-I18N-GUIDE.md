@@ -50,13 +50,46 @@ This applies to:
 
 ## next-intl Setup
 
+### Environment Configuration
+
+**Locale and timezone are now configurable via environment variables:**
+
+```bash
+# .env or .env.local
+NEXT_PUBLIC_DEFAULT_LOCALE=vi              # Default: vi
+NEXT_PUBLIC_TIMEZONE=Asia/Ho_Chi_Minh      # Default: Asia/Ho_Chi_Minh
+```
+
+**Centralized config (`lib/i18n/config.ts`):**
+
+```typescript
+export const SUPPORTED_LOCALES = ["vi", "en"] as const;
+export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+
+export const DEFAULT_LOCALE: SupportedLocale =
+  (process.env.NEXT_PUBLIC_DEFAULT_LOCALE as SupportedLocale) || "vi";
+
+export const TIMEZONE: string =
+  process.env.NEXT_PUBLIC_TIMEZONE || "Asia/Ho_Chi_Minh";
+```
+
+**Benefits:**
+
+- ✅ Deploy same codebase with different default locales
+- ✅ Change timezone without code modification
+- ✅ Type-safe configuration with TypeScript
+- ✅ Backward compatible (works without env vars)
+
 ### Configuration
 
-**Default locale**: Vietnamese (`vi`)
+**Default locale**: Vietnamese (`vi`) - configurable via `NEXT_PUBLIC_DEFAULT_LOCALE`
 
 **Structure:**
 
 ```
+lib/i18n/
+└── config.ts       # Centralized i18n config
+
 messages/
 └── vi.json         # Vietnamese translations
 
@@ -67,19 +100,18 @@ i18n.ts             # Main config file
 next.config.ts      # withNextIntl plugin
 ```
 
-**Current config (`i18n.ts`):**
+**Current config (`i18n/request.ts`):**
 
 ```typescript
-import { notFound } from "next/navigation";
 import { getRequestConfig } from "next-intl/server";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 
-const locales = ["vi"];
-
-export default getRequestConfig(async ({ locale }) => {
-  if (!locales.includes(locale as any)) notFound();
+export default getRequestConfig(async () => {
+  const locale = DEFAULT_LOCALE;
 
   return {
-    messages: (await import(`./messages/${locale}.json`)).default,
+    locale,
+    messages: (await import(`../messages/${locale}.json`)).default,
   };
 });
 ```

@@ -11,6 +11,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { generateDefaultMetadata } from "@/lib/seo/metadata";
 import { generateWebsiteSchema } from "@/lib/seo/json-ld";
+import { DEFAULT_LOCALE, TIMEZONE } from "@/lib/i18n/config";
 
 const notoSans = Noto_Sans({
   variable: "--font-sans",
@@ -42,7 +43,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang={DEFAULT_LOCALE} suppressHydrationWarning>
       <head>
         {/* Resource Hints */}
         <link
@@ -70,8 +71,8 @@ export default async function RootLayout({
       <body className={`${notoSans.variable} ${roadRage.variable} antialiased`}>
         <NextIntlClientProvider
           messages={messages}
-          locale="vi"
-          timeZone="Asia/Ho_Chi_Minh"
+          locale={DEFAULT_LOCALE}
+          timeZone={TIMEZONE}
           now={new Date()}
         >
           <ReactQueryProvider>

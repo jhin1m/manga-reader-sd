@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+
 interface UseRelativeTimeOptions {
   updateInterval?: number;
   locale?: string;
@@ -11,7 +13,7 @@ export function useRelativeTime(
   timestamp: string | Date,
   options: UseRelativeTimeOptions = {}
 ) {
-  const { updateInterval = 60000, locale = "vi" } = options;
+  const { updateInterval = 60000, locale = DEFAULT_LOCALE } = options;
   const [relativeTime, setRelativeTime] = useState<string>("");
 
   useEffect(() => {

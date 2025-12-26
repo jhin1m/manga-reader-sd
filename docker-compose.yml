@@ -9,6 +9,8 @@ services:
         - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-}
         - NEXT_PUBLIC_SITE_NAME=${NEXT_PUBLIC_SITE_NAME}
         - NEXT_PUBLIC_TWITTER_HANDLE=${NEXT_PUBLIC_TWITTER_HANDLE}
+        - NEXT_PUBLIC_DEFAULT_LOCALE=${NEXT_PUBLIC_DEFAULT_LOCALE:-vi}
+        - NEXT_PUBLIC_TIMEZONE=${NEXT_PUBLIC_TIMEZONE:-Asia/Ho_Chi_Minh}
     container_name: manga-reader
     restart: unless-stopped
     expose:
