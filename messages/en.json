@@ -409,6 +409,13 @@
     "pageNotFound": "Page Not Found",
     "pageNotFoundDescription": "The page you're looking for doesn't exist or has been removed."
   },
+  "notFoundPage": {
+    "title": "404 - Lost in Translation",
+    "heading": "Oops! You're lost?",
+    "description": "The page you're looking for seems to have been transported to another world...",
+    "backButton": "Go Back",
+    "homeButton": "Back to Home"
+  },
   "footer": {
     "copyright": "© {year} Manga Reader CMS. All rights reserved.",
     "about": "About",
