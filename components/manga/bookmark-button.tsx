@@ -51,8 +51,11 @@ export function BookmarkButton({
       toast.success(tNotifications("bookmarkAdded"), {
         description: manga.name,
       });
-      // Invalidate favorites list
+      // Invalidate both favorites list and status queries
       queryClient.invalidateQueries({ queryKey: ["user", "favorites"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user", "favorites", manga.id, "status"],
+      });
     },
     onError: (error) => {
       const errorMessage =
@@ -71,8 +74,11 @@ export function BookmarkButton({
       toast.success(tNotifications("bookmarkRemoved"), {
         description: manga.name,
       });
-      // Invalidate favorites list
+      // Invalidate both favorites list and status queries
       queryClient.invalidateQueries({ queryKey: ["user", "favorites"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user", "favorites", manga.id, "status"],
+      });
     },
     onError: (error) => {
       const errorMessage =

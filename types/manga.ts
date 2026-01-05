@@ -189,3 +189,11 @@ export interface RemoveFavoriteResponse {
   manga_id: number;
   favorited: boolean;
 }
+
+/**
+ * Check favorite status response
+ */
+export interface CheckFavoriteStatusResponse {
+  manga_id: number;
+  is_favorited: boolean;
+}

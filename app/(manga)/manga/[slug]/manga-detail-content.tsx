@@ -619,19 +619,14 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
   // Extract typed data
   const chapters = chaptersResponse?.data || [];
 
-  const { data: favoritesData } = useQuery({
-    queryKey: ["user", "favorites"],
-    queryFn: () => userFavoritesApi.getList({ per_page: 1000 }),
-    enabled: isAuthenticated,
+  // Check favorite status for this specific manga (only if authenticated)
+  const { data: favoriteStatus } = useQuery({
+    queryKey: ["user", "favorites", manga?.id, "status"],
+    queryFn: () => userFavoritesApi.checkStatus(manga!.id),
+    enabled: isAuthenticated && !!manga,
   });
 
-  const isBookmarked = useMemo(
-    () =>
-      manga && favoritesData?.data
-        ? favoritesData.data.some((fav) => fav.id === manga.id)
-        : false,
-    [manga, favoritesData]
-  );
+  const isBookmarked = favoriteStatus?.is_favorited ?? false;
 
   // Handler to update sort order - passed to MangaDetail
   const handleSortOrderChange = useCallback((order: "newest" | "oldest") => {

@@ -11,6 +11,7 @@ import type {
   AddFavoriteRequest,
   AddFavoriteResponse,
   RemoveFavoriteResponse,
+  CheckFavoriteStatusResponse,
 } from "@/types/manga";
 import type { ReadingHistoryItem } from "@/types/chapter";
 
@@ -64,6 +65,18 @@ export const userFavoritesApi = {
   remove: async (mangaId: number): Promise<RemoveFavoriteResponse> => {
     return apiClient.delete<RemoveFavoriteResponse>(
       `/user/favorites/${mangaId}`
+    );
+  },
+
+  /**
+   * Check if manga is in user's favorites
+   * GET /user/favorites/{manga_id}/status
+   */
+  checkStatus: async (
+    mangaId: number
+  ): Promise<CheckFavoriteStatusResponse> => {
+    return apiClient.get<CheckFavoriteStatusResponse>(
+      `/user/favorites/${mangaId}/status`
     );
   },
 };
