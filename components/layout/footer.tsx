@@ -1,23 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Container } from "./container";
 import { Separator } from "@/components/ui/separator";
 import { BookOpen, Facebook, Twitter, MessageCircle } from "lucide-react";
-
-const navigationLinks = [
-  { href: "/", label: "Home" },
-  { href: "/genres", label: "Genres" },
-  { href: "/hot", label: "Hot Manga" },
-  { href: "/recent", label: "Recent Updates" },
-  { href: "/search", label: "Search" },
-];
-
-const legalLinks = [
-  { href: "/about", label: "About" },
-  { href: "/terms", label: "Terms of Service" },
-  { href: "/privacy", label: "Privacy Policy" },
-  { href: "/dmca", label: "DMCA" },
-  { href: "/contact", label: "Contact" },
-];
 
 const socialLinks = [
   {
@@ -39,6 +26,21 @@ const socialLinks = [
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const t = useTranslations("footer");
+  const tNav = useTranslations("navigation");
+
+  const navigationLinks = [
+    { href: "/", label: tNav("home") },
+    { href: "/browse?sort=-views", label: tNav("hot") },
+    { href: "/browse", label: tNav("recent") },
+    { href: "/library", label: tNav("library") },
+  ];
+
+  const userLinks = [
+    { href: "/profile", label: tNav("profile") },
+    { href: "/login", label: t("login") },
+    { href: "/register", label: t("register") },
+  ];
 
   return (
     <footer className="border-t bg-background">
@@ -46,7 +48,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* Navigation Section */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold">Navigation</h3>
+            <h3 className="mb-4 text-sm font-semibold">{t("navigation")}</h3>
             <ul className="space-y-2">
               {navigationLinks.map((link) => (
                 <li key={link.href}>
@@ -61,11 +63,11 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Legal & Info Section */}
+          {/* User Section */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold">Legal & Info</h3>
+            <h3 className="mb-4 text-sm font-semibold">{t("account")}</h3>
             <ul className="space-y-2">
-              {legalLinks.map((link) => (
+              {userLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -80,7 +82,7 @@ export function Footer() {
 
           {/* Social Media & Branding Section */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold">Follow Us</h3>
+            <h3 className="mb-4 text-sm font-semibold">{t("followUs")}</h3>
             <div className="flex gap-4">
               {socialLinks.map((link) => (
                 <Link
@@ -98,10 +100,10 @@ export function Footer() {
             <div className="mt-6">
               <Link href="/" className="flex items-center space-x-2">
                 <BookOpen className="h-6 w-6" />
-                <span className="font-bold">Manga Reader</span>
+                <span className="font-bold">{t("brandName")}</span>
               </Link>
               <p className="mt-2 text-sm text-muted-foreground">
-                Your favorite place to read manga online.
+                {t("tagline")}
               </p>
             </div>
           </div>
@@ -111,7 +113,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="text-center text-sm text-muted-foreground">
-          <p>© {currentYear} Manga Reader. All rights reserved.</p>
+          <p>{t("copyright", { year: currentYear })}</p>
         </div>
       </Container>
     </footer>

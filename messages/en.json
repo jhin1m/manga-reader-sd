@@ -417,12 +417,18 @@
     "homeButton": "Back to Home"
   },
   "footer": {
-    "copyright": "© {year} Manga Reader CMS. All rights reserved.",
+    "navigation": "Navigation",
+    "account": "Account",
+    "login": "Login",
+    "register": "Register",
+    "followUs": "Follow Us",
+    "brandName": "Manga Reader",
+    "tagline": "Your favorite place to read manga online.",
+    "copyright": "© {year} Manga Reader. All rights reserved.",
     "about": "About",
     "contact": "Contact",
     "terms": "Terms",
-    "privacy": "Privacy",
-    "followUs": "Follow Us"
+    "privacy": "Privacy"
   },
   "notifications": {
     "newChapter": "New chapter has been updated",

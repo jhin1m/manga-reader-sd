@@ -417,12 +417,18 @@
     "homeButton": "Về trang chủ"
   },
   "footer": {
-    "copyright": "© {year} Manga Reader CMS. All rights reserved.",
+    "navigation": "Danh mục",
+    "account": "Tài khoản",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "followUs": "Theo dõi chúng tôi",
+    "brandName": "Manga Reader",
+    "tagline": "Nơi yêu thích để đọc manga online.",
+    "copyright": "© {year} Manga Reader. All rights reserved.",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
     "terms": "Điều khoản",
-    "privacy": "Chính sách bảo mật",
-    "followUs": "Theo dõi chúng tôi"
+    "privacy": "Chính sách bảo mật"
   },
   "notifications": {
     "newChapter": "Chương mới đã được cập nhật",
