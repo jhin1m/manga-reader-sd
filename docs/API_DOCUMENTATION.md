@@ -95,53 +95,6 @@ Configured for Next.js domains:
 
 ---
 
-## Library Hooks Integration (Phase 1)
-
-**React Query hooks that map to library endpoints**
-
-The frontend uses custom React Query hooks in `lib/hooks/use-library.ts` to interact with the library endpoints. These hooks provide caching, pagination, and optimistic updates.
-
-### Hook to Endpoint Mapping
-
-| Hook                     | Endpoint                            | Description                                             |
-| ------------------------ | ----------------------------------- | ------------------------------------------------------- |
-| `useFavorites()`         | `GET /user/favorites`               | Fetch user's favorite manga with pagination             |
-| `useHistory()`           | `GET /user/histories`               | Fetch user's reading history with pagination            |
-| `useContinueReading()`   | `GET /user/histories`               | Fetch first 5 items from history for "Continue Reading" |
-| `useRemoveFromHistory()` | `DELETE /user/histories/{manga_id}` | Remove manga from reading history                       |
-| `useCompletedManga()`    | `GET /user/favorites`               | Client-side filter for completed manga from favorites   |
-| `useLibraryPrefetch()`   | Various                             | Prefetch data for smooth UX                             |
-
-### Usage Examples
-
-```typescript
-// Fetch favorites with pagination
-import { useFavorites } from "@/lib/hooks/use-library";
-
-const { data, isLoading, error } = useFavorites({
-  page: 1,
-  per_page: 20,
-});
-
-// Remove from history with automatic cache update
-import { useRemoveFromHistory } from "@/lib/hooks/use-library";
-
-const { mutate } = useRemoveFromHistory();
-
-const handleRemove = (mangaId: number) => {
-  mutate(mangaId, {
-    onSuccess: () => {
-      // Automatically invalidates cache
-      toast.success("Removed from history");
-    },
-  });
-};
-```
-
-**Note**: For complete documentation of all library hooks, see [Phase 1 Library Hooks Documentation](./phase-1-library-hooks-documentation.md).
-
----
-
 ## Authentication Endpoints
 
 **Available Authentication & User Management Operations:**
@@ -152,10 +105,6 @@ const handleRemove = (mangaId: number) => {
 - `GET /auth/profile` - Get current user profile with relationships
 - `PUT /auth/profile` - Update profile (name, email, password, avatar)
 - `POST /auth/logout` - Revoke current access token
-
-**Frontend Profile Route:**
-
-- `GET /profile` - Profile display page (Frontend route, not API)
 
 **User Settings Management:**
 The `PUT /auth/profile` endpoint provides comprehensive user settings management including:
@@ -2202,6 +2151,159 @@ DELETE /api/v1/user/favorites/42
 
 ---
 
+#### GET /user/favorites/{manga_uuid}/status
+
+Check if a manga is in user's favorites.
+
+**Headers:** `Authorization: Bearer {token}`
+
+**Authentication:** Required
+
+**Rate Limit:** 60 requests/minute
+
+**Parameters:**
+
+- `manga_uuid` (string, required): UUID of the manga to check
+
+**Example Request:**
+
+```
+GET /api/v1/user/favorites/123e4567-e89b-12d3-a456-426614174000/status
+```
+
+**Success Response (200):**
+
+**Raw API Response:**
+
+```json
+{
+  "success": true,
+  "message": "Favorite status retrieved successfully",
+  "data": {
+    "manga_id": 50,
+    "is_favorited": true
+  }
+}
+```
+
+**Frontend Receives (after apiClient processing):**
+
+```json
+{
+  "manga_id": 50,
+  "is_favorited": true
+}
+```
+
+**Error Response - Unauthorized (401):**
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized"
+}
+```
+
+---
+
+#### PUT /user/favorites/{manga_uuid}/toggle
+
+Toggle manga favorite status (add if not favorited, remove if favorited).
+
+**Headers:** `Authorization: Bearer {token}`, `X-CSRF-TOKEN: {csrf_token}`
+
+**Authentication:** Required
+
+**Rate Limit:** 60 requests/minute
+
+**Parameters:**
+
+- `manga_uuid` (string, required): UUID of the manga to toggle
+
+**Example Request:**
+
+```
+PUT /api/v1/user/favorites/123e4567-e89b-12d3-a456-426614174000/toggle
+```
+
+**Success Response - Added (200):**
+
+**Raw API Response:**
+
+```json
+{
+  "success": true,
+  "message": "Manga added to favorites",
+  "data": {
+    "is_following": true,
+    "manga_id": "123e4567-e89b-12d3-a456-426614174000"
+  }
+}
+```
+
+**Frontend Receives (after apiClient processing):**
+
+```json
+{
+  "is_following": true,
+  "manga_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+**Success Response - Removed (200):**
+
+**Raw API Response:**
+
+```json
+{
+  "success": true,
+  "message": "Manga removed from favorites",
+  "data": {
+    "is_following": false,
+    "manga_id": "123e4567-e89b-12d3-a456-426614174000"
+  }
+}
+```
+
+**Frontend Receives (after apiClient processing):**
+
+```json
+{
+  "is_following": false,
+  "manga_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+```
+
+**Error Response - Not Found (404):**
+
+```json
+{
+  "success": false,
+  "message": "Manga not found",
+  "errors": {
+    "manga_id": ["The selected manga is invalid."]
+  }
+}
+```
+
+**Error Response - Unauthenticated (401):**
+
+```json
+{
+  "success": false,
+  "message": "Unauthenticated"
+}
+```
+
+**Notes:**
+
+- This endpoint is idempotent - calling it multiple times will toggle the state
+- Cache is automatically invalidated after toggle
+- Only reviewed manga can be favorited (`is_reviewed = 1`)
+- Optimistic UI updates recommended for better UX
+
+---
+
 ### Reading History
 
 #### GET /user/histories
@@ -2433,160 +2535,6 @@ GET /api/v1/user/pets
   }
 }
 ```
-
----
-
-## Comments System Phase 1: API Layer & Types
-
-**New comment-related endpoints and types added for manga comments functionality**
-
-### API Endpoints Added
-
-#### GET /mangas/{slug}/comments
-
-Get comments for a manga with pagination support.
-
-**Query Parameters:**
-
-- `per_page` (int): Items per page (default: 20)
-- `page` (int): Page number
-- `sort` (string): Order (asc, desc - default: desc)
-- `type` (string): Filter by comment type ('all', 'manga', 'chapter' - default: 'all')
-
-**Response:** Paginated list of comments with user data and nested replies
-
-#### POST /mangas/{slug}/comments
-
-Add a new comment to a manga.
-
-**Request Body:**
-
-```json
-{
-  "content": "Comment content (sanitized)",
-  "parent_id": 123 // Optional, for replies
-}
-```
-
-**Response:** Created comment with full user data
-
-### Type Definitions Added
-
-**`types/comment.ts`:**
-
-- `Comment` - Core comment type with user relationships
-- `ChapterInfo` - Chapter information for chapter-level comments (Refinement Phase 01)
-- `CreateCommentRequest` - Type for creating new comments
-- `MangaCommentParams` - Query parameters for fetching manga comments
-
-### Validation & Security
-
-**`lib/validators/comment.ts`:**
-
-- `createCommentSchema` - Zod schema for comment validation
-- Content validation: 1-2000 characters
-- XSS protection via DOMPurify integration
-- Optional parent_id for reply threading
-
-### Implementation Details
-
-- **XSS Protection**: All comment content is sanitized using DOMPurify before API submission
-- **Type Safety**: Full TypeScript support with inferred types from Zod schemas
-- **Query Support**: Full pagination and filtering support for comment retrieval
-- **Reply Threading**: Support for nested comments via parent_id
-
-**Dependencies Added:**
-
-- `dompurify`: For XSS protection in comment content
-- `@types/dompurify`: TypeScript definitions
-
-### Comments System Phase 5: Page Integration
-
-**Frontend integration of comments system into manga reading experience (2025-12-05)**
-
-#### Integration Points
-
-1. **Manga Detail Page Integration**
-   - File: `app/(manga)/manga/[slug]/manga-detail-content.tsx`
-   - Uses: `CommentSection` with `resourceType="manga"`
-   - Endpoint: `GET /mangas/{slug}/comments?type=manga`
-
-2. **Chapter Reader Integration**
-   - File: `components/reader/reader-view.tsx`
-   - Uses: `CommentSection` with `resourceType="chapter"`
-   - Endpoint: `GET /mangas/{manga_slug}/chapters/{chapter_slug}/comments`
-
-#### Resource Type Implementation
-
-The frontend `CommentSection` component automatically handles:
-
-- Resource type detection (`manga` vs `chapter`)
-- Appropriate endpoint selection
-- Context-aware comment display
-- Consistent UI/UX across both contexts
-
-#### No API Changes Required
-
-Phase 5 uses existing endpoints:
-
-- `GET /mangas/{slug}/comments` - For manga-level comments
-
----
-
-### Comments System Phase 6: Final Touches (COMPLETE)
-
-**Production-ready polish and user experience enhancements (2025-12-05)**
-
-#### Internationalization
-
-**Vietnamese translations added to `messages/vi.json`:**
-
-- Complete `comment` namespace with all UI text
-- `emojiPicker` namespace for emoji search
-- Context-aware error messages in Vietnamese
-- User-friendly placeholder text
-
-#### Authentication Integration
-
-**Login prompts for unauthenticated users:**
-
-- Clean, centered login prompt design
-- Direct link to login page from comment sections
-- Maintains user flow context
-- Prevents unauthorized API calls
-
-#### Performance & UX Enhancements
-
-**Smooth loading transitions:**
-
-- Skeleton loading states matching comment structure
-- Optimistic updates for immediate feedback
-- Debounced emoji search (300ms)
-- Progressive loading of comment threads
-
-**Mobile optimization:**
-
-- Touch-optimized interaction targets (44px minimum)
-- Auto-dismiss keyboard on submit
-- Responsive design improvements
-- Better text scaling and readability
-
-#### No Backend Changes Required
-
-Phase 6 is purely frontend enhancements using existing APIs:
-
-- All comment endpoints remain unchanged
-- Existing authentication flows reused
-- No new database schemas or migrations
-
-#### Implementation Files
-
-- `messages/vi.json` - Vietnamese translations
-- Enhanced comment components with animations
-- Improved loading states and error handling
-- Mobile-responsive optimizations
-
-**All Comments System phases (1-6) are now complete!**
 
 ---
 

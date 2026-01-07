@@ -5,8 +5,7 @@
  * Allows authenticated users to add/remove manga from their favorites
  */
 
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -19,7 +18,6 @@ import type { Manga } from "@/types/manga";
 
 interface BookmarkButtonProps {
   manga: Pick<Manga, "id" | "name">;
-  initialBookmarked?: boolean;
   variant?: "default" | "outline" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
   showText?: boolean;
@@ -28,7 +26,6 @@ interface BookmarkButtonProps {
 
 export function BookmarkButton({
   manga,
-  initialBookmarked = false,
   variant = "outline",
   size = "default",
   showText = true,
@@ -41,50 +38,127 @@ export function BookmarkButton({
 
   const { isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
-  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
 
-  // Add to favorites mutation
+  // Use React Query to manage bookmark status - single source of truth
+  const { data: favoriteStatus } = useQuery({
+    queryKey: ["user", "favorites", manga.id, "status"],
+    queryFn: () => userFavoritesApi.checkStatus(manga.id),
+    enabled: isAuthenticated,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  const isBookmarked = favoriteStatus?.is_favorited ?? false;
+
+  // Add to favorites mutation with optimistic update
   const addMutation = useMutation({
     mutationFn: () => userFavoritesApi.add({ manga_id: manga.id }),
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["user", "favorites", manga.id, "status"],
+      });
+
+      // Snapshot the previous value
+      const previousStatus = queryClient.getQueryData([
+        "user",
+        "favorites",
+        manga.id,
+        "status",
+      ]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(["user", "favorites", manga.id, "status"], {
+        is_favorited: true,
+        manga_id: manga.id,
+      });
+
+      return { previousStatus };
+    },
     onSuccess: () => {
-      setIsBookmarked(true);
       toast.success(tNotifications("bookmarkAdded"), {
         description: manga.name,
       });
-      // Invalidate both favorites list and status queries
-      queryClient.invalidateQueries({ queryKey: ["user", "favorites"] });
+      // Invalidate favorites list to refresh library page
       queryClient.invalidateQueries({
-        queryKey: ["user", "favorites", manga.id, "status"],
+        queryKey: ["user", "favorites"],
+        refetchType: "none", // Don't refetch immediately
       });
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousStatus) {
+        queryClient.setQueryData(
+          ["user", "favorites", manga.id, "status"],
+          context.previousStatus
+        );
+      }
       const errorMessage =
         error instanceof Error ? error.message : tErrors("general");
       toast.error(tErrors("general"), {
         description: errorMessage,
+      });
+    },
+    onSettled: () => {
+      // Always refetch status to sync with server (but won't duplicate initial mutation)
+      queryClient.invalidateQueries({
+        queryKey: ["user", "favorites", manga.id, "status"],
       });
     },
   });
 
-  // Remove from favorites mutation
+  // Remove from favorites mutation with optimistic update
   const removeMutation = useMutation({
     mutationFn: () => userFavoritesApi.remove(manga.id),
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: ["user", "favorites", manga.id, "status"],
+      });
+
+      // Snapshot the previous value
+      const previousStatus = queryClient.getQueryData([
+        "user",
+        "favorites",
+        manga.id,
+        "status",
+      ]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(["user", "favorites", manga.id, "status"], {
+        is_favorited: false,
+        manga_id: manga.id,
+      });
+
+      return { previousStatus };
+    },
     onSuccess: () => {
-      setIsBookmarked(false);
       toast.success(tNotifications("bookmarkRemoved"), {
         description: manga.name,
       });
-      // Invalidate both favorites list and status queries
-      queryClient.invalidateQueries({ queryKey: ["user", "favorites"] });
+      // Invalidate favorites list to refresh library page
       queryClient.invalidateQueries({
-        queryKey: ["user", "favorites", manga.id, "status"],
+        queryKey: ["user", "favorites"],
+        refetchType: "none", // Don't refetch immediately
       });
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
+      // Rollback on error
+      if (context?.previousStatus) {
+        queryClient.setQueryData(
+          ["user", "favorites", manga.id, "status"],
+          context.previousStatus
+        );
+      }
       const errorMessage =
         error instanceof Error ? error.message : tErrors("general");
       toast.error(tErrors("general"), {
         description: errorMessage,
+      });
+    },
+    onSettled: () => {
+      // Always refetch status to sync with server
+      queryClient.invalidateQueries({
+        queryKey: ["user", "favorites", manga.id, "status"],
       });
     },
   });

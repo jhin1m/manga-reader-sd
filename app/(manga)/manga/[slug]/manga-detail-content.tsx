@@ -28,7 +28,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { MangaDetailSkeleton } from "@/components/layout/loading/detail-skeleton";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
 import { mangaApi } from "@/lib/api/endpoints/manga";
-import { userFavoritesApi } from "@/lib/api/endpoints/user";
 import { useAuthStore } from "@/lib/store/authStore";
 import { cn, formatNumber } from "@/lib/utils";
 import { useMangaComments, useAddMangaComment } from "@/lib/hooks/use-comments";
@@ -136,7 +135,6 @@ interface MangaDetailProps {
   isChaptersLoading?: boolean;
   sortOrder: "newest" | "oldest";
   setSortOrder: (order: "newest" | "oldest") => void;
-  isBookmarked?: boolean;
 }
 
 function MangaDetail({
@@ -145,7 +143,6 @@ function MangaDetail({
   isChaptersLoading = false,
   sortOrder,
   setSortOrder,
-  isBookmarked = false,
 }: MangaDetailProps) {
   const t = useTranslations("manga");
   const tCommon = useTranslations("common");
@@ -403,7 +400,6 @@ function MangaDetail({
                 {/* Bookmark Button */}
                 <BookmarkButton
                   manga={{ id: manga.id, name: manga.name }}
-                  initialBookmarked={isBookmarked}
                   size="sm"
                   showText={false}
                   variant="outline"
@@ -619,15 +615,6 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
   // Extract typed data
   const chapters = chaptersResponse?.data || [];
 
-  // Check favorite status for this specific manga (only if authenticated)
-  const { data: favoriteStatus } = useQuery({
-    queryKey: ["user", "favorites", manga?.id, "status"],
-    queryFn: () => userFavoritesApi.checkStatus(manga!.id),
-    enabled: isAuthenticated && !!manga,
-  });
-
-  const isBookmarked = favoriteStatus?.is_favorited ?? false;
-
   // Handler to update sort order - passed to MangaDetail
   const handleSortOrderChange = useCallback((order: "newest" | "oldest") => {
     setSortOrder(order);
@@ -650,7 +637,6 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
         isChaptersLoading={isChaptersLoading}
         sortOrder={sortOrder}
         setSortOrder={handleSortOrderChange}
-        isBookmarked={isBookmarked}
       />
     </div>
   );
