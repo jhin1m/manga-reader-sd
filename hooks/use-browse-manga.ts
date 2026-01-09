@@ -30,7 +30,7 @@ function buildApiParams(filters: FilterValues, page: number): MangaListParams {
   }
 
   if (filters.genre && filters.genre !== "all") {
-    params["filter[id]"] = parseInt(filters.genre, 10);
+    params["filter[accept_genres]"] = parseInt(filters.genre, 10);
   }
 
   return params;

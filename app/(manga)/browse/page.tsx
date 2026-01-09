@@ -116,7 +116,7 @@ async function prefetchBrowseData(
   }
 
   if (filters.genre && filters.genre !== "all") {
-    mangaParams.set("filter[id]", filters.genre);
+    mangaParams.set("filter[accept_genres]", filters.genre);
   }
 
   // Parallel prefetch - manga list + genres
