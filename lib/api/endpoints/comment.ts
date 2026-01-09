@@ -4,11 +4,14 @@
  */
 
 import { apiClient } from "../client";
+import { buildQueryString } from "@/lib/utils/query-string";
+import type { PaginatedResponse } from "@/types/api";
 import type {
   Comment,
   UpdateCommentRequest,
   RateMangaRequest,
   RateMangaResponse,
+  CommentListParams,
 } from "@/types/comment";
 
 /**
@@ -30,6 +33,19 @@ export const commentApi = {
    */
   delete: async (id: string): Promise<null> => {
     return apiClient.delete<null>(`/comments/${id}`);
+  },
+
+  /**
+   * Get recent comments across the system
+   * GET /comments/recent
+   */
+  getRecent: async (
+    params?: CommentListParams
+  ): Promise<PaginatedResponse<Comment>> => {
+    const query = buildQueryString(params as Record<string, unknown>);
+    return apiClient.get<PaginatedResponse<Comment>>(
+      `/comments/recent${query}`
+    );
   },
 };
 

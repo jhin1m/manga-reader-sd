@@ -79,7 +79,7 @@ const Breadcrumb = ({ name }: { name: string }) => {
         {t("home")}
       </Link>
       <ChevronRight className="h-3 w-3 mx-1 flex-shrink-0" />
-      <Link href="/manga" className="hover:text-primary transition-colors">
+      <Link href="/browse" className="hover:text-primary transition-colors">
         {t("mangaList")}
       </Link>
       <ChevronRight className="h-3 w-3 mx-1 flex-shrink-0" />

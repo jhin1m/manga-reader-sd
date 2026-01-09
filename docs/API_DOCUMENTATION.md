@@ -2151,62 +2151,7 @@ DELETE /api/v1/user/favorites/42
 
 ---
 
-#### GET /user/favorites/{manga_uuid}/status
-
-Check if a manga is in user's favorites.
-
-**Headers:** `Authorization: Bearer {token}`
-
-**Authentication:** Required
-
-**Rate Limit:** 60 requests/minute
-
-**Parameters:**
-
-- `manga_uuid` (string, required): UUID of the manga to check
-
-**Example Request:**
-
-```
-GET /api/v1/user/favorites/123e4567-e89b-12d3-a456-426614174000/status
-```
-
-**Success Response (200):**
-
-**Raw API Response:**
-
-```json
-{
-  "success": true,
-  "message": "Favorite status retrieved successfully",
-  "data": {
-    "manga_id": 50,
-    "is_favorited": true
-  }
-}
-```
-
-**Frontend Receives (after apiClient processing):**
-
-```json
-{
-  "manga_id": 50,
-  "is_favorited": true
-}
-```
-
-**Error Response - Unauthorized (401):**
-
-```json
-{
-  "success": false,
-  "message": "Unauthorized"
-}
-```
-
----
-
-#### PUT /user/favorites/{manga_uuid}/toggle
+#### PUT /user/favorites/{manga_id}/toggle
 
 Toggle manga favorite status (add if not favorited, remove if favorited).
 
@@ -2218,7 +2163,7 @@ Toggle manga favorite status (add if not favorited, remove if favorited).
 
 **Parameters:**
 
-- `manga_uuid` (string, required): UUID of the manga to toggle
+- `manga_id` (string, required): UUID of the manga to toggle
 
 **Example Request:**
 
@@ -2227,8 +2172,6 @@ PUT /api/v1/user/favorites/123e4567-e89b-12d3-a456-426614174000/toggle
 ```
 
 **Success Response - Added (200):**
-
-**Raw API Response:**
 
 ```json
 {
@@ -2241,18 +2184,7 @@ PUT /api/v1/user/favorites/123e4567-e89b-12d3-a456-426614174000/toggle
 }
 ```
 
-**Frontend Receives (after apiClient processing):**
-
-```json
-{
-  "is_following": true,
-  "manga_id": "123e4567-e89b-12d3-a456-426614174000"
-}
-```
-
 **Success Response - Removed (200):**
-
-**Raw API Response:**
 
 ```json
 {
@@ -2262,15 +2194,6 @@ PUT /api/v1/user/favorites/123e4567-e89b-12d3-a456-426614174000/toggle
     "is_following": false,
     "manga_id": "123e4567-e89b-12d3-a456-426614174000"
   }
-}
-```
-
-**Frontend Receives (after apiClient processing):**
-
-```json
-{
-  "is_following": false,
-  "manga_id": "123e4567-e89b-12d3-a456-426614174000"
 }
 ```
 
@@ -3068,6 +2991,122 @@ Add comment to a manga (or reply to another comment).
   "message": "Manga not found"
 }
 ```
+
+---
+
+#### GET /comments/recent
+
+Get recent comments across the entire system (both manga and chapter comments). This endpoint is **public** (no authentication required) and uses caching for optimal performance.
+
+**Query Parameters:**
+
+- `per_page` (int): Items per page (default: 20, max: 100)
+- `sort` (string): Order (asc, desc - default: desc)
+- `page` (int): Page number
+
+**Example Request:**
+
+```
+GET /api/v1/comments/recent?per_page=20&sort=desc
+```
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Recent comments retrieved successfully",
+  "data": [
+    {
+      "id": "327273ff-557e-4914-9c36-d292a80c65a4",
+      "uuid": "abc-def-ghi",
+      "content": "<p>Great manga! Really enjoying the story progression.</p>",
+      "created_at": "2026-01-09T11:00:00.000000Z",
+      "updated_at": "2026-01-09T11:00:00.000000Z",
+      "user": {
+        "id": "327273ff-557e-4914-9c36-d292a80c65a4",
+        "name": "Nguyễn Văn A",
+        "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-1.jpg"
+      },
+      "replies": [
+        {
+          "id": "327273ff-557e-4914-9c36-d292a80c65a4",
+          "uuid": "def-ghi-jkl",
+          "content": "I agree! The plot is amazing!",
+          "created_at": "2026-01-09T11:05:00.000000Z",
+          "updated_at": "2026-01-09T11:05:00.000000Z",
+          "user": {
+            "id": 3,
+            "name": "Lê Văn C",
+            "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-3.jpg"
+          }
+        }
+      ],
+      "context": {
+        "type": "chapter",
+        "text": "One Piece - Chapter 1095",
+        "manga_slug": "one-piece",
+        "chapter_slug": "chapter-1095",
+        "manga_id": 42,
+        "chapter_id": 1523
+      }
+    },
+    {
+      "id": 122,
+      "uuid": "xyz-uvw-rst",
+      "content": "This is one of my favorite manga series!",
+      "created_at": "2026-01-09T10:55:00.000000Z",
+      "updated_at": "2026-01-09T10:55:00.000000Z",
+      "user": {
+        "id": 2,
+        "name": "Trần Thị B",
+        "avatar_full_url": "https://dcnvn2.mgcdnxyz.cfd/storage/images/avatars/user-2.jpg"
+      },
+      "replies": [],
+      "context": {
+        "type": "manga",
+        "text": "Naruto",
+        "manga_slug": "naruto",
+        "chapter_slug": null,
+        "manga_id": 58,
+        "chapter_id": null
+      }
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "current_page": 1,
+      "last_page": 5,
+      "per_page": 20,
+      "total": 100
+    }
+  }
+}
+```
+
+**Response Fields:**
+
+- `context.type`: Either "chapter" or "manga" indicating where the comment was posted
+- `context.text`: Formatted string showing the context (e.g., "Manga Name" or "Manga Name - Chapter Name")
+- `context.manga_slug`: Slug for linking to the manga page
+- `context.chapter_slug`: Slug for linking to the chapter page (null for manga comments)
+- `user`: Minimal user data (only id, name, avatar for performance)
+- `replies`: Array of reply comments with same minimal structure (id, uuid, content, created_at, updated_at, user)
+
+**Performance Features:**
+
+- **Caching**: Results are cached for 5 minutes
+- **Auto-invalidation**: Cache automatically clears when comments are created/updated/deleted
+- **Optimized queries**: Uses eager loading to prevent N+1 queries
+- **Minimal data**: Only essential fields to reduce payload size
+
+**Notes:**
+
+- Returns top-level comments with their nested replies
+- Replies are sorted by the same order as the parent comments (asc/desc)
+- Only includes comments on existing/reviewed manga and chapters
+- Public endpoint - no authentication required
+- Ideal for homepage "Recent Activity" sections
 
 ---
 

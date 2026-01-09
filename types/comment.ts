@@ -22,6 +22,15 @@ export interface ChapterInfo {
   slug: string;
 }
 
+export interface CommentContext {
+  type: "manga" | "chapter";
+  text: string;
+  manga_slug: string;
+  chapter_slug: string | null;
+  manga_id: number;
+  chapter_id: number | null;
+}
+
 /**
  * Comment entity
  */
@@ -40,6 +49,7 @@ export interface Comment {
   can_edit: boolean;
   can_delete: boolean;
   chapter_info?: ChapterInfo; // Only for chapter comments
+  context?: CommentContext; // For recent comments
 }
 
 /**

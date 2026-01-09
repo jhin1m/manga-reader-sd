@@ -13,6 +13,7 @@ import Image from "next/image";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaCarousel } from "@/components/manga/manga-carousel";
 import { RecentlyUpdatedSection } from "@/components/manga/recently-updated-section";
+import { RecentCommentsSidebar } from "@/components/manga/recent-comments-sidebar";
 import { HotMangaSidebar } from "@/components/manga/hot-manga-sidebar";
 import { MangaCarouselSkeleton } from "@/components/layout/loading";
 import { PopularGenresSection } from "@/components/manga/popular-genres-section";
@@ -52,6 +53,7 @@ export function HomePageContent({
 
           {/* Sidebar - Shows below on mobile, on right on desktop */}
           <aside className="w-full lg:w-80 flex-shrink-0">
+            <RecentCommentsSidebar />
             <HotMangaSidebar sticky />
           </aside>
         </div>
