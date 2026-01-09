@@ -18,7 +18,7 @@ export function RecentCommentsSidebar() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["comments", "recent"],
-    queryFn: () => commentApi.getRecent({ per_page: 5 }),
+    queryFn: () => commentApi.getRecent({ per_page: 15 }),
   });
 
   if (isLoading) {
@@ -36,10 +36,15 @@ export function RecentCommentsSidebar() {
         <h2 className="text-xl font-bold">{t("recentComments")}</h2>
       </div>
 
-      <div className="space-y-4">
-        {data.data.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} />
-        ))}
+      {/* Scrollable container with max height and fade effect */}
+      <div className="relative">
+        <div className="max-h-[600px] overflow-y-auto space-y-4 scrollbar-hide pr-1">
+          {data.data.map((comment) => (
+            <CommentItem key={comment.id} comment={comment} />
+          ))}
+        </div>
+        {/* Fade effect at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none" />
       </div>
     </div>
   );
