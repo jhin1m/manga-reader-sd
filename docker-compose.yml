@@ -11,6 +11,7 @@ services:
         - NEXT_PUBLIC_TWITTER_HANDLE=${NEXT_PUBLIC_TWITTER_HANDLE}
         - NEXT_PUBLIC_DEFAULT_LOCALE=${NEXT_PUBLIC_DEFAULT_LOCALE:-vi}
         - NEXT_PUBLIC_TIMEZONE=${NEXT_PUBLIC_TIMEZONE:-Asia/Ho_Chi_Minh}
+        - NEXT_PUBLIC_GA_MEASUREMENT_ID=${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
     container_name: manga-reader
     restart: unless-stopped
     expose:
