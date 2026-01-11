@@ -1008,6 +1008,160 @@ function LazyImage({ src, alt }: { src: string; alt: string }) {
 
 ---
 
+## PWA Manifest
+
+Progressive Web App (PWA) manifest enables installable app experience with home screen icon and standalone display mode.
+
+### Implementation Overview
+
+Manifest implemented using Next.js Metadata API:
+
+1. **`app/manifest.ts`** - Web app manifest configuration
+2. **`public/icons/`** - PWA icons (192x192, 512x512)
+3. **`messages/*/pwa`** - i18n translations for manifest strings
+
+### Manifest Configuration
+
+```typescript
+// app/manifest.ts
+import type { MetadataRoute } from "next";
+import { siteConfig } from "@/lib/config/site";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: siteConfig.name,
+    short_name: "Manga",
+    description: "Đọc manga online miễn phí với chất lượng cao",
+    start_url: "/",
+    display: "standalone", // Hides browser UI
+    background_color: "#18121d", // Dark theme
+    theme_color: "#18121d",
+    orientation: "portrait-primary",
+    icons: [
+      {
+        src: "/icons/icon-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        src: "/icons/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+      {
+        src: "/icons/icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable", // Adaptive icon for Android
+      },
+    ],
+  };
+}
+```
+
+### PWA Installation Requirements
+
+**Minimum requirements for install prompt:**
+
+1. ✅ Valid manifest at `/manifest.webmanifest`
+2. ✅ Icons: 192x192 and 512x512
+3. ✅ Service Worker registered
+4. ⚠️ HTTPS required (localhost exempt)
+5. ✅ Display mode: `standalone` or `fullscreen`
+
+**Generated manifest accessible at**: `https://yourdomain.com/manifest.webmanifest`
+
+### Icon Specifications
+
+**Required sizes:**
+
+- **192x192**: Home screen icon (minimum requirement)
+- **512x512**: Splash screen and high-res devices
+
+**Maskable icon**: Android adaptive icon with safe zone for proper cropping
+
+**File sizes:**
+
+- 192x192: ~50KB (optimized PNG)
+- 512x512: ~150-200KB (optimized PNG)
+
+### Theme Colors
+
+Colors match dark mode from `globals.css`:
+
+```css
+/* globals.css */
+.dark {
+  --background: oklch(0.2166 0.0215 292.8474); /* ≈ #18121d */
+}
+```
+
+**Manifest hex colors:**
+
+- `background_color`: `#18121d` (dark purple-black)
+- `theme_color`: `#18121d` (matches status bar)
+
+### Multi-Language Support
+
+**Current implementation**: Vietnamese default (80% user base)
+
+**Limitation**: Next.js `manifest()` requires static export - cannot use runtime translations
+
+**i18n translations** (for consistency with app):
+
+```json
+// messages/vi.json
+{
+  "pwa": {
+    "name": "Manga Reader",
+    "shortName": "Manga",
+    "description": "Đọc manga online miễn phí với chất lượng cao"
+  }
+}
+
+// messages/en.json
+{
+  "pwa": {
+    "name": "Manga Reader",
+    "shortName": "Manga",
+    "description": "Read manga online for free in high quality"
+  }
+}
+```
+
+**Alternative for multi-locale manifests**: Use route handlers per locale (adds complexity)
+
+### Testing PWA Installation
+
+**Chrome DevTools:**
+
+1. Open DevTools > Application > Manifest
+2. Verify all fields display correctly
+3. Check "Add to home screen" availability
+
+**Manual install:**
+
+1. Chrome: Three dots menu > "Install app"
+2. Safari iOS: Share > "Add to Home Screen"
+3. Edge: Settings > Apps > "Install this site as an app"
+
+**Lighthouse PWA Audit:**
+
+```bash
+# Run PWA audit
+npx lighthouse https://yourdomain.com --view --preset=pwa
+```
+
+### Best Practices
+
+1. **Icon optimization**: Keep 512x512 icon <150KB
+2. **Theme consistency**: Match colors with app design system
+3. **Orientation lock**: `portrait-primary` appropriate for manga reader
+4. **Short name**: ≤12 characters for home screen display
+5. **Manifest size**: Keep <1KB for fast loading
+
+---
+
 ## Service Worker Caching
 
 Service Worker (SW) caching provides browser-side caching for improved performance, offline support, and reduced API load.

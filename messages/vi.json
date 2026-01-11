@@ -510,6 +510,11 @@
     "noResults": "Thật đáng tiếc khi không tìm thấy gì 😭",
     "noResultsDescription": "Thử thay đổi bộ lọc hoặc tìm kiếm cái khác"
   },
+  "pwa": {
+    "name": "Động Hentai",
+    "shortName": "Động Hentai",
+    "description": "Đọc Hentai online miễn phí với chất lượng cao"
+  },
   "seo": {
     "default": {
       "title": "{siteName} - Đọc Hentai Tiếng Việt Miễn Phí",

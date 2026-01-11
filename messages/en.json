@@ -510,6 +510,11 @@
     "noResults": "Nothing found 😭",
     "noResultsDescription": "Try changing filters or search for something else"
   },
+  "pwa": {
+    "name": "Manga Reader",
+    "shortName": "Manga",
+    "description": "Read manga online for free in high quality"
+  },
   "seo": {
     "default": {
       "title": "{siteName} - Read Manga Online Free",

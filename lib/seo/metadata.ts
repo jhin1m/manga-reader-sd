@@ -140,7 +140,7 @@ export async function generateDefaultMetadata(): Promise<Metadata> {
       icon: siteConfig.favicon,
       apple: "/apple-touch-icon.png",
     },
-    manifest: "/manifest.json",
+    manifest: "/manifest.webmanifest",
     verification: siteConfig.verification,
   };
 }
