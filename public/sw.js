@@ -1,7 +1,7 @@
 // Service Worker for Manga Reader
-// Version: 1.0.0
+// Version: 1.0.1 - Fixed Response body lock issue
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const API_CACHE = `api-${CACHE_VERSION}`;
 
@@ -259,11 +259,15 @@ async function trimCache(cacheName, maxEntries) {
 // ============ MESSAGE HANDLER ============
 
 self.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING') {
+  const message = typeof event.data === 'string' ? event.data : event.data?.type;
+
+  if (message === 'SKIP_WAITING') {
+    if (DEBUG) console.log('[SW] Skipping waiting - activating now');
     self.skipWaiting();
   }
 
-  if (event.data === 'CLEAR_CACHE') {
+  if (message === 'CLEAR_CACHE') {
+    if (DEBUG) console.log('[SW] Clearing all caches');
     caches.keys().then((keys) =>
       Promise.all(keys.map((key) => caches.delete(key)))
     );

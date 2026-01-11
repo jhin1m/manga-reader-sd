@@ -30,11 +30,19 @@ export function SwRegister() {
                 newWorker.state === "installed" &&
                 navigator.serviceWorker.controller
               ) {
-                if (DEBUG) console.log("[SW] New version available");
-                // Optional: notify user about update
+                if (DEBUG)
+                  console.log("[SW] New version available - activating");
+                // Auto-activate new service worker
+                newWorker.postMessage({ type: "SKIP_WAITING" });
               }
             });
           }
+        });
+
+        // Auto-reload when new SW takes control
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (DEBUG) console.log("[SW] New version activated - reloading");
+          window.location.reload();
         });
 
         // Track cache usage (optional monitoring)
