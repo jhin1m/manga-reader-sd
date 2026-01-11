@@ -181,12 +181,18 @@ async function networkFirstWithTTL(request, cacheName, ttl) {
     const response = await fetch(request);
 
     if (response.ok && response.status === 200) {
+      // Clone response before processing (prevent body lock)
+      const responseToCache = response.clone();
+      const responseToReturn = response.clone();
+
       // Add timestamp for TTL checking
-      const responseWithTimestamp = await addTimestamp(response);
+      const responseWithTimestamp = await addTimestamp(responseToCache);
       cache.put(request, responseWithTimestamp);
 
       // Cleanup old entries
       trimCache(cacheName, MAX_API_ENTRIES);
+
+      return responseToReturn;
     }
 
     return response;
