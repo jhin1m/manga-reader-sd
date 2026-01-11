@@ -287,9 +287,19 @@ sudo kill -9 <PID>
 │  │  ┌──────────────┐         ┌──────────────────────┐  │   │
 │  │  │ cloudflared  │ ──────▶ │   manga-reader       │  │   │
 │  │  │              │         │   (Next.js:3000)     │  │   │
-│  │  └──────────────┘         └──────────────────────┘  │   │
+│  │  └──────────────┘         │   + Service Worker   │  │   │
+│  │                           └──────────────────────┘  │   │
 │  │                                                      │   │
 │  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ (Browser)
+┌─────────────────────────────────────────────────────────────┐
+│                    Client Browser                           │
+│  • Service Worker caching                                   │
+│  • Static assets cached (JS, CSS, fonts)                    │
+│  • API responses cached with TTL                            │
+│  • Offline browsing capability                              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -313,3 +323,51 @@ sudo kill -9 <PID>
 | `.dockerignore`      | Exclude files từ Docker build            |
 | `.env`               | Environment variables (không commit)     |
 | `.env.example`       | Template cho `.env`                      |
+
+---
+
+## Service Worker Caching
+
+Service Worker automatically caches static assets and API responses for better performance.
+
+### Automatic Features
+
+- **Static Assets**: JS, CSS, fonts cached with cache-first strategy
+- **API Responses**: Manga list, genres, details cached with network-first + TTL
+- **Auto Registration**: SW registered on app load
+- **Cache Cleanup**: Old caches auto-deleted on version change
+
+### Cache Configuration
+
+```javascript
+// public/sw.js - Production ready
+const DEBUG = false; // Console logs disabled in production
+const MAX_STATIC_ENTRIES = 100;
+const MAX_API_ENTRIES = 50;
+```
+
+### Monitoring (Development)
+
+Enable debug mode for local testing:
+
+```javascript
+// public/sw.js
+const DEBUG = true; // Enable console logs
+```
+
+Check cache usage in browser console.
+
+### Cache Invalidation
+
+On major updates, consider clearing caches:
+
+```bash
+# Option 1: Increment SW version
+# Edit public/sw.js
+const CACHE_VERSION = 'v2'; # Old caches auto-deleted
+
+# Option 2: Manual clear via browser DevTools
+# Application → Storage → Clear Site Data
+```
+
+**Note**: Service Worker caching is production-ready and requires no manual configuration.

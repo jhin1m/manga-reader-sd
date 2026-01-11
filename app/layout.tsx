@@ -13,6 +13,7 @@ import { generateDefaultMetadata } from "@/lib/seo/metadata";
 import { generateWebsiteSchema } from "@/lib/seo/json-ld";
 import { DEFAULT_LOCALE, TIMEZONE } from "@/lib/i18n/config";
 import { GoogleAnalytics } from "@/components/providers/google-analytics";
+import { SwRegister } from "@/components/service-worker/sw-register";
 
 const notoSans = Noto_Sans({
   variable: "--font-sans",
@@ -92,6 +93,7 @@ export default async function RootLayout({
                   <Footer />
                 </div>
                 <Toaster />
+                <SwRegister />
               </ThemeProvider>
             </GoogleOAuthProvider>
           </ReactQueryProvider>

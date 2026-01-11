@@ -103,6 +103,9 @@ manga-reader-sd/
 │       ├── theme-provider.tsx
 │       └── google-oauth-provider.tsx
 │
+├── components/service-worker/   # Service Worker components
+│   └── sw-register.tsx          # SW registration component
+│
 ├── lib/
 │   ├── api/                     # API integration
 │   │   ├── client.ts           # Axios instance & interceptors
@@ -112,6 +115,9 @@ manga-reader-sd/
 │   │   │   ├── user.ts
 │   │   │   └── ...
 │   │   └── types/              # API-specific types
+│   │
+│   ├── sw/                      # Service Worker configuration
+│   │   └── cache-config.ts     # SW cache config & helpers
 │   │
 │   ├── hooks/                   # Custom React hooks
 │   │   ├── use-auth.ts
@@ -148,6 +154,7 @@ manga-reader-sd/
 │   └── request.ts
 │
 ├── public/                      # Static assets
+│   ├── sw.js                   # Service Worker main file
 │   └── ...
 │
 ├── docs/                        # Documentation
@@ -228,6 +235,7 @@ Components should be designed with performance in mind:
 #### Dynamic Imports for Heavy Components
 
 Use Next.js dynamic imports for components that:
+
 - Are below-the-fold or not immediately visible
 - Have large dependencies
 - Are only shown on user interaction
@@ -236,9 +244,10 @@ Use Next.js dynamic imports for components that:
 ```tsx
 // reader-view.tsx
 const ChapterReaderComments = dynamic(
-  () => import("@/components/comments/chapter-reader-comments").then(mod => ({
-    default: mod.ChapterReaderComments
-  })),
+  () =>
+    import("@/components/comments/chapter-reader-comments").then((mod) => ({
+      default: mod.ChapterReaderComments,
+    })),
   {
     loading: () => <CommentsSkeleton />,
     ssr: false,
@@ -307,6 +316,7 @@ export function ReaderView() {
 ```
 
 **File organization for reducer pattern:**
+
 ```
 components/reader/
 ├── reader-view.tsx              # Main component using reducer
@@ -596,4 +606,4 @@ The following components have been added/updated for the Comments System:
 
 ---
 
-**Last updated**: 2025-12-16 (Phase 04 - Code Quality & Refactoring)
+**Last updated**: 2026-01-11 (Service Worker Implementation)

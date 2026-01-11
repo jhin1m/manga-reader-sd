@@ -23,6 +23,7 @@
 - **Comment System**: Robust multi-level commenting for manga and chapters with emoji support.
 - **SEO Optimized**: Centralized metadata management, canonical URLs, and structured data (JSON-LD).
 - **i18n Support**: Full internationalization for all user-facing strings.
+- **Service Worker Caching**: Browser-side caching for static assets and API responses with TTL management.
 
 ## Codebase Structure
 
@@ -37,6 +38,7 @@
   - `/api`: API clients and endpoints definitions.
   - `/seo`: SEO configuration and metadata generators.
   - `/store`: Zustand state management.
+  - `/sw`: Service Worker cache configuration and helpers.
 - `/docs`: Comprehensive project documentation.
 - `/messages`: i18n translation files (JSON).
 - `/types`: Global TypeScript interfaces and types.
@@ -66,6 +68,7 @@
 - **Image Priority**: Critical above-the-fold images (like carousel items) use the `priority` attribute.
 - **Caching Strategy**: 5-minute stale time for library data; 30-second stale time for frequently updated manga lists.
 - **Optimistic Updates**: Used in the comment system for immediate UI feedback.
+- **Service Worker Caching**: Browser-side caching with network-first (API) and cache-first (static) strategies, TTL expiration, and automatic cleanup.
 
 ## Current Project Status
 
@@ -76,7 +79,8 @@
 - **Comment System**: Complete ✅
 - **SSR Optimization**: Complete ✅
 - **SEO Refinement**: Complete ✅
+- **Service Worker Caching**: Complete ✅
 
 ---
 
-**Last Updated**: 2025-12-20
+**Last Updated**: 2026-01-11
