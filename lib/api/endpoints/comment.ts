@@ -9,8 +9,6 @@ import type { PaginatedResponse } from "@/types/api";
 import type {
   Comment,
   UpdateCommentRequest,
-  RateMangaRequest,
-  RateMangaResponse,
   CommentListParams,
 } from "@/types/comment";
 
@@ -46,21 +44,5 @@ export const commentApi = {
     return apiClient.get<PaginatedResponse<Comment>>(
       `/comments/recent${query}`
     );
-  },
-};
-
-/**
- * Rating API
- */
-export const ratingApi = {
-  /**
-   * Rate a manga (or update existing rating)
-   * POST /mangas/{slug}/rating
-   */
-  rateManga: async (
-    slug: string,
-    data: RateMangaRequest
-  ): Promise<RateMangaResponse> => {
-    return apiClient.post<RateMangaResponse>(`/mangas/${slug}/rating`, data);
   },
 };

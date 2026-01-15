@@ -27,10 +27,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MangaDetailSkeleton } from "@/components/layout/loading/detail-skeleton";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
+import { StarRating } from "@/components/manga/star-rating";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { useAuthStore } from "@/lib/store/authStore";
 import { cn, formatNumber } from "@/lib/utils";
 import { useMangaComments, useAddMangaComment } from "@/lib/hooks/use-comments";
+import { useRateManga } from "@/lib/hooks/use-rating";
 import type { Manga } from "@/types/manga";
 import type { ChapterListItem } from "@/types/chapter";
 import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
@@ -148,10 +150,16 @@ function MangaDetail({
   const tCommon = useTranslations("common");
   const tChapter = useTranslations("chapter");
   const tComment = useTranslations("comment");
+  const tRating = useTranslations("rating");
+
+  const { isAuthenticated } = useAuthStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [commentSort, setCommentSort] = useState<"asc" | "desc">("desc");
   const [commentPage, setCommentPage] = useState(1);
+
+  // Rating mutation
+  const rateMutation = useRateManga(manga.slug);
 
   // Reading progress from localStorage
   const readingProgress = useReadingProgressStore((s) =>
@@ -223,6 +231,25 @@ function MangaDetail({
     [addCommentMutation, tComment]
   );
 
+  // Rating handler
+  const handleRate = useCallback(
+    async (rating: number) => {
+      // Check authentication first
+      if (!isAuthenticated) {
+        toast.error(tRating("loginRequired"));
+        return;
+      }
+
+      try {
+        await rateMutation.mutateAsync(rating);
+        toast.success(tRating("success"));
+      } catch (error) {
+        toast.error(tRating("error"));
+      }
+    },
+    [isAuthenticated, rateMutation, tRating]
+  );
+
   return (
     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <Card>
@@ -288,14 +315,32 @@ function MangaDetail({
                       : t("status.ongoing")}
                   </span>
                 </div>
-                {manga.average_rating > 0 && (
-                  <div className="flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
-                    <span className="font-bold text-foreground">
-                      {Number(manga.average_rating).toFixed(1)}
-                    </span>
+
+                {/* Rating Section - Average + User Rating */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  {/* Average Rating Display */}
+                  {manga.average_rating > 0 && (
+                    <div className="flex items-center gap-1 text-xs sm:text-sm">
+                      <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
+                      <span className="font-bold text-foreground">
+                        {Number(manga.average_rating).toFixed(1)}
+                      </span>
+                      <span className="text-muted-foreground">
+                        ({manga.total_ratings || 0})
+                      </span>
+                    </div>
+                  )}
+
+                  {/* User Rating Input */}
+                  <div className="flex items-center gap-1.5">
+                    <StarRating
+                      value={rateMutation.data?.rating.rating}
+                      onChange={handleRate}
+                      isLoading={rateMutation.isPending}
+                      size="sm"
+                    />
                   </div>
-                )}
+                </div>
 
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <Eye className="h-3.5 w-3.5" />

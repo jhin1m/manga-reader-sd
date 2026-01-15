@@ -21,6 +21,7 @@
 - **Reader Interface**: Optimized reading experience with single-page and long-strip modes.
 - **User Library**: Personalized bookmarks and reading history.
 - **Comment System**: Robust multi-level commenting for manga and chapters with emoji support.
+- **Rating System**: Interactive 5-star rating for manga with optimistic updates and real-time average.
 - **SEO Optimized**: Centralized metadata management, canonical URLs, and structured data (JSON-LD).
 - **i18n Support**: Full internationalization for all user-facing strings.
 - **Service Worker Caching**: Browser-side caching for static assets and API responses with TTL management.
@@ -67,7 +68,7 @@
 
 - **Image Priority**: Critical above-the-fold images (like carousel items) use the `priority` attribute.
 - **Caching Strategy**: 5-minute stale time for library data; 30-second stale time for frequently updated manga lists.
-- **Optimistic Updates**: Used in the comment system for immediate UI feedback.
+- **Optimistic Updates**: Used in the comment system and rating system for immediate UI feedback.
 - **Service Worker Caching**: Browser-side caching with network-first (API) and cache-first (static) strategies, TTL expiration, and automatic cleanup.
 
 ## Current Project Status
@@ -77,10 +78,11 @@
 - **Manga Reading & Browsing**: Complete ✅
 - **User Library**: Complete ✅
 - **Comment System**: Complete ✅
+- **Rating System**: Complete ✅
 - **SSR Optimization**: Complete ✅
 - **SEO Refinement**: Complete ✅
 - **Service Worker Caching**: Complete ✅
 
 ---
 
-**Last Updated**: 2026-01-11
+**Last Updated**: 2026-01-15

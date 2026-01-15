@@ -394,7 +394,12 @@
     "yourRating": "Your Rating",
     "averageRating": "Average Rating",
     "totalRatings": "{count} ratings",
-    "ratingSubmitted": "Rating submitted"
+    "ratingSubmitted": "Rating submitted",
+    "loginRequired": "Login to rate",
+    "success": "Rating submitted!",
+    "error": "Failed to rate. Please try again.",
+    "starRatingLabel": "Star rating",
+    "rateStarsLabel": "Rate {value} out of 5 stars"
   },
   "errors": {
     "general": "An error occurred. Please try again.",

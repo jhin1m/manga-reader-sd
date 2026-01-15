@@ -394,7 +394,12 @@
     "yourRating": "Đánh giá của bạn",
     "averageRating": "Đánh giá trung bình",
     "totalRatings": "{count} đánh giá",
-    "ratingSubmitted": "Đã gửi đánh giá"
+    "ratingSubmitted": "Đã gửi đánh giá",
+    "loginRequired": "Đăng nhập để đánh giá",
+    "success": "Đã đánh giá thành công!",
+    "error": "Không thể đánh giá. Vui lòng thử lại.",
+    "starRatingLabel": "Đánh giá bằng sao",
+    "rateStarsLabel": "Đánh giá {value} trên 5 sao"
   },
   "errors": {
     "general": "Đã xảy ra lỗi. Vui lòng thử lại.",

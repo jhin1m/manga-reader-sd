@@ -25,7 +25,8 @@ export {
   userAchievementsApi,
   userPetsApi,
 } from "./endpoints/user";
-export { commentApi, ratingApi } from "./endpoints/comment";
+export { commentApi } from "./endpoints/comment";
+export { ratingApi } from "./endpoints/rating";
 
 // Export commonly used types
 export type {
