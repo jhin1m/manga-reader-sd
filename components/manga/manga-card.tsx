@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 import { mangaKeys } from "@/lib/api/query-keys";
 import { mangaApi } from "@/lib/api/endpoints/manga";
+import { StarRating } from "@/components/manga/star-rating";
 
 export interface MangaCardProps {
   manga: MangaListItem;
@@ -85,7 +86,7 @@ export function MangaCard({ manga, className, priority }: MangaCardProps) {
           {manga.name}
         </h3>
 
-        {/* Metadata (Chapter + Rating) */}
+        {/* Metadata (Chapter) */}
         <div className="flex items-center justify-between text-xs text-muted-foreground gap-2">
           {/* Chapter */}
           {manga.latest_chapter ? (
@@ -96,6 +97,23 @@ export function MangaCard({ manga, className, priority }: MangaCardProps) {
             <span />
           )}
         </div>
+
+        {/* Star Rating */}
+        {manga.average_rating > 0 && (
+          <div className="flex items-center gap-1">
+            <StarRating
+              value={manga.average_rating}
+              readonly={true}
+              size="sm"
+              showValue={true}
+            />
+            {manga.total_ratings && (
+              <span className="text-xs text-muted-foreground">
+                ({manga.total_ratings})
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );

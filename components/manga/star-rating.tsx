@@ -40,6 +40,10 @@ export function StarRating({
   const t = useTranslations("rating");
   const [hoverValue, setHoverValue] = useState<number | null>(null);
 
+  // Ensure value is always a valid number
+  const numericValue =
+    typeof value === "number" ? value : parseFloat(String(value)) || 0;
+
   const handleMouseEnter = useCallback(
     (starValue: number) => {
       if (!readonly && !disabled && !isLoading) {
@@ -67,7 +71,7 @@ export function StarRating({
     [readonly, disabled, isLoading, onChange]
   );
 
-  const displayValue = hoverValue ?? value;
+  const displayValue = hoverValue ?? numericValue;
   const isInteractive = !readonly && !disabled && !isLoading;
 
   return (
@@ -115,9 +119,9 @@ export function StarRating({
         );
       })}
 
-      {showValue && value > 0 && (
+      {showValue && numericValue > 0 && (
         <span className="ml-2 text-sm font-medium text-foreground">
-          {value.toFixed(1)}
+          {numericValue.toFixed(1)}
         </span>
       )}
     </div>
