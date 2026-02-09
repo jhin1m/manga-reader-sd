@@ -6,6 +6,7 @@
  * Used in grids, lists, and carousels throughout the application
  */
 
+import { memo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,18 +33,22 @@ export interface MangaCardProps {
  * @param manga - Manga data to display
  * @param className - Optional additional CSS classes
  */
-export function MangaCard({ manga, className, priority }: MangaCardProps) {
+export const MangaCard = memo(function MangaCard({
+  manga,
+  className,
+  priority,
+}: MangaCardProps) {
   const t = useTranslations("homepage.mangaCard");
   const queryClient = useQueryClient();
 
   // Prefetch manga detail on hover for faster navigation
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     queryClient.prefetchQuery({
       queryKey: mangaKeys.detail(manga.slug),
       queryFn: () => mangaApi.getDetail(manga.slug),
       staleTime: 60_000, // 1 minute fresh
     });
-  };
+  }, [queryClient, manga.slug]);
 
   return (
     <Link
@@ -117,4 +122,4 @@ export function MangaCard({ manga, className, priority }: MangaCardProps) {
       </div>
     </Link>
   );
-}
+});

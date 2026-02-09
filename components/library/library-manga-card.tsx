@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,7 +28,7 @@ export interface LibraryMangaCardProps {
   className?: string;
 }
 
-export function LibraryMangaCard({
+export const LibraryMangaCard = memo(function LibraryMangaCard({
   manga,
   lastReadChapter,
   lastReadAt,
@@ -135,7 +136,7 @@ export function LibraryMangaCard({
       </div>
     </div>
   );
-}
+});
 
 // Helper: Format time ago string
 function formatTimeAgo(dateString: string): string {

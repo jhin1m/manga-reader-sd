@@ -18,9 +18,7 @@ import type {
 } from "@/types/comment";
 import { useRefreshUser } from "@/lib/hooks/use-refresh-user";
 import { useAuthStore } from "@/lib/store/authStore";
-
-// === Constants ===
-const COMMENTS_STALE_TIME = 1000 * 60 * 5; // 5 minutes
+import { STALE_TIMES } from "@/lib/constants";
 
 // === Helper Functions ===
 /**
@@ -124,7 +122,7 @@ export function useMangaComments(
   return useQuery({
     queryKey: commentKeys.manga(slug, { page, per_page, sort, type }),
     queryFn: () => mangaApi.getComments(slug, { page, per_page, sort, type }),
-    staleTime: COMMENTS_STALE_TIME,
+    staleTime: STALE_TIMES.LONG,
     enabled: enabled && !!slug,
     select: (data: PaginatedResponse<Comment>): CommentsData => ({
       items: data.data,
@@ -154,7 +152,7 @@ export function useChapterComments(
     }),
     queryFn: () =>
       chapterApi.getComments(mangaSlug, chapterSlug, { page, per_page, sort }),
-    staleTime: COMMENTS_STALE_TIME,
+    staleTime: STALE_TIMES.LONG,
     enabled: enabled && !!mangaSlug && !!chapterSlug,
     select: (data: PaginatedResponse<Comment>): CommentsData => ({
       items: data.data,
@@ -166,38 +164,37 @@ export function useChapterComments(
 // === Mutation Hooks ===
 
 /**
- * Hook for adding manga comment
+ * Factory: creates an optimistic add-comment mutation for any commentable type.
+ * Eliminates duplication between manga and chapter comment hooks.
  */
-export function useAddMangaComment(slug: string) {
+function useAddCommentMutation(config: {
+  mutationFn: (data: CreateCommentRequest) => Promise<Comment>;
+  queryKey: readonly unknown[];
+  commentableType: CommentableType;
+}) {
   const queryClient = useQueryClient();
   const { refreshUserPartial } = useRefreshUser();
   const user = useAuthStore((state) => state.user);
 
   return useMutation({
-    mutationFn: (data: CreateCommentRequest) => mangaApi.addComment(slug, data),
+    mutationFn: config.mutationFn,
     onMutate: async (newComment) => {
-      // Cancel any outgoing refetches with partial match
       await queryClient.cancelQueries({
-        queryKey: ["comments", "manga", slug],
+        queryKey: config.queryKey as string[],
         exact: false,
       });
 
-      // Get snapshot from all matching queries
       const previousQueries = queryClient.getQueriesData<
         PaginatedResponse<Comment>
-      >({
-        queryKey: ["comments", "manga", slug],
-        exact: false,
-      });
+      >({ queryKey: config.queryKey as string[], exact: false });
 
-      // Optimistically update to the new value
       const tempId = generateTempId();
       const optimisticComment: Comment = {
-        id: tempId, // temporary ID
+        id: tempId,
         uuid: `temp-${tempId}`,
         content: newComment.content,
-        commentable_type: "manga" as CommentableType,
-        commentable_id: "0", // Will be replaced by real data
+        commentable_type: config.commentableType,
+        commentable_id: "0",
         parent_id: newComment.parent_id?.toString() || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -213,9 +210,8 @@ export function useAddMangaComment(slug: string) {
         can_delete: false,
       };
 
-      // Set data on all matching queries
       queryClient.setQueriesData<PaginatedResponse<Comment>>(
-        { queryKey: ["comments", "manga", slug], exact: false },
+        { queryKey: config.queryKey as string[], exact: false },
         (old) => {
           if (!old)
             return {
@@ -234,7 +230,6 @@ export function useAddMangaComment(slug: string) {
               },
             };
 
-          // Reply: insert into parent's replies array
           if (newComment.parent_id) {
             return {
               ...old,
@@ -246,18 +241,13 @@ export function useAddMangaComment(slug: string) {
             };
           }
 
-          // Top-level comment: prepend to data array
-          return {
-            ...old,
-            data: [optimisticComment, ...old.data],
-          };
+          return { ...old, data: [optimisticComment, ...old.data] };
         }
       );
 
       return { previousQueries };
     },
-    onError: (err, newComment, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
+    onError: (_err, _newComment, context) => {
       if (context?.previousQueries) {
         context.previousQueries.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
@@ -265,20 +255,28 @@ export function useAddMangaComment(slug: string) {
       }
     },
     onSettled: async () => {
-      // Always refetch after error or success to ensure server state
       await queryClient.invalidateQueries({
-        queryKey: ["comments", "manga", slug],
+        queryKey: config.queryKey as string[],
         exact: false,
       });
 
-      // Refresh user data to get updated points
       try {
         await refreshUserPartial();
       } catch (error) {
         console.error("Failed to refresh user points after comment:", error);
-        // Don't fail the mutation if user refresh fails
       }
     },
+  });
+}
+
+/**
+ * Hook for adding manga comment
+ */
+export function useAddMangaComment(slug: string) {
+  return useAddCommentMutation({
+    mutationFn: (data) => mangaApi.addComment(slug, data),
+    queryKey: ["comments", "manga", slug],
+    commentableType: "manga" as CommentableType,
   });
 }
 
@@ -286,120 +284,10 @@ export function useAddMangaComment(slug: string) {
  * Hook for adding chapter comment
  */
 export function useAddChapterComment(mangaSlug: string, chapterSlug: string) {
-  const queryClient = useQueryClient();
-  const { refreshUserPartial } = useRefreshUser();
-  const user = useAuthStore((state) => state.user);
-
-  return useMutation({
-    mutationFn: (data: CreateCommentRequest) =>
-      chapterApi.addComment(mangaSlug, chapterSlug, data),
-    onMutate: async (newComment) => {
-      // Cancel any outgoing refetches with partial match
-      await queryClient.cancelQueries({
-        queryKey: ["comments", "chapter", mangaSlug, chapterSlug],
-        exact: false,
-      });
-
-      // Get snapshot from all matching queries
-      const previousQueries = queryClient.getQueriesData<
-        PaginatedResponse<Comment>
-      >({
-        queryKey: ["comments", "chapter", mangaSlug, chapterSlug],
-        exact: false,
-      });
-
-      // Optimistically update to the new value
-      const tempId = generateTempId();
-      const optimisticComment: Comment = {
-        id: tempId, // temporary ID
-        uuid: `temp-${tempId}`,
-        content: newComment.content,
-        commentable_type: "chapter" as CommentableType,
-        commentable_id: "0", // Will be replaced by real data
-        parent_id: newComment.parent_id?.toString() || null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        user: {
-          id: user?.id || 0,
-          uuid: user?.uuid || "",
-          name: user?.name || "You",
-          avatar_full_url: user?.avatar_full_url || "",
-        },
-        replies: [],
-        replies_count: 0,
-        can_edit: false,
-        can_delete: false,
-      };
-
-      // Set data on all matching queries
-      queryClient.setQueriesData<PaginatedResponse<Comment>>(
-        {
-          queryKey: ["comments", "chapter", mangaSlug, chapterSlug],
-          exact: false,
-        },
-        (old) => {
-          if (!old)
-            return {
-              data: [optimisticComment],
-              success: true,
-              message: "",
-              meta: {
-                pagination: {
-                  total: 1,
-                  current_page: 1,
-                  last_page: 1,
-                  per_page: 20,
-                  from: 1,
-                  to: 1,
-                },
-              },
-            };
-
-          // Reply: insert into parent's replies array
-          if (newComment.parent_id) {
-            return {
-              ...old,
-              data: insertReplyIntoComments(
-                old.data,
-                newComment.parent_id.toString(),
-                optimisticComment
-              ),
-            };
-          }
-
-          // Top-level comment: prepend to data array
-          return {
-            ...old,
-            data: [optimisticComment, ...old.data],
-          };
-        }
-      );
-
-      return { previousQueries };
-    },
-    onError: (err, newComment, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
-      if (context?.previousQueries) {
-        context.previousQueries.forEach(([queryKey, data]) => {
-          queryClient.setQueryData(queryKey, data);
-        });
-      }
-    },
-    onSettled: async () => {
-      // Always refetch after error or success to ensure server state
-      await queryClient.invalidateQueries({
-        queryKey: ["comments", "chapter", mangaSlug, chapterSlug],
-        exact: false,
-      });
-
-      // Refresh user data to get updated points
-      try {
-        await refreshUserPartial();
-      } catch (error) {
-        console.error("Failed to refresh user points after comment:", error);
-        // Don't fail the mutation if user refresh fails
-      }
-    },
+  return useAddCommentMutation({
+    mutationFn: (data) => chapterApi.addComment(mangaSlug, chapterSlug, data),
+    queryKey: ["comments", "chapter", mangaSlug, chapterSlug],
+    commentableType: "chapter" as CommentableType,
   });
 }
 
@@ -414,7 +302,7 @@ export function useCommentsPrefetch() {
       queryClient.prefetchQuery({
         queryKey: commentKeys.manga(slug, params),
         queryFn: () => mangaApi.getComments(slug, params),
-        staleTime: COMMENTS_STALE_TIME,
+        staleTime: STALE_TIMES.LONG,
       }),
 
     prefetchChapterComments: (
@@ -425,7 +313,7 @@ export function useCommentsPrefetch() {
       queryClient.prefetchQuery({
         queryKey: commentKeys.chapter(mangaSlug, chapterSlug, params),
         queryFn: () => chapterApi.getComments(mangaSlug, chapterSlug, params),
-        staleTime: COMMENTS_STALE_TIME,
+        staleTime: STALE_TIMES.LONG,
       }),
   };
 }

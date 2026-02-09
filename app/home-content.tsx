@@ -118,7 +118,6 @@ function MangaCarouselSection({
           width={36}
           height={36}
           className="w-8 h-8"
-          unoptimized
         />
       }
       autoplayDelay={5000}

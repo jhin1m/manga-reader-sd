@@ -6,6 +6,7 @@
  * Features: Gradient overlay at bottom with title and chapter info inside the image
  */
 
+import { memo } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,7 +28,7 @@ export interface MangaCarouselCardProps {
  * @param manga - Manga data to display
  * @param className - Optional additional CSS classes
  */
-export function MangaCarouselCard({
+export const MangaCarouselCard = memo(function MangaCarouselCard({
   manga,
   className,
   priority,
@@ -86,4 +87,4 @@ export function MangaCarouselCard({
       </div>
     </Link>
   );
-}
+});

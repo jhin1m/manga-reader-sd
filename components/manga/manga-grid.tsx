@@ -12,11 +12,7 @@ import type { MangaListItem } from "@/types/manga";
 import { MangaCard } from "./manga-card";
 import { MangaGridSkeleton } from "@/components/layout/loading";
 import { cn } from "@/lib/utils";
-
-// Above-fold priority count
-// Desktop (5 cols): ~10 items, Tablet (4 cols): ~8, Mobile (3 cols): ~6
-// Conservative: 6 ensures above-fold on all viewports
-const PRIORITY_IMAGE_COUNT = 6;
+import { UI } from "@/lib/constants";
 
 export interface MangaGridProps {
   mangas: MangaListItem[];
@@ -54,7 +50,7 @@ export function MangaGrid({
     md: 4,
     lg: 5,
   },
-  priorityCount = PRIORITY_IMAGE_COUNT,
+  priorityCount = UI.PRIORITY_IMAGE_COUNT,
 }: MangaGridProps) {
   const t = useTranslations("homepage.emptyStates");
 

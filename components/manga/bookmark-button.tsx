@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/store/authStore";
 import { userFavoritesApi } from "@/lib/api/endpoints/user";
 import { cn } from "@/lib/utils";
+import { STALE_TIMES } from "@/lib/constants";
 import type { Manga } from "@/types/manga";
 
 interface BookmarkButtonProps {
@@ -44,7 +45,7 @@ export function BookmarkButton({
     queryKey: ["user", "favorites", manga.id, "status"],
     queryFn: () => userFavoritesApi.checkStatus(manga.id),
     enabled: isAuthenticated,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: STALE_TIMES.LONG,
   });
 
   const isBookmarked = favoriteStatus?.is_favorited ?? false;

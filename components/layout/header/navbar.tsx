@@ -39,6 +39,7 @@ export function Navbar() {
                 alt="Logo"
                 width={180}
                 height={50}
+                sizes="180px"
                 className="rounded-md"
               />
             </Link>

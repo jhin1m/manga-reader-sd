@@ -8,6 +8,7 @@ import { CommentSection } from "./comment-section";
 import { TabContent } from "./tab-content";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { chapterApi } from "@/lib/api/endpoints/chapter";
+import { commentKeys } from "@/lib/hooks/use-comments";
 
 interface ChapterReaderCommentsProps {
   mangaSlug: string;
@@ -27,10 +28,13 @@ export function ChapterReaderComments({
   const [, setActiveTab] = useState("chapter");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Fetch chapter comments
+  // Fetch chapter comments (uses shared commentKeys for cache consistency)
   const { data: chapterCommentsData, isLoading: isLoadingChapterComments } =
     useQuery({
-      queryKey: ["chapter-comments", mangaSlug, chapterSlug, sortOrder],
+      queryKey: commentKeys.chapter(mangaSlug, chapterSlug, {
+        sort: sortOrder,
+        per_page: 20,
+      }),
       queryFn: async () => {
         const response = await chapterApi.getComments(mangaSlug, chapterSlug, {
           sort: sortOrder,
@@ -46,10 +50,14 @@ export function ChapterReaderComments({
       },
     });
 
-  // Fetch manga comments
+  // Fetch manga comments (uses shared commentKeys for cache consistency)
   const { data: mangaCommentsData, isLoading: isLoadingMangaComments } =
     useQuery({
-      queryKey: ["manga-comments", mangaSlug, sortOrder],
+      queryKey: commentKeys.manga(mangaSlug, {
+        type: "manga",
+        sort: sortOrder,
+        per_page: 20,
+      }),
       queryFn: async () => {
         const response = await mangaApi.getComments(mangaSlug, {
           type: "manga",
@@ -90,14 +98,16 @@ export function ChapterReaderComments({
       }
     },
     onSuccess: (_, { type }) => {
-      // Invalidate relevant query to refetch comments
+      // Invalidate relevant query to refetch comments (uses shared commentKeys)
       if (type === "chapter") {
         queryClient.invalidateQueries({
-          queryKey: ["chapter-comments", mangaSlug, chapterSlug],
+          queryKey: commentKeys.chapter(mangaSlug, chapterSlug),
+          exact: false,
         });
       } else {
         queryClient.invalidateQueries({
-          queryKey: ["manga-comments", mangaSlug],
+          queryKey: commentKeys.manga(mangaSlug),
+          exact: false,
         });
       }
     },

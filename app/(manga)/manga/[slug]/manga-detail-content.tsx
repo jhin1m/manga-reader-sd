@@ -39,6 +39,7 @@ import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
 import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
 import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
 import { useReadingProgressStore } from "@/lib/store/readingProgressStore";
+import { STALE_TIMES } from "@/lib/constants";
 
 // Dynamic import for CommentSection - reduces initial bundle size
 const CommentSection = dynamic(
@@ -654,7 +655,7 @@ export function MangaDetailContent({ slug }: MangaDetailContentProps) {
         sort: sortOrder === "newest" ? "desc" : "asc",
       }),
     enabled: !!manga,
-    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    staleTime: STALE_TIMES.LONG,
   });
 
   // Extract typed data

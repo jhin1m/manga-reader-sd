@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { genreApi } from "@/lib/api/endpoints/manga";
 import { genreKeys } from "@/lib/api/query-keys";
+import { STALE_TIMES } from "@/lib/constants";
 
 export interface GenreSelectProps {
   value: string; // "all" or genre id
@@ -44,7 +45,7 @@ export function GenreSelect({
   const { data, isLoading } = useQuery({
     queryKey: genreKeys.all,
     queryFn: () => genreApi.getList({ per_page: 100 }),
-    staleTime: 5 * 60_000, // Genres change rarely - 5 min fresh
+    staleTime: STALE_TIMES.LONG,
   });
 
   const genres = data?.data || [];
