@@ -6,6 +6,7 @@
  * Only renders when Google OAuth is configured (NEXT_PUBLIC_GOOGLE_CLIENT_ID is set)
  */
 
+import { Suspense } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useGoogleAuth } from "@/lib/hooks/use-auth";
 import { useGoogleOAuthAvailable } from "@/components/providers/google-oauth-provider";
@@ -31,7 +32,11 @@ export function GoogleOAuthButton({
     return null;
   }
 
-  return <GoogleOAuthButtonInner onSuccess={onSuccess} disabled={disabled} />;
+  return (
+    <Suspense fallback={<Spinner className="mx-auto h-4 w-4" />}>
+      <GoogleOAuthButtonInner onSuccess={onSuccess} disabled={disabled} />
+    </Suspense>
+  );
 }
 
 // Inner component that uses useGoogleLogin hook

@@ -5,7 +5,7 @@
  * Registration form with validation and error handling
  */
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -40,7 +40,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { GoogleOAuthButton } from "./google-oauth-button";
 
-export function RegisterForm() {
+function RegisterFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { register, isLoading } = useRegister();
@@ -356,5 +356,13 @@ export function RegisterForm() {
         </div>
       </CardFooter>
     </Card>
+  );
+}
+
+export function RegisterForm() {
+  return (
+    <Suspense fallback={<Spinner className="mx-auto h-8 w-8" />}>
+      <RegisterFormContent />
+    </Suspense>
   );
 }

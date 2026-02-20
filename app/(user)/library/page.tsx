@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/hooks/use-auth";
@@ -45,7 +46,9 @@ function LibraryPageContent() {
 export default function LibraryPage() {
   return (
     <ProtectedRoute>
-      <LibraryPageContent />
+      <Suspense fallback={<LibrarySkeleton />}>
+        <LibraryPageContent />
+      </Suspense>
     </ProtectedRoute>
   );
 }

@@ -5,7 +5,7 @@
  * Email/password login form with validation and error handling
  */
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -38,7 +38,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { GoogleOAuthButton } from "./google-oauth-button";
 
-export function LoginForm() {
+function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isLoading } = useLogin();
@@ -211,5 +211,13 @@ export function LoginForm() {
         </div>
       </CardFooter>
     </Card>
+  );
+}
+
+export function LoginForm() {
+  return (
+    <Suspense fallback={<Spinner className="mx-auto h-8 w-8" />}>
+      <LoginFormContent />
+    </Suspense>
   );
 }
