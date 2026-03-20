@@ -13,6 +13,12 @@ export const STALE_TIMES = {
   SHORT: 2 * 60_000,
 } as const;
 
+// === Garbage Collection Times (milliseconds) ===
+export const GC_TIMES = {
+  /** Default gc time for most queries (10 minutes) */
+  DEFAULT: 10 * 60_000,
+} as const;
+
 // === UI Constants ===
 export const UI = {
   /** Number of images to prioritize loading (above the fold) */

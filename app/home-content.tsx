@@ -10,13 +10,36 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
+import dynamic from "next/dynamic";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { MangaCarousel } from "@/components/manga/manga-carousel";
 import { RecentlyUpdatedSection } from "@/components/manga/recently-updated-section";
-import { RecentCommentsSidebar } from "@/components/manga/recent-comments-sidebar";
-import { HotMangaSidebar } from "@/components/manga/hot-manga-sidebar";
 import { MangaCarouselSkeleton } from "@/components/layout/loading";
-import { PopularGenresSection } from "@/components/manga/popular-genres-section";
+
+// Lazy load below-fold sections to improve initial page load
+const RecentCommentsSidebar = dynamic(
+  () =>
+    import("@/components/manga/recent-comments-sidebar").then((mod) => ({
+      default: mod.RecentCommentsSidebar,
+    })),
+  { ssr: false }
+);
+
+const HotMangaSidebar = dynamic(
+  () =>
+    import("@/components/manga/hot-manga-sidebar").then((mod) => ({
+      default: mod.HotMangaSidebar,
+    })),
+  { ssr: false }
+);
+
+const PopularGenresSection = dynamic(
+  () =>
+    import("@/components/manga/popular-genres-section").then((mod) => ({
+      default: mod.PopularGenresSection,
+    })),
+  { ssr: false }
+);
 import { MangaListItem } from "@/types/manga";
 import { PaginatedResponse } from "@/types/api";
 

@@ -42,8 +42,9 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   const readingMode = "long-strip";
   const [showControls, setShowControls] = useState(true);
 
-  // Store for persistent settings
-  const { preferences, updatePreference } = useReaderStore();
+  // Store for persistent settings - use selectors to prevent unnecessary re-renders
+  const preferences = useReaderStore((s) => s.preferences);
+  const updatePreference = useReaderStore((s) => s.updatePreference);
   const { zoom, backgroundColor, imageSpacing } = preferences;
 
   // Reading progress store

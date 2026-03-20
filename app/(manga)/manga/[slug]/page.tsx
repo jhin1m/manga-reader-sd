@@ -1,10 +1,12 @@
 /**
  * Manga Detail Page
- * Server component with SEO metadata and JSON-LD schemas
+ * Server component with SSR prefetch, SEO metadata, and JSON-LD schemas
  */
 
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
 import { generateMangaMetadata } from "@/lib/seo/metadata";
 import {
@@ -13,11 +15,18 @@ import {
   combineSchemas,
 } from "@/lib/seo/json-ld";
 import { mangaApi } from "@/lib/api/endpoints/manga";
+import { getQueryClient } from "@/lib/api/query-client";
+import { mangaKeys } from "@/lib/api/query-keys";
 import { MangaDetailContent } from "./manga-detail-content";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+// Cache the manga fetch to deduplicate between generateMetadata and page component
+const getMangaDetail = cache(async (slug: string) => {
+  return mangaApi.getDetail(slug);
+});
 
 /**
  * Generate metadata for manga detail page
@@ -27,11 +36,10 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   try {
     const { slug } = await params;
-    const manga = await mangaApi.getDetail(slug);
+    const manga = await getMangaDetail(slug);
 
     return generateMangaMetadata(manga);
   } catch {
-    // Return basic metadata if manga not found
     return {
       title: "Manga Not Found",
       description: "The requested manga could not be found.",
@@ -41,29 +49,31 @@ export async function generateMetadata({
 
 /**
  * Manga Detail Page Component
+ * Prefetches manga data on server and passes to client via HydrationBoundary
  */
 export default async function MangaDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  // Fetch manga data for JSON-LD schema generation
+  // Fetch manga data (deduplicated with generateMetadata via cache())
   let manga;
   try {
-    manga = await mangaApi.getDetail(slug);
+    manga = await getMangaDetail(slug);
   } catch {
     notFound();
   }
 
-  // Generate breadcrumb schema
+  // Prefetch manga data into QueryClient for client hydration
+  const queryClient = getQueryClient();
+  queryClient.setQueryData(mangaKeys.detail(slug), manga);
+  const dehydratedState = dehydrate(queryClient);
+
+  // Generate JSON-LD schemas
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Manga", url: "/manga" },
     { name: manga.name, url: `/manga/${manga.slug}` },
   ]);
-
-  // Generate manga schema
   const mangaSchema = generateMangaSchema(manga);
-
-  // Combine schemas
   const schemas = combineSchemas([breadcrumbSchema, mangaSchema]);
 
   return (
@@ -74,8 +84,10 @@ export default async function MangaDetailPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
 
-      {/* Client Content */}
-      <MangaDetailContent slug={slug} />
+      {/* Client Content with hydrated query data */}
+      <HydrationBoundary state={dehydratedState}>
+        <MangaDetailContent slug={slug} />
+      </HydrationBoundary>
     </>
   );
 }

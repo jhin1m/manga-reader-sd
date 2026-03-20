@@ -64,10 +64,11 @@ export function BookmarksTab() {
 
       {/* Grid */}
       <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {data.items.map((manga) => (
+        {data.items.map((manga, index) => (
           <LibraryMangaCard
             key={manga.id}
             manga={manga}
+            index={index}
             showRemove
             onRemove={() => handleRemove(manga.id, manga.name)}
             isRemoving={removeMutation.isPending}

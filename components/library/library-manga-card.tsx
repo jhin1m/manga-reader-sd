@@ -24,6 +24,8 @@ export interface LibraryMangaCardProps {
   onRemove?: () => void;
   /** Is remove action pending */
   isRemoving?: boolean;
+  /** Card index for image priority loading (first N cards get priority) */
+  index?: number;
   /** Custom className */
   className?: string;
 }
@@ -35,6 +37,7 @@ export const LibraryMangaCard = memo(function LibraryMangaCard({
   showRemove = false,
   onRemove,
   isRemoving = false,
+  index,
   className,
 }: LibraryMangaCardProps) {
   const t = useTranslations("user.library.card");
@@ -61,7 +64,7 @@ export const LibraryMangaCard = memo(function LibraryMangaCard({
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
           className="object-cover"
-          priority={false}
+          priority={index !== undefined && index < 4}
         />
 
         {/* Hot Badge */}

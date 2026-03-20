@@ -10,7 +10,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { EmojiPickerComponent } from "@/components/ui/emoji-picker";
+import dynamic from "next/dynamic";
+
+// Lazy load emoji picker (1000+ lines) - only load when popover opens
+const EmojiPickerComponent = dynamic(
+  () =>
+    import("@/components/ui/emoji-picker").then((mod) => ({
+      default: mod.EmojiPickerComponent,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="p-4 text-sm text-muted-foreground">Loading...</div>
+    ),
+  }
+);
 import { useEmojiInsertion } from "@/hooks/use-emoji-insertion";
 
 interface CommentReplyFormProps {

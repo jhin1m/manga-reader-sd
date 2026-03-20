@@ -70,13 +70,14 @@ export function ContinueReadingSection() {
     <div className="space-y-4">
       {/* Grid of continue reading items */}
       <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-        {data.items.map((item) => (
+        {data.items.map((item, index) => (
           <LibraryMangaCard
             key={item.manga.id}
             manga={transformMangaReferenceToMangaListItem(
               item.manga,
               item.last_read_at
             )}
+            index={index}
             lastReadChapter={item.last_read_chapter}
             lastReadAt={item.last_read_at}
           />

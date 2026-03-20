@@ -8,6 +8,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { STALE_TIMES, GC_TIMES } from "@/lib/constants";
 
 interface ReactQueryProviderProps {
   children: React.ReactNode;
@@ -19,24 +20,17 @@ interface ReactQueryProviderProps {
  * Uses useState to ensure QueryClient is created once per component lifecycle
  */
 export function ReactQueryProvider({ children }: ReactQueryProviderProps) {
-  // Create QueryClient instance once per component mount
-  // This prevents creating new instances on every render
   const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Disable automatic refetching on window focus
             refetchOnWindowFocus: false,
-            // Retry failed requests twice with exponential backoff
             retry: 2,
             retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 30000),
-            // Cache data for 5 minutes (considered fresh)
-            staleTime: 5 * 60 * 1000,
-            // Keep in memory for 30 minutes to prevent cache thrashing during reading sessions
-            gcTime: 30 * 60 * 1000,
-            // Refetch when network returns from offline state
-            refetchOnReconnect: 'always',
+            staleTime: STALE_TIMES.DEFAULT,
+            gcTime: GC_TIMES.DEFAULT,
+            refetchOnReconnect: true,
           },
         },
       })

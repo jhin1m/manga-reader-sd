@@ -5,6 +5,7 @@
 
 import { QueryClient } from "@tanstack/react-query";
 import { cache } from "react";
+import { STALE_TIMES, GC_TIMES } from "@/lib/constants";
 
 /**
  * Create and cache a QueryClient instance for server-side rendering
@@ -15,11 +16,8 @@ export const getQueryClient = cache(
     new QueryClient({
       defaultOptions: {
         queries: {
-          // Data is considered fresh for 1 minute on server
-          staleTime: 60 * 1000,
-          // Keep data in memory for 5 minutes
-          gcTime: 5 * 60 * 1000,
-          // Don't refetch on window focus on server
+          staleTime: STALE_TIMES.DEFAULT,
+          gcTime: GC_TIMES.DEFAULT,
           refetchOnWindowFocus: false,
         },
       },

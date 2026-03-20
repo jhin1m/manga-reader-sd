@@ -18,12 +18,14 @@ import { SwRegister } from "@/components/service-worker/sw-register";
 const notoSans = Noto_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const roadRage = Road_Rage({
   variable: "--font-road-rage",
   subsets: ["latin"],
   weight: ["400"],
+  display: "swap",
 });
 
 /**
