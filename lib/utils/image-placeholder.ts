@@ -41,7 +41,7 @@ export function getShimmerPlaceholder(): string {
 }
 
 /** Domains to skip Next.js image optimization */
-const UNOPTIMIZED_DOMAINS = ["damconuong.plus"];
+const UNOPTIMIZED_DOMAINS = ["damconuong."];
 
 /**
  * Check if an image URL should skip Next.js optimization
@@ -49,7 +49,7 @@ const UNOPTIMIZED_DOMAINS = ["damconuong.plus"];
 export function isUnoptimizedImage(src: string): boolean {
   try {
     const url = new URL(src);
-    return UNOPTIMIZED_DOMAINS.some((domain) => url.hostname.endsWith(domain));
+    return UNOPTIMIZED_DOMAINS.some((domain) => url.hostname.includes(domain));
   } catch {
     return false;
   }
