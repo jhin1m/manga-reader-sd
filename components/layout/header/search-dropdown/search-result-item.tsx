@@ -10,6 +10,7 @@ import Link from "next/link";
 
 import type { MangaListItem } from "@/types/manga";
 import { cn } from "@/lib/utils";
+import { isUnoptimizedImage } from "@/lib/utils/image-placeholder";
 
 export interface SearchResultItemProps {
   manga: MangaListItem;
@@ -50,6 +51,7 @@ export function SearchResultItem({
           fill
           className="object-cover"
           sizes="56px"
+          unoptimized={isUnoptimizedImage(manga.cover_full_url)}
         />
       </div>
 

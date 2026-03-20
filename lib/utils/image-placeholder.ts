@@ -39,3 +39,18 @@ export function getShimmerPlaceholder(): string {
   }
   return SHIMMER_DATA_URL_BROWSER;
 }
+
+/** Domains to skip Next.js image optimization */
+const UNOPTIMIZED_DOMAINS = ["damconuong.plus"];
+
+/**
+ * Check if an image URL should skip Next.js optimization
+ */
+export function isUnoptimizedImage(src: string): boolean {
+  try {
+    const url = new URL(src);
+    return UNOPTIMIZED_DOMAINS.some((domain) => url.hostname.endsWith(domain));
+  } catch {
+    return false;
+  }
+}

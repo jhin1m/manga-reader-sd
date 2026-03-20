@@ -11,6 +11,7 @@ import type { ChapterListItem } from "@/types/chapter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isUnoptimizedImage } from "@/lib/utils/image-placeholder";
 
 export interface LibraryMangaCardProps {
   manga: MangaListItem;
@@ -65,6 +66,7 @@ export const LibraryMangaCard = memo(function LibraryMangaCard({
           sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
           className="object-cover"
           priority={index !== undefined && index < 4}
+          unoptimized={isUnoptimizedImage(manga.cover_full_url)}
         />
 
         {/* Hot Badge */}

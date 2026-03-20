@@ -13,7 +13,10 @@ import Image from "next/image";
 
 import type { MangaListItem } from "@/types/manga";
 import { cn } from "@/lib/utils";
-import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
+import {
+  getShimmerPlaceholder,
+  isUnoptimizedImage,
+} from "@/lib/utils/image-placeholder";
 
 export interface MangaCarouselCardProps {
   manga: MangaListItem;
@@ -57,6 +60,7 @@ export const MangaCarouselCard = memo(function MangaCarouselCard({
           placeholder="blur"
           blurDataURL={getShimmerPlaceholder()}
           priority={priority}
+          unoptimized={isUnoptimizedImage(manga.cover_full_url)}
         />
 
         {/* Gradient Overlay at Bottom */}

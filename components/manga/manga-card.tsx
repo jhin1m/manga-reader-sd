@@ -15,7 +15,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { MangaListItem } from "@/types/manga";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
+import {
+  getShimmerPlaceholder,
+  isUnoptimizedImage,
+} from "@/lib/utils/image-placeholder";
 import { mangaKeys } from "@/lib/api/query-keys";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { StarRating } from "@/components/manga/star-rating";
@@ -72,6 +75,7 @@ export const MangaCard = memo(function MangaCard({
           placeholder="blur"
           blurDataURL={getShimmerPlaceholder()}
           priority={priority}
+          unoptimized={isUnoptimizedImage(manga.cover_full_url)}
         />
 
         {/* Hot Badge */}

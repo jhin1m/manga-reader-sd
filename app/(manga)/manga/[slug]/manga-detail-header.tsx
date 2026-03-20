@@ -25,7 +25,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BookmarkButton } from "@/components/manga/bookmark-button";
 import { StarRating } from "@/components/manga/star-rating";
 import { cn, formatNumber } from "@/lib/utils";
-import { getShimmerPlaceholder } from "@/lib/utils/image-placeholder";
+import {
+  getShimmerPlaceholder,
+  isUnoptimizedImage,
+} from "@/lib/utils/image-placeholder";
 import { useReadingProgressStore } from "@/lib/store/readingProgressStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRateManga } from "@/lib/hooks/use-rating";
@@ -170,6 +173,7 @@ export function MangaDetailHeader({ manga, chapters }: MangaDetailHeaderProps) {
                 placeholder="blur"
                 blurDataURL={getShimmerPlaceholder()}
                 priority
+                unoptimized={isUnoptimizedImage(manga.cover_full_url)}
               />
               {manga.is_hot && (
                 <Badge
