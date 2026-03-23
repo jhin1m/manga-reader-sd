@@ -23,6 +23,7 @@ import {
   Settings,
 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ChapterNavigation } from "@/types/chapter";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
@@ -73,6 +74,7 @@ export function ReaderControls({
   onNavigateChapter,
 }: ReaderControlsProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const t = useTranslations("reader");
 
   return (
     <TooltipProvider>
@@ -92,14 +94,14 @@ export function ReaderControls({
           <div className="flex flex-col">
             <h1 className="text-sm font-medium line-clamp-1">
               {currentChapterNumber
-                ? `Chapter ${currentChapterNumber}`
-                : "Chapter Reader"}
+                ? t("chapterTitle", { number: currentChapterNumber })
+                : t("chapterReader")}
             </h1>
             <Link
               href={`/manga/${mangaSlug}`}
               className="text-xs text-muted-foreground hover:underline"
             >
-              {mangaName || "Back to Manga"}
+              {mangaName || t("backToManga")}
             </Link>
           </div>
         </div>
@@ -115,7 +117,7 @@ export function ReaderControls({
                 <Settings className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Settings</TooltipContent>
+            <TooltipContent>{t("settings.title")}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -143,24 +145,26 @@ export function ReaderControls({
           {/* Chapter Selector - Centered */}
           <Select value={currentChapterSlug} onValueChange={onNavigateChapter}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Chapter" />
+              <SelectValue placeholder={t("chapterReader")} />
             </SelectTrigger>
             <SelectContent>
               {chapterList?.map((chapter) => (
                 <SelectItem key={chapter.slug} value={chapter.slug}>
-                  Chapter {chapter.chapter_number}
+                  {t("chapterTitle", { number: chapter.chapter_number })}
                 </SelectItem>
               ))}
               {/* Fallback for current chapter if not in list (e.g. due to pagination) */}
               {chapterList &&
                 !chapterList.some((c) => c.slug === currentChapterSlug) && (
                   <SelectItem value={currentChapterSlug}>
-                    Chapter {currentChapterNumber || "..."}
+                    {t("chapterTitle", {
+                      number: currentChapterNumber || "...",
+                    })}
                   </SelectItem>
                 )}
               {!chapterList && (
                 <SelectItem value={currentChapterSlug}>
-                  Chapter {currentChapterNumber || "..."}
+                  {t("chapterTitle", { number: currentChapterNumber || "..." })}
                 </SelectItem>
               )}
             </SelectContent>
@@ -187,7 +191,7 @@ export function ReaderControls({
                 <ArrowUp className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Back to Top</TooltipContent>
+            <TooltipContent>{t("backToTop")}</TooltipContent>
           </Tooltip>
         </div>
       </div>

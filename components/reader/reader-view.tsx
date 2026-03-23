@@ -14,6 +14,7 @@ import { CommentsSkeleton } from "@/components/comments/comments-skeleton";
 import { LazyCommentWrapper } from "@/components/comments/lazy-comment-wrapper";
 import { useReaderStore } from "@/lib/store/readerStore";
 import { useReadingProgressStore } from "@/lib/store/readingProgressStore";
+import { useTranslations } from "next-intl";
 
 const ChapterReaderComments = dynamic(
   () =>
@@ -36,10 +37,9 @@ interface ReaderViewProps {
 export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations("reader");
 
   // State
-  // State
-  const readingMode = "long-strip";
   const [showControls, setShowControls] = useState(true);
 
   // Store for persistent settings - use selectors to prevent unnecessary re-renders
@@ -264,12 +264,12 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
   if (error || !chapter) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-4">
-        <p className="text-destructive">Failed to load chapter</p>
+        <p className="text-destructive">{t("failedToLoadChapter")}</p>
         <button
           onClick={() => router.push(`/manga/${mangaSlug}`)}
           className="text-primary hover:underline"
         >
-          Back to Manga
+          {t("backToManga")}
         </button>
       </div>
     );

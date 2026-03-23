@@ -61,8 +61,9 @@ function GoogleOAuthButtonInner({
         if (result.success) {
           toast.success(t("auth.googleAuthSuccess"));
 
-          // Redirect to previous page or homepage
-          const redirectTo = searchParams.get("redirect") || "/";
+          // Redirect to previous page or homepage (validate to prevent open redirect)
+          const rawRedirect = searchParams.get("redirect") || "/";
+          const redirectTo = rawRedirect.startsWith("/") ? rawRedirect : "/";
           router.push(redirectTo);
 
           onSuccess?.();
@@ -71,7 +72,7 @@ function GoogleOAuthButtonInner({
         }
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : "Failed to authenticate";
+          err instanceof Error ? err.message : t("auth.googleAuthFailed");
         toast.error(errorMessage);
       }
     },

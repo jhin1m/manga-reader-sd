@@ -110,6 +110,14 @@
     "errorLoadingChapter": "Lỗi khi tải chương"
   },
   "reader": {
+    "failedToLoadChapter": "Không thể tải chương",
+    "backToManga": "Quay lại truyện",
+    "chapterTitle": "Chương {number}",
+    "chapterReader": "Đọc chương",
+    "backToTop": "Về đầu trang",
+    "failedToLoadImage": "Không thể tải ảnh {number}",
+    "retry": "Thử lại",
+    "contentHidden": "Nội dung bị ẩn",
     "settings": {
       "title": "Cài đặt đọc truyện",
       "description": "Tùy chỉnh trải nghiệm đọc truyện của bạn",
@@ -466,7 +474,8 @@
         "week": "Tuần",
         "all": "Tất cả"
       },
-      "recentComments": "Bình luận mới"
+      "recentComments": "Bình luận mới",
+      "contentHidden": "Nội dung bị ẩn"
     },
     "mangaCard": {
       "hot": "Hot",

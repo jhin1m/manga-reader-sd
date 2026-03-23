@@ -110,6 +110,14 @@
     "errorLoadingChapter": "Error loading chapter"
   },
   "reader": {
+    "failedToLoadChapter": "Failed to load chapter",
+    "backToManga": "Back to Manga",
+    "chapterTitle": "Chapter {number}",
+    "chapterReader": "Chapter Reader",
+    "backToTop": "Back to Top",
+    "failedToLoadImage": "Failed to load image {number}",
+    "retry": "Retry",
+    "contentHidden": "Content hidden",
     "settings": {
       "title": "Reader Settings",
       "description": "Customize your reading experience",
@@ -466,7 +474,8 @@
         "week": "Week",
         "all": "All"
       },
-      "recentComments": "Recent Comments"
+      "recentComments": "Recent Comments",
+      "contentHidden": "Content hidden"
     },
     "mangaCard": {
       "hot": "Hot",

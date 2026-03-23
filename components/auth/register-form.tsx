@@ -71,8 +71,9 @@ function RegisterFormContent() {
         description: t("auth.accountCreatedSuccess"),
       });
 
-      // Redirect to previous page or homepage
-      const redirectTo = searchParams.get("redirect") || "/";
+      // Redirect to previous page or homepage (validate to prevent open redirect)
+      const rawRedirect = searchParams.get("redirect") || "/";
+      const redirectTo = rawRedirect.startsWith("/") ? rawRedirect : "/";
       router.push(redirectTo);
     } else {
       toast.error(t("auth.registerFailed"), {

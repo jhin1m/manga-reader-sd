@@ -51,6 +51,7 @@ export function RecentCommentsSidebar() {
 }
 
 function CommentItem({ comment }: { comment: Comment }) {
+  const t = useTranslations("homepage.sections");
   const format = useFormatter();
   const date = new Date(comment.created_at);
   const now = new Date(); // Current time for relative comparison
@@ -106,7 +107,7 @@ function CommentItem({ comment }: { comment: Comment }) {
 
           <p className="text-xs text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
             {sanitizedContent || (
-              <span className="italic opacity-50">Content hidden</span>
+              <span className="italic opacity-50">{t("contentHidden")}</span>
             )}
           </p>
 

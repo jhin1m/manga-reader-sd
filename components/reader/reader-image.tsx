@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
@@ -21,6 +22,7 @@ export function ReaderImage({
   style,
   onLoad,
 }: ReaderImageProps) {
+  const t = useTranslations("reader");
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -52,7 +54,7 @@ export function ReaderImage({
       {hasError ? (
         <div className="flex h-96 w-full flex-col items-center justify-center bg-muted p-4 text-center">
           <p className="text-muted-foreground">
-            Failed to load image {index + 1}
+            {t("failedToLoadImage", { number: index + 1 })}
           </p>
           <button
             onClick={() => {
@@ -61,7 +63,7 @@ export function ReaderImage({
             }}
             className="mt-2 text-primary underline"
           >
-            Retry
+            {t("retry")}
           </button>
         </div>
       ) : (
