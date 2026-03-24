@@ -62,9 +62,21 @@ export default async function MangaDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // Prefetch manga data into QueryClient for client hydration
+  // Prefetch manga data + chapters into QueryClient for client hydration
   const queryClient = getQueryClient();
   queryClient.setQueryData(mangaKeys.detail(slug), manga);
+
+  // Prefetch chapters list in parallel (non-blocking — don't fail page if this errors)
+  try {
+    const chapters = await mangaApi.getChapters(slug, {
+      per_page: 999,
+      sort: "desc",
+    });
+    queryClient.setQueryData(["manga", slug, "chapters", "newest"], chapters);
+  } catch {
+    // Client will fetch chapters if prefetch fails
+  }
+
   const dehydratedState = dehydrate(queryClient);
 
   // Generate JSON-LD schemas

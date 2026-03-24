@@ -8,22 +8,12 @@ const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     formats: ["image/avif", "image/webp"],
+    // Image domains are dynamic (backend-controlled CDNs like hentaicube.xyz, dcnvn2.mbpro.vip, damconuong.*)
+    // Using HTTPS-only wildcard since the CDN domains change frequently
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**.damconuong.*",
-      },
-      {
-        protocol: "http",
-        hostname: "**.damconuong.*",
-      },
-      {
-        protocol: "https",
-        hostname: "damconuong.*",
-      },
-      {
-        protocol: "http",
-        hostname: "damconuong.*",
+        hostname: "**",
       },
     ],
   },
