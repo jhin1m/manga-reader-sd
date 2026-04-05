@@ -8,6 +8,9 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
+/** ISR: revalidate manga detail every 15 minutes */
+export const revalidate = 900;
+
 import { generateMangaMetadata } from "@/lib/seo/metadata";
 import {
   generateMangaSchema,

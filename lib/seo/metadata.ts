@@ -173,7 +173,9 @@ export async function generateMangaMetadata(manga: {
   title = truncateText(title, 70);
 
   // Build description from translation template
-  const pilotSnippet = manga.pilot.replace(/<[^>]*>/g, "").substring(0, 100);
+  const pilotSnippet = (manga.pilot ?? "")
+    .replace(/<[^>]*>/g, "")
+    .substring(0, 100);
   const description = truncateText(
     t("manga.description", { name: manga.name, pilot: pilotSnippet }),
     160
@@ -204,17 +206,18 @@ export async function generateChapterMetadata(chapter: {
 }): Promise<Metadata> {
   const t = await getTranslations("seo");
 
-  const title = `${chapter.manga.name} - ${chapter.name}`;
+  const mangaName = chapter.manga?.name ?? "Manga";
+  const title = `${mangaName} - ${chapter.name}`;
   const description = t("chapter.description", {
-    mangaName: chapter.manga.name,
+    mangaName,
     chapterName: chapter.name,
   });
 
   return generatePageMetadata({
     title,
     description,
-    path: `/manga/${chapter.manga.slug}/${chapter.slug}`,
-    image: chapter.manga.cover_full_url,
+    path: `/manga/${chapter.manga?.slug ?? "unknown"}/${chapter.slug}`,
+    image: chapter.manga?.cover_full_url,
     keywords: [
       chapter.manga.name,
       chapter.name,

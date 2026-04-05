@@ -4,6 +4,9 @@ import { mangaApi } from "@/lib/api/endpoints/manga";
 import { HomePageContent } from "./home-content";
 import type { Metadata } from "next";
 
+/** ISR: revalidate homepage every 5 minutes */
+export const revalidate = 300;
+
 /**
  * Homepage Metadata
  * Uses centralized SEO configuration from lib/seo/config.ts

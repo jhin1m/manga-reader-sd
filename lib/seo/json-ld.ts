@@ -159,7 +159,7 @@ export function generateMangaSchema(manga: {
   updated_at?: string;
 }) {
   // Clean HTML from description
-  const cleanDescription = manga.pilot.replace(/<[^>]*>/g, "");
+  const cleanDescription = (manga.pilot ?? "").replace(/<[^>]*>/g, "");
 
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
