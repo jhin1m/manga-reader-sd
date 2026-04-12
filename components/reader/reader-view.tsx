@@ -233,6 +233,17 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
     [router, mangaSlug]
   );
 
+  // Toggle controls visibility
+  const toggleControls = useCallback(() => {
+    setShowControls((prev) => !prev);
+  }, []);
+
+  // Memoize image spacing style to prevent new object each render (breaks React.memo)
+  const imageSpacingStyle = useMemo(
+    () => ({ marginBottom: `${imageSpacing}px` }),
+    [imageSpacing]
+  );
+
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -277,6 +288,9 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
 
   const images = chapter.content || [];
 
+  // Number of images to load eagerly (above-the-fold)
+  const EAGER_COUNT = 3;
+
   return (
     <div className="relative min-h-screen" style={{ backgroundColor }}>
       <ReaderControls
@@ -296,24 +310,13 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
         onNavigateChapter={handleNavigateChapter}
       />
 
-      {/* Click zone to toggle controls */}
-      <div
-        className="fixed inset-0 z-40 bg-transparent"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            setShowControls(!showControls);
-          }
-        }}
-        style={{ pointerEvents: showControls ? "none" : "auto" }}
-      />
-
       {/* Main Content */}
       <main
         className={cn(
           "relative z-0 mx-auto min-h-screen transition-all duration-300",
           showControls ? "pt-16 pb-16" : "py-0"
         )}
-        onClick={() => setShowControls(!showControls)}
+        onClick={toggleControls}
         style={{
           width: "100%",
           maxWidth: "100%",
@@ -329,12 +332,13 @@ export function ReaderView({ mangaSlug, chapterSlug }: ReaderViewProps) {
         >
           {images.map((src, index) => (
             <ReaderImage
-              key={index}
+              key={src}
               src={src}
               alt={`Page ${index + 1}`}
               index={index}
+              priority={index < EAGER_COUNT}
               className="w-full max-w-4xl"
-              style={{ marginBottom: `${imageSpacing}px` }}
+              style={imageSpacingStyle}
             />
           ))}
         </div>
