@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.hentaicube.xyz",
+        hostname: "**.wtcdn.xyz",
       },
       {
         protocol: "https",
