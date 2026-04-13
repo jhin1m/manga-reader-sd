@@ -8,12 +8,19 @@ const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     formats: ["image/avif", "image/webp"],
-    // Image domains are dynamic (backend-controlled CDNs like hentaicube.xyz, dcnvn2.mbpro.vip, damconuong.*)
-    // Using HTTPS-only wildcard since the CDN domains change frequently
+    // Known image CDN domains — add new domains here as backend introduces them
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "**.mbpro.vip",
+      },
+      {
+        protocol: "https",
+        hostname: "**.hentaicube.xyz",
+      },
+      {
+        protocol: "https",
+        hostname: "damconuong.**",
       },
       {
         protocol: "http",
@@ -44,6 +51,22 @@ const nextConfig: NextConfig = {
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src * data: blob:",
+              "font-src 'self' data:",
+              "connect-src 'self' https: wss:",
+              "media-src 'self'",
+              "frame-src 'self' https://accounts.google.com",
+              "frame-ancestors 'self'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join("; "),
           },
         ],
       },

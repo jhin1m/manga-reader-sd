@@ -1,19 +1,19 @@
 /**
- * Next.js Proxy (Middleware)
+ * Next.js Middleware
  * Handles route protection and authentication redirects
  *
- * Note: This proxy works with localStorage-based auth.
- * For server-side token validation, consider using httpOnly cookies.
+ * Note: Currently using localStorage-based auth — middleware passes all requests through.
+ * For server-side token validation, migrate to httpOnly cookies.
  */
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Proxy function
- * Runs on every request to check authentication status
+ * Middleware function
+ * Next.js requires this export name — runs on matched routes
  */
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip proxy for:
@@ -41,8 +41,8 @@ export function proxy(request: NextRequest) {
 }
 
 /**
- * Proxy configuration
- * Specifies which routes the proxy should run on
+ * Middleware configuration
+ * Specifies which routes the middleware should run on
  */
 export const config = {
   matcher: [

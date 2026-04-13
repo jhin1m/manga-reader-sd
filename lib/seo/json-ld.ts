@@ -428,3 +428,14 @@ export function combineSchemas(schemas: Array<Record<string, unknown>>) {
     "@graph": schemas,
   };
 }
+
+/**
+ * Safely serialize JSON-LD for use in dangerouslySetInnerHTML.
+ * Escapes </script> injection vectors that JSON.stringify does NOT handle.
+ */
+export function safeJsonLdStringify(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}

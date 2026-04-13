@@ -33,7 +33,9 @@ function GuestOnlyContent({
     const timer = setTimeout(() => {
       if (isAuthenticated) {
         // If user is already logged in, redirect to home or specified page
-        const redirect = searchParams.get("redirect") || redirectTo;
+        const rawRedirect = searchParams.get("redirect") || redirectTo;
+        // Prevent open redirect — only allow relative paths
+        const redirect = rawRedirect.startsWith("/") ? rawRedirect : "/";
         router.push(redirect);
       } else {
         setIsChecking(false);

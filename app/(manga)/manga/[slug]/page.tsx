@@ -16,6 +16,7 @@ import {
   generateMangaSchema,
   generateBreadcrumbSchema,
   combineSchemas,
+  safeJsonLdStringify,
 } from "@/lib/seo/json-ld";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { getQueryClient } from "@/lib/api/query-client";
@@ -96,7 +97,7 @@ export default async function MangaDetailPage({ params }: PageProps) {
       {/* JSON-LD Schemas */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(schemas) }}
       />
 
       {/* Client Content with hydrated query data */}

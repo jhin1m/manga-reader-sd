@@ -1,5 +1,5 @@
 import { generateDefaultMetadata } from "@/lib/seo/metadata";
-import { generateWebsiteSchema } from "@/lib/seo/json-ld";
+import { generateWebsiteSchema, safeJsonLdStringify } from "@/lib/seo/json-ld";
 import { mangaApi } from "@/lib/api/endpoints/manga";
 import { HomePageContent } from "./home-content";
 import type { Metadata } from "next";
@@ -41,7 +41,7 @@ export default async function HomePage() {
       {/* JSON-LD Schema */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(websiteSchema) }}
       />
 
       {/* Page Content (Client Component) */}
